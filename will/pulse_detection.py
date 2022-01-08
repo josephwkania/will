@@ -2,8 +2,7 @@
 """
 Pulse analysis routine
 """
-
-from typing import NamedTuple
+from dataclasses import dataclass
 
 import numpy as np
 from jess.dispersion import dedisperse
@@ -37,9 +36,21 @@ def dedisped_time_series(
     return dynamic_spectra_dispered.mean(axis=1)
 
 
-DetectPulsesResult = NamedTuple(
-    "PulseInfo", [("locations", np.ndarray), ("snrs", np.ndarray)]
-)
+@dataclass
+class PulseInfo:
+    """
+    Pulse info result
+
+    locations - sample location of the pulses
+
+    snrs - Signal to noise of pulses
+
+    std - Standard devivation of time series
+    """
+
+    locations: np.ndarray
+    snrs: np.ndarray
+    std: np.float64
 
 
 def detect_pulses(
@@ -47,9 +58,9 @@ def detect_pulses(
     box_car_length: int,
     sigma: float = 6,
     smoothing_factor: int = 4,
-) -> NamedTuple:
+) -> dataclass:
     """
-    Deterct pulses in a dedisperesed serries.
+    Detect pulses in a dedisperesed serries.
 
     Args:
         time_series - The dedispersed time series
@@ -62,7 +73,7 @@ def detect_pulses(
         smoothing_factor - Median filter is smoothing_factor*box_car_length
 
     Returns:
-        namedtyple[Locations, SNRs]
+        dataclass[Locations, SNRs]
 
     Deterned the time series by subtracting off the running median
     Thesis described in Bardell Thesis, but Heimdall uses a different
@@ -75,9 +86,8 @@ def detect_pulses(
         time_series, box_car_length * smoothing_factor
     ).astype(float)
 
-    normatlized_time_series = flattened_times_series / stats.median_abs_deviation(
-        flattened_times_series, scale="normal"
-    )
+    std = stats.median_abs_deviation(flattened_times_series, scale="normal")
+    normatlized_time_series = flattened_times_series / std
     if box_car_length > 1:
         window = signal.boxcar(box_car_length) / np.sqrt(box_car_length)
         normatlized_time_series = signal.fftconvolve(
@@ -87,25 +97,36 @@ def detect_pulses(
             box_car_length // 2 - 1 : -box_car_length // 2
         ]
     locations = np.argwhere(normatlized_time_series > sigma)
-    return DetectPulsesResult(locations, normatlized_time_series[locations])
+    return PulseInfo(locations, normatlized_time_series[locations], std)
 
 
-FindMaxResult = NamedTuple("MaxPulse", [("location", np.int64), ("snr", np.float64)])
+@dataclass
+class MaxPulse:
+    """
+    Max pulse location
+
+    location - Sample location of max pulse
+
+    snr - Signal to noise ratio
+    """
+
+    location: np.int64
+    snr: np.float64
 
 
-def find_max_pulse(pulses: NamedTuple, start_idx: int, end_idx: int):
+def find_max_pulse(pulses: dataclass, start_idx: int, end_idx: int) -> dataclass:
     """
     Find the maximum pulse between two indices.
 
     Args:
-        pulses - The NamedTuple from detected pulses
+        pulses - The dataclass from detected pulses
 
         start_idx - Start index of the the range
 
         end_idx - End index of range
 
     Returns:
-        NamedTuple(location index, SNR)
+        dataclass(location index, SNR)
         if no pulse in range, returns (None, None)
     """
     mask = (pulses.locations >= start_idx) & (pulses.locations <= end_idx)
@@ -113,9 +134,9 @@ def find_max_pulse(pulses: NamedTuple, start_idx: int, end_idx: int):
 
     if len(snrs) > 0:
         max_pulse_location = np.argmax(snrs)
-        return FindMaxResult(
+        return MaxPulse(
             pulses.locations[max_pulse_location], pulses.snrs[max_pulse_location]
         )
 
     # No suitable pulses
-    return FindMaxResult(None, None)
+    return MaxPulse(None, None)
