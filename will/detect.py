@@ -3,6 +3,7 @@
 Pulse analysis routine
 """
 from dataclasses import dataclass
+from typing import Union
 
 import numpy as np
 from jess.dispersion import dedisperse
@@ -58,7 +59,7 @@ def detect_pulses(
     box_car_length: int,
     sigma: float = 6,
     smoothing_factor: int = 4,
-) -> dataclass:
+) -> PulseInfo:
     """
     Detect pulses in a dedisperesed serries.
 
@@ -108,13 +109,15 @@ class MaxPulse:
     location - Sample location of max pulse
 
     snr - Signal to noise ratio
+
+    If `None`, no pulse fitting requirements found.
     """
 
-    location: np.int64
-    snr: np.float64
+    location: Union[np.int64, None]
+    snr: Union[np.float64, None]
 
 
-def find_max_pulse(pulses: dataclass, start_idx: int, end_idx: int) -> dataclass:
+def find_max_pulse(pulses: PulseInfo, start_idx: int, end_idx: int) -> MaxPulse:
     """
     Find the maximum pulse between two indices.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pulse Creation routines
+Pulse creation routines.
 """
 
 import logging
@@ -10,12 +10,13 @@ from jess.dispersion import dedisperse, delay_lost
 from scipy import integrate, interpolate, signal, stats
 
 
-def gaussian(x: np.ndarray, mu: float, sig: float) -> np.ndarray:
+# pylint: disable=invalid-name
+def gaussian(domain: np.ndarray, mu: float, sig: float) -> np.ndarray:
     """
     A Gaussian
 
     Args:
-        x - Domain to calculate the Gaussian
+        domain - Domain to calculate the Gaussian
 
         mu - Start location
 
@@ -24,7 +25,7 @@ def gaussian(x: np.ndarray, mu: float, sig: float) -> np.ndarray:
     Returns:
         Gaussian evaluated over x
     """
-    return np.exp(-np.power(x - mu, 2.0) / (2 * np.power(sig, 2.0)))
+    return np.exp(-np.power(domain - mu, 2.0) / (2 * np.power(sig, 2.0)))
 
 
 def pulse_with_tail(times: np.ndarray, tau: float = 50) -> np.ndarray:
@@ -280,7 +281,7 @@ def build_pulse(
 
 
 def spectral_index(
-    chan_freqs: np.ndarray, freq_ref: float, spectral_index: float
+    chan_freqs: np.ndarray, freq_ref: float, spectral_index_alpha: float
 ) -> np.ndarray:
     """
     Add spectral index to pulse profile
@@ -295,7 +296,7 @@ def spectral_index(
     Returns:
         pulse profile modulated by spectral index
     """
-    return (chan_freqs / freq_ref) ** spectral_index
+    return (chan_freqs / freq_ref) ** spectral_index_alpha
 
 
 def scintillation(
@@ -353,6 +354,18 @@ def apply_scatter_profile(
     return scattered / scattered.max()
 
 
+# @dataclass
+# def GaussPulse:
+#     """
+#     Gaussian Pulse
+
+#     pulse - 2D array with pulse
+
+#     max_location - location of pulse max of
+#                    highest channel
+#     """
+
+
 def create_gauss_pulse(
     nsamp: int,
     sigma_time: float,
@@ -362,7 +375,7 @@ def create_gauss_pulse(
     center_freq: float,
     chan_freqs: np.ndarray,
     tsamp: float,
-    spectral_index: float,
+    spectral_index_alpha: float,
     nscint: int,
     phi: float,
     bandpass: np.ndarray = None,
@@ -370,15 +383,42 @@ def create_gauss_pulse(
     """
     Create a pulse from Gaussians in time and frequency
 
+    Args:
+        nsamp - Number of samples to add
+
+        sigma_time - time sigma in seconds
+
+        dm - Dispersion measure
+
+        tau - scatter
+
+        sigma_freq - Frequency Sigma in MHz
+
+        center_freq - Center Frequency in MHz
+
+        tsamp - sampling time of dynamic spectra in second
+
+        spectra_index - spectral index around center_freq
+
+        nscint - number of scintills
+
+        phi - phase of of scintillation
+
+        bandpass - scale frequency structure with bandpass if
+                   not None
+
+    Returns:
+        dispersed pulse
     """
 
     logging.debug("Creating time profile.")
 
     sigma_time_samples = np.around(sigma_time / tsamp)
-    pulse_width = int(7 * sigma_time_samples + np.around(tau))
+    gauss_width = int(8 * sigma_time_samples)
+    pulse_width = int(gauss_width + np.around(8 * tau))
     time_indices = np.arange(0, pulse_width)
     pulse_time_profile = gaussian(
-        time_indices, mu=pulse_width // 2, sig=sigma_time_samples
+        time_indices, mu=gauss_width // 2, sig=sigma_time_samples
     )
     if tau > 0:
         pulse_time_profile = apply_scatter_profile(
@@ -387,6 +427,8 @@ def create_gauss_pulse(
             ref_freq=chan_freqs[len(chan_freqs) // 2],
             tau=tau,
         )
+    # offset_to_pulse_max = pulse_time_profile.argmax()
+
     channel_bw = np.abs(chan_freqs[0] - chan_freqs[1])
     sigma_freq_samples = np.around(sigma_freq / channel_bw)
     freq_center_index = np.abs(chan_freqs - center_freq).argmin()
@@ -397,11 +439,11 @@ def create_gauss_pulse(
         mu=freq_center_index,
         sig=sigma_freq_samples,
     )
-    if spectral_index != 0:
+    if spectral_index_alpha != 0:
         pulse_freq_profile *= spectral_index(
             chan_freqs=chan_freqs,
             freq_ref=center_freq,
-            spectral_index=spectral_index,
+            spectral_index_alpha=spectral_index_alpha,
         )
     if nscint != 0:
         pulse_freq_profile *= scintillation(
@@ -427,7 +469,6 @@ def create_gauss_pulse(
 
     delay = delay_lost(dm=dm, chan_freqs=chan_freqs, tsamp=tsamp)
     pulse_array_pad = np.zeros((pulse_width + delay, nchans), dtype=np.uint32)
-    print(pulse_array.shape, pulse_array_pad.shape)
     pulse_array_pad[:pulse_width] = pulse_array
     pulse_dispersed = dedisperse(
         pulse_array_pad, dm=-dm, tsamp=tsamp, chan_freqs=chan_freqs
