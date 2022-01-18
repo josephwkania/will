@@ -138,7 +138,7 @@ def find_max_pulse(pulses: PulseInfo, start_idx: int, end_idx: int) -> MaxPulse:
     if len(snrs) > 0:
         max_pulse_location = np.argmax(snrs)
         return MaxPulse(
-            pulses.locations[max_pulse_location], pulses.snrs[max_pulse_location]
+            pulses.locations[mask][max_pulse_location], snrs[max_pulse_location]
         )
 
     # No suitable pulses
