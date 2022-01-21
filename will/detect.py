@@ -87,16 +87,22 @@ def detect_pulses(
         time_series, box_car_length * smoothing_factor
     ).astype(float)
 
-    std = stats.median_abs_deviation(flattened_times_series, scale="normal")
-    normatlized_time_series = flattened_times_series / std
+    # this follows https://arxiv.org/pdf/2011.10191.pdf
+    # std = stats.median_abs_deviation(flattened_times_series, scale="normal")
+    # normatlized_time_series = flattened_times_series / std
+
     if box_car_length > 1:
         window = signal.boxcar(box_car_length) / np.sqrt(box_car_length)
-        normatlized_time_series = signal.fftconvolve(
-            window, normatlized_time_series, "full"
+        flattened_times_series = signal.fftconvolve(
+            window, flattened_times_series, "full"
         )
-        normatlized_time_series = normatlized_time_series[
+        flattened_times_series = flattened_times_series[
             box_car_length // 2 - 1 : -box_car_length // 2
         ]
+
+    std = stats.median_abs_deviation(flattened_times_series, scale="normal")
+    normatlized_time_series = flattened_times_series / std
+
     locations = np.argwhere(normatlized_time_series > sigma)
     return PulseInfo(locations, normatlized_time_series[locations], std)
 
@@ -113,11 +119,13 @@ class MaxPulse:
     If `None`, no pulse fitting requirements found.
     """
 
-    location: Union[np.int64, None]
-    snr: Union[np.float64, None]
+    location: Union[np.int64, float]
+    snr: Union[np.float64, float]
 
 
-def find_max_pulse(pulses: PulseInfo, start_idx: int, end_idx: int) -> MaxPulse:
+def find_max_pulse(
+    pulses: PulseInfo, start_idx: int = 0, end_idx: int = -1
+) -> MaxPulse:
     """
     Find the maximum pulse between two indices.
 
@@ -132,7 +140,11 @@ def find_max_pulse(pulses: PulseInfo, start_idx: int, end_idx: int) -> MaxPulse:
         dataclass(location index, SNR)
         if no pulse in range, returns (None, None)
     """
-    mask = (pulses.locations >= start_idx) & (pulses.locations <= end_idx)
+    if end_idx == -1:
+        mask = pulses.locations >= start_idx
+    else:
+        mask = (pulses.locations >= start_idx) & (pulses.locations <= end_idx)
+
     snrs = pulses.snrs[mask]
 
     if len(snrs) > 0:
@@ -142,4 +154,4 @@ def find_max_pulse(pulses: PulseInfo, start_idx: int, end_idx: int) -> MaxPulse:
         )
 
     # No suitable pulses
-    return MaxPulse(None, None)
+    return MaxPulse(np.nan, np.nan)
