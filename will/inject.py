@@ -7,8 +7,8 @@ from typing import Union
 
 import numpy as np
 from rich.progress import track
-from your import Your
-from your.formats.filwriter import Writer, sigproc_object_from_writer
+from your import Writer, Your
+from your.formats.filwriter import sigproc_object_from_writer
 
 
 def inject_into_file(

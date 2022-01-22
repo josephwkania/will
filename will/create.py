@@ -4,10 +4,13 @@ Pulse creation routines.
 """
 
 import logging
+from typing import Callable
 
 import numpy as np
+from jess.calculators import median_abs_deviation_med, to_dtype
 from jess.dispersion import dedisperse, delay_lost
-from scipy import integrate, interpolate, signal, stats
+from jess.fitters import median_fitter
+from scipy import integrate, interpolate, ndimage, signal, stats
 
 
 # pylint: disable=invalid-name
@@ -475,3 +478,93 @@ def create_gauss_pulse(
     )
 
     return pulse_dispersed
+
+
+def filter_weights(
+    dynamic_spectra: np.ndarray,
+    metric: Callable = np.median,
+    bandpass_smooth_length: int = 50,
+    cut_sigma: float = 2 / 3,
+    smooth_sigma: int = 30,
+) -> np.ndarray:
+    """
+    Makes weights based on low values of some meteric.
+    This is designed to ignore bandpass filters or tapers
+    at the end of the bandpass.
+
+    Args:
+        dynamic_spectra - 2D dynamic spectra with time on the
+                          vertical axis
+
+        metric - The statistic to sample.
+
+        bandpass_smooth_length - length of the median filter to
+                                 smooth the bandpass
+
+        sigma_cut - Cut values below (standard deviation)*(sigma cut)
+
+        smooth_sigma - Gaussian filter smoothing sigma
+
+    Returns:
+        Bandpass weights for sections of spectra with low values.
+        0 where the value is below the threshold and 1 elsewhere,
+        with a Gaussian taper.
+    """
+    bandpass = metric(dynamic_spectra, axis=0)
+    bandpass_std = stats.median_abs_deviation(bandpass, scale="normal")
+    threshold = bandpass_std * cut_sigma
+    if bandpass_smooth_length > 1:
+        bandpass = median_fitter(bandpass, chans_per_fit=bandpass_smooth_length)
+    mask = bandpass > threshold
+    return ndimage.gaussian_filter1d((mask).astype(float), sigma=smooth_sigma)
+
+
+def dynamic_from_statistics(
+    medians: np.ndarray, stds: np.ndarray, dtype: np.dtype, nsamps: int = 2 ** 16
+) -> np.ndarray:
+    """
+    Make a dynamic spectra from statistics.
+
+    Args:
+        medians - Bandpass medians
+
+        stds - Standard deviation of the bandpass
+
+        dtype - data type of fake file
+
+        nsamps - Number of time samples
+
+    Returns:
+        2D random arrays
+    """
+    nchans = medians.shape[0]
+    clone = np.random.normal(size=nchans * nsamps)
+    clone = clone.reshape(nsamps, nchans)
+    clone *= stds
+    clone += medians
+    return to_dtype(clone, dtype=dtype)
+
+
+def clone_spectra(
+    dynamic_spectra: np.ndarray, median_filter_length: int = 0
+) -> np.ndarray:
+    """
+    Clone a section of dynamic spectra using Gaussian random numbers.
+
+    Args:
+        2D array of dynamic spectra
+
+    Returns:
+        Dynamic spectra that has simlar statstics as the given dynamic
+        spectra.
+    """
+    dtype = dynamic_spectra.dtype
+    nsamps, _ = dynamic_spectra.shape
+    stds, medians = median_abs_deviation_med(dynamic_spectra, axis=0, scale="normal")
+
+    if median_filter_length > 0:
+        stds = median_fitter(stds, chans_per_fit=median_filter_length)
+        medians = median_fitter(medians, chans_per_fit=median_filter_length)
+    return dynamic_from_statistics(
+        medians=medians, stds=stds, dtype=dtype, nsamps=nsamps
+    )
