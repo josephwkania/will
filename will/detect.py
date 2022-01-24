@@ -52,19 +52,19 @@ class PulseInfo:
     std - Standard devivation of time series
     """
 
-    locations: np.ndarray
-    snrs: np.ndarray
+    locations: Union[int, float, np.ndarray]
+    snrs: float
     std: np.float64
 
 
-def detect_pulses(
+def detect_all_pulses(
     time_series: np.ndarray,
     box_car_length: int,
     sigma: float = 6,
     smoothing_factor: int = 4,
 ) -> PulseInfo:
     """
-    Detect pulses in a dedisperesed serries.
+    Detect pulses in a dedisperesed series.
 
     Args:
         time_series - The dedispersed time series
@@ -83,8 +83,8 @@ def detect_pulses(
     Thesis described in Bardell Thesis, but Heimdall uses a different
     method
 
-    Scale the SNR with 1/sqrt(boxcar length)
-    as described in https://arxiv.org/pdf/2011.10191.pdf
+    Don't scale SNR as described in https://arxiv.org/pdf/2011.10191.pdf
+    because we want the actual SNR of the time series.
     """
     flattened_times_series = time_series - ndimage.median_filter(
         time_series, box_car_length * smoothing_factor
@@ -108,6 +108,72 @@ def detect_pulses(
 
     locations = np.argwhere(normatlized_time_series > sigma)
     return PulseInfo(locations, normatlized_time_series[locations], std)
+
+
+def detect_max_pulse(
+    time_series: np.ndarray,
+    box_car_length: int,
+    sigma: float = 6,
+    smoothing_factor: int = 4,
+) -> PulseInfo:
+    """
+    Detect the largest pulse in a dedisperesed series.
+    reports back the location, pulse SNR and time series
+    standard deviation as computed by Median Absolute Deviation.
+
+    Args:
+        time_series - The dedispersed time series
+
+        box_car_length - Length of the boxcar
+
+        sigma - Return pulses with significance above
+                this
+
+        smoothing_factor - Median filter is smoothing_factor*box_car_length
+
+    Returns:
+        dataclass[Locations, SNRs]
+
+    Deterned the time series by subtracting off the running median
+    Thesis described in Bardell Thesis, but Heimdall uses a different
+    method
+
+    Don't scale SNR as described in https://arxiv.org/pdf/2011.10191.pdf
+    because we want the actual SNR of the time series.
+    """
+    flattened_times_series = time_series - ndimage.median_filter(
+        time_series, box_car_length * smoothing_factor
+    ).astype(float)
+
+    # this follows https://arxiv.org/pdf/2011.10191.pdf
+    # std = stats.median_abs_deviation(flattened_times_series, scale="normal")
+    # normatlized_time_series = flattened_times_series / std
+
+    if box_car_length > 1:
+        window = signal.boxcar(box_car_length) / np.sqrt(box_car_length)
+        flattened_times_series = signal.fftconvolve(
+            window, flattened_times_series, "full"
+        )
+        flattened_times_series = flattened_times_series[
+            box_car_length // 2 - 1 : -box_car_length // 2
+        ]
+
+    # Find max value
+    max_index = np.argmax(flattened_times_series)
+    max_value = flattened_times_series[max_index]
+
+    # don't use pulse for calculating SNR
+    mask = np.zeros(flattened_times_series.shape, dtype=bool)
+    mask[max_index] = True
+    ndimage.binary_dilation(
+        mask, iterations=box_car_length * smoothing_factor // 2, output=mask
+    )
+
+    std = stats.median_abs_deviation(flattened_times_series[~mask], scale="normal")
+    snr = max_value / std
+    if snr < sigma:
+        return PulseInfo(np.nan, np.nan, std)
+    return PulseInfo(max_index, snr, std)
 
 
 @dataclass
@@ -313,23 +379,20 @@ def search_file(
             tsamp=pulse_search_params.yr_obj.your_header.tsamp,
             chan_freqs=pulse_search_params.yr_obj.chan_freqs,
         )
+        # cut the rolled part
         dynamic_spectra_trim = dynamic_spectra_dispered[
             pulse_search_params.samples_lost : -pulse_search_params.samples_lost
         ]
         folded += dynamic_spectra_trim
         time_series = dynamic_spectra_trim.mean(axis=1)
 
-        # cut the rolled part
-        pulse = detect_pulses(
+        pulse = detect_max_pulse(
             time_series,
             box_car_length=pulse_search_params.box_car_length,
             sigma=pulse_search_params.sigma,
         )
-        # print(pulse)
 
         stds[j] = pulse.std
-
-        # pulse_window = offset // 2
-        snrs[j] = find_max_pulse(pulse, 0, -1).snr
+        snrs[j] = pulse.snrs
 
     return PulseSNRs(snrs, stds, folded)
