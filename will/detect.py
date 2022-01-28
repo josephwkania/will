@@ -6,6 +6,7 @@ import logging
 from dataclasses import dataclass
 from typing import Union
 
+import matplotlib.pyplot as plt
 import numpy as np
 from jess.dispersion import dedisperse, delay_lost
 from rich.progress import track
@@ -113,7 +114,7 @@ def detect_all_pulses(
 def detect_max_pulse(
     time_series: np.ndarray,
     box_car_length: int,
-    sigma: float = 6,
+    # sigma: float = 6,
     smoothing_factor: int = 4,
 ) -> PulseInfo:
     """
@@ -171,8 +172,8 @@ def detect_max_pulse(
 
     std = stats.median_abs_deviation(flattened_times_series[~mask], scale="normal")
     snr = max_value / std
-    if snr < sigma:
-        return PulseInfo(np.nan, np.nan, std)
+    # if snr < sigma:
+    #     return PulseInfo(np.nan, np.nan, std)
     return PulseInfo(max_index, snr, std)
 
 
@@ -329,6 +330,76 @@ class PulseSNRs:
     snrs: np.ndarray
     stds: np.ndarray
     folded: np.ndarray
+    pulse_search_params: PulseSearchParamters
+    pulse_locations: np.ndarray
+
+    def plot_snrs(self) -> None:
+        """
+        Plot Signal to Noise Ratios as a function of time.
+        """
+        snr_mask = self.snrs > self.pulse_search_params.sigma
+        # pulse locations in seconds
+        locs = (
+            self.pulse_locations[snr_mask]
+            * self.pulse_search_params.yr_obj.your_header.tsamp
+        )
+        plt.plot(locs, self.snrs[snr_mask])
+        plt.xlabel("Time [Seconds]")
+        plt.ylabel("SNR")
+        plt.title("SNR vs. Time")
+        plt.show()
+
+    def plot_stds(self) -> None:
+        """
+        Plot Standard Deviation (As calculated via Median Absolute Deviation)
+        as a function of time.
+        """
+        locs = self.pulse_locations * self.pulse_search_params.yr_obj.your_header.tsamp
+        plt.plot(locs, self.stds)
+        plt.xlabel("Time [Seconds]")
+        plt.ylabel("Standard Deviation")
+        plt.title("Standard Deviation vs. Time")
+        plt.show()
+
+    def plot_folded_dynamic(self, median_filter_length=29) -> None:
+        """
+        Plot the folded dynamic spectra.
+
+        Args:
+            median_filter_length - The length of the median filter used to
+                                    remove the bandpass
+        """
+        nsamps, _ = self.folded.shape
+        xmax = 1000 * nsamps * self.pulse_search_params.yr_obj.your_header.tsamp
+        ymin = self.pulse_search_params.yr_obj.chan_freqs[-1]
+        ymax = self.pulse_search_params.yr_obj.chan_freqs[0]
+        bandpass = ndimage.median_filter(
+            np.median(self.folded, axis=0), size=median_filter_length, mode="mirror"
+        )
+        plt.imshow((self.folded - bandpass).T, extent=[0, xmax, ymin, ymax])
+        plt.xlabel("Time [millisecond]")
+        plt.ylabel("Frequency [Mhz]")
+        plt.title("Folded Dynamic Spectra")
+        plt.show()
+
+    def plot_folded_profile(self) -> None:
+        """
+        Plot the folded pulse profile and print the Signal to Noise
+        """
+        time_series = self.folded.mean(axis=1)
+        times = (
+            np.arange(len(time_series))
+            * self.pulse_search_params.yr_obj.your_header.tsamp
+        )
+        plt.plot(times, time_series)
+        plt.xlabel("Time [Seconds]")
+        plt.ylabel("Intensity")
+        plt.title("Folded Time Series")
+        plt.show()
+        max_pulse = detect_max_pulse(
+            time_series, box_car_length=self.pulse_search_params.box_car_length
+        )
+        print(f"Folded Pulse SNR: {max_pulse.snrs:.2f}")
 
 
 def search_file(
@@ -389,10 +460,16 @@ def search_file(
         pulse = detect_max_pulse(
             time_series,
             box_car_length=pulse_search_params.box_car_length,
-            sigma=pulse_search_params.sigma,
+            # sigma=pulse_search_params.sigma,
         )
 
         stds[j] = pulse.std
         snrs[j] = pulse.snrs
 
-    return PulseSNRs(snrs, stds, folded)
+    return PulseSNRs(
+        snrs=snrs,
+        stds=stds,
+        folded=folded,
+        pulse_search_params=pulse_search_params,
+        pulse_locations=pulse_locations,
+    )
