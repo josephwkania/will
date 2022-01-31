@@ -5,7 +5,7 @@ Pulse creation routines.
 
 import logging
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Union
 
 import numpy as np
 from jess.calculators import median_abs_deviation_med, to_dtype
@@ -358,20 +358,8 @@ def apply_scatter_profile(
     return scattered / scattered.max()
 
 
-# @dataclass
-# def GaussPulse:
-#     """
-#     Gaussian Pulse
-
-#     pulse - 2D array with pulse
-
-#     max_location - location of pulse max of
-#                    highest channel
-#     """
-
-
 @dataclass
-class CreateGaussPulse:
+class GaussPulse:
     """
     Create a pulse from Gaussians in time and frequency.
     The time and frequency profiles are created with the
@@ -415,7 +403,7 @@ class CreateGaussPulse:
     spectral_index_alpha: float
     nscint: int
     phi: float
-    bandpass: np.ndarray = None
+    bandpass: Union[np.ndarray, None] = None
 
     def __post_init__(self):
         """
@@ -472,9 +460,17 @@ class CreateGaussPulse:
         if self.bandpass is not None:
             self.pulse_freq_profile *= self.bandpass
 
-    def sample_pulse(self, nsamp: int) -> np.ndarray:
+    def sample_pulse(self, nsamp: int, dtype: type = np.uint32) -> np.ndarray:
         """
         Sample the pulse with `nsamp` samples
+
+        Args:
+            nsamp - Number of samples in the pulse
+
+            dtype - Data type of the pulse
+
+        Returns:
+            2D ndarray with disperesed pulse
         """
 
         logging.debug("Calculating %i locations.", nsamp)
@@ -495,9 +491,7 @@ class CreateGaussPulse:
         )
 
         delay = delay_lost(dm=self.dm, chan_freqs=self.chan_freqs, tsamp=self.tsamp)
-        pulse_array_pad = np.zeros(
-            (self.pulse_width + delay, self.nchans), dtype=np.uint32
-        )
+        pulse_array_pad = np.zeros((self.pulse_width + delay, self.nchans), dtype=dtype)
         pulse_array_pad[: self.pulse_width] = pulse_array
         pulse_dispersed = dedisperse(
             pulse_array_pad, dm=-self.dm, tsamp=self.tsamp, chan_freqs=self.chan_freqs
