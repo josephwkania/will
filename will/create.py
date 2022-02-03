@@ -4,6 +4,7 @@ Pulse creation routines.
 """
 
 import logging
+from dataclasses import dataclass
 from typing import Callable, Union
 
 import numpy as np
@@ -365,37 +366,15 @@ def apply_scatter_profile(
     return scattered / scattered.max()
 
 
-# @dataclass
-# def GaussPulse:
-#     """
-#     Gaussian Pulse
-
-#     pulse - 2D array with pulse
-
-#     max_location - location of pulse max of
-#                    highest channel
-#     """
-
-
-def create_gauss_pulse(
-    nsamp: int,
-    sigma_time: float,
-    dm: float,
-    tau: float,
-    sigma_freq: float,
-    center_freq: float,
-    chan_freqs: np.ndarray,
-    tsamp: float,
-    spectral_index_alpha: float,
-    nscint: int,
-    phi: float,
-    bandpass: np.ndarray = None,
-) -> np.ndarray:
+@dataclass
+class GaussPulse:
     """
-    Create a pulse from Gaussians in time and frequency
+    Create a pulse from Gaussians in time and frequency.
+    The time and frequency profiles are created with the
+    object. To sample use .sample_pulse(nsamps)
+    to sample the pulse.
 
     Args:
-        nsamp - Number of samples to add
 
         sigma_time - time sigma in seconds
 
@@ -422,70 +401,111 @@ def create_gauss_pulse(
         dispersed pulse
     """
 
-    logging.debug("Creating time profile.")
+    sigma_time: float
+    dm: float
+    tau: float
+    sigma_freq: float
+    center_freq: float
+    chan_freqs: np.ndarray
+    tsamp: float
+    spectral_index_alpha: float
+    nscint: int
+    phi: float
+    bandpass: Union[np.ndarray, None] = None
 
-    sigma_time_samples = np.around(sigma_time / tsamp)
-    gauss_width = int(8 * sigma_time_samples)
-    pulse_width = int(gauss_width + np.around(8 * tau))
-    time_indices = np.arange(0, pulse_width)
-    pulse_time_profile = gaussian(
-        time_indices, mu=gauss_width // 2, sig=sigma_time_samples
-    )
-    if tau > 0:
-        pulse_time_profile = apply_scatter_profile(
-            pulse_time_profile,
-            chan_freqs=chan_freqs,
-            ref_freq=chan_freqs[len(chan_freqs) // 2],
-            tau=tau,
+    def __post_init__(self):
+        """
+        Create the pulse time and frequency profiles when
+        the instance is created
+        """
+        self.create_pulse()
+
+    def create_pulse(self) -> None:
+        """
+        Create the pulse
+        """
+        logging.debug("Creating time profile.")
+
+        sigma_time_samples = np.around(self.sigma_time / self.tsamp)
+        self.gauss_width = int(8 * sigma_time_samples)
+        self.pulse_width = int(self.gauss_width + np.around(8 * self.tau))
+        self.time_indices = np.arange(0, self.pulse_width)
+        self.pulse_time_profile = gaussian(
+            self.time_indices, mu=self.gauss_width // 2, sig=sigma_time_samples
         )
-    # offset_to_pulse_max = pulse_time_profile.argmax()
+        if self.tau > 0:
+            self.pulse_time_profile = apply_scatter_profile(
+                self.pulse_time_profile,
+                chan_freqs=self.chan_freqs,
+                ref_freq=self.chan_freqs[len(self.chan_freqs) // 2],
+                tau=self.tau,
+            )
+        # offset_to_pulse_max = pulse_time_profile.argmax()
 
-    channel_bw = np.abs(chan_freqs[0] - chan_freqs[1])
-    sigma_freq_samples = np.around(sigma_freq / channel_bw)
-    freq_center_index = np.abs(chan_freqs - center_freq).argmin()
-    nchans = len(chan_freqs)
-    chan_indices = np.arange(0, nchans)
-    pulse_freq_profile = gaussian(
-        chan_indices,
-        mu=freq_center_index,
-        sig=sigma_freq_samples,
-    )
-    if spectral_index_alpha != 0:
-        pulse_freq_profile *= spectral_index(
-            chan_freqs=chan_freqs,
-            freq_ref=center_freq,
-            spectral_index_alpha=spectral_index_alpha,
+        channel_bw = np.abs(self.chan_freqs[0] - self.chan_freqs[1])
+        sigma_freq_samples = np.around(self.sigma_freq / channel_bw)
+        freq_center_index = np.abs(self.chan_freqs - self.center_freq).argmin()
+        self.nchans = len(self.chan_freqs)
+        self.chan_indices = np.arange(0, self.nchans)
+        self.pulse_freq_profile = gaussian(
+            self.chan_indices,
+            mu=freq_center_index,
+            sig=sigma_freq_samples,
         )
-    if nscint != 0:
-        pulse_freq_profile *= scintillation(
-            chan_freqs=chan_freqs, freq_ref=center_freq, nscint=nscint, phi=phi
+        if self.spectral_index_alpha != 0:
+            self.pulse_freq_profile *= spectral_index(
+                chan_freqs=self.chan_freqs,
+                freq_ref=self.center_freq,
+                spectral_index_alpha=self.spectral_index_alpha,
+            )
+        if self.nscint != 0:
+            self.pulse_freq_profile *= scintillation(
+                chan_freqs=self.chan_freqs,
+                freq_ref=self.center_freq,
+                nscint=self.nscint,
+                phi=self.phi,
+            )
+        if self.bandpass is not None:
+            self.pulse_freq_profile *= self.bandpass
+
+    def sample_pulse(self, nsamp: int, dtype: type = np.uint32) -> np.ndarray:
+        """
+        Sample the pulse with `nsamp` samples
+
+        Args:
+            nsamp - Number of samples in the pulse
+
+            dtype - Data type of the pulse
+
+        Returns:
+            2D ndarray with disperesed pulse
+        """
+
+        logging.debug("Calculating %i locations.", nsamp)
+        time_locations = arbitrary_array_cdf(
+            self.pulse_time_profile, locations=self.time_indices, num_samples=nsamp
         )
-    if bandpass is not None:
-        pulse_freq_profile *= bandpass
+        np.round(time_locations, out=time_locations)
+        time_locations = time_locations.astype(int)
 
-    logging.debug("Calculating %i locations.", nsamp)
-    time_locations = arbitrary_array_cdf(
-        pulse_time_profile, locations=time_indices, num_samples=nsamp
-    )
-    np.round(time_locations, out=time_locations)
-    time_locations = time_locations.astype(int)
+        freq_locations = arbitrary_array_cdf(
+            self.pulse_freq_profile, locations=self.chan_indices, num_samples=nsamp
+        )
+        np.around(freq_locations, out=freq_locations)
+        freq_locations = freq_locations.astype(int)
 
-    freq_locations = arbitrary_array_cdf(
-        pulse_freq_profile, locations=chan_indices, num_samples=nsamp
-    )
-    np.around(freq_locations, out=freq_locations)
-    freq_locations = freq_locations.astype(int)
+        pulse_array = build_pulse(
+            self.pulse_width, time_locations, self.nchans, freq_locations
+        )
 
-    pulse_array = build_pulse(pulse_width, time_locations, nchans, freq_locations)
+        delay = delay_lost(dm=self.dm, chan_freqs=self.chan_freqs, tsamp=self.tsamp)
+        pulse_array_pad = np.zeros((self.pulse_width + delay, self.nchans), dtype=dtype)
+        pulse_array_pad[: self.pulse_width] = pulse_array
+        pulse_dispersed = dedisperse(
+            pulse_array_pad, dm=-self.dm, tsamp=self.tsamp, chan_freqs=self.chan_freqs
+        )
 
-    delay = delay_lost(dm=dm, chan_freqs=chan_freqs, tsamp=tsamp)
-    pulse_array_pad = np.zeros((pulse_width + delay, nchans), dtype=np.uint32)
-    pulse_array_pad[:pulse_width] = pulse_array
-    pulse_dispersed = dedisperse(
-        pulse_array_pad, dm=-dm, tsamp=tsamp, chan_freqs=chan_freqs
-    )
-
-    return pulse_dispersed
+        return pulse_dispersed
 
 
 def filter_weights(
