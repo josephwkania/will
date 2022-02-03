@@ -4,7 +4,7 @@ Pulse creation routines.
 """
 
 import logging
-from typing import Callable
+from typing import Callable, Union
 
 import numpy as np
 from jess.calculators import median_abs_deviation_med, to_dtype
@@ -21,7 +21,7 @@ def gaussian(domain: np.ndarray, mu: float, sig: float) -> np.ndarray:
     Args:
         domain - Domain to calculate the Gaussian
 
-        mu - Start location
+        mu - Center location
 
         sig - Pulse width
 
@@ -337,7 +337,11 @@ def scatter_profile(freqs: np.ndarray, ref_freq: float, tau: float = 1.0) -> np.
 
 
 def apply_scatter_profile(
-    time_profile: np.ndarray, chan_freqs: np.ndarray, ref_freq: float, tau: float = 1.0
+    time_profile: np.ndarray,
+    chan_freqs: np.ndarray,
+    ref_freq: float,
+    tau: float = 1.0,
+    axis: Union[None, int] = None,
 ) -> np.ndarray:
     """
     Create exponential scattering profile.
@@ -349,11 +353,15 @@ def apply_scatter_profile(
 
         tau - Scattering parameter
 
+        axis - Axis to perform convolution
+
     Return:
         Exponential scattering profile
     """
     scatter = scatter_profile(chan_freqs, ref_freq, tau)
-    scattered = signal.fftconvolve(time_profile, scatter, "full")[: len(time_profile)]
+    scattered = signal.fftconvolve(time_profile, scatter, "full", axes=axis)[
+        : len(time_profile)
+    ]
     return scattered / scattered.max()
 
 

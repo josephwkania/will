@@ -333,6 +333,11 @@ class PulseSNRs:
     pulse_search_params: PulseSearchParamters
     pulse_locations: np.ndarray
 
+    @property
+    def percent_with_pulses(self):
+        mask = self.snrs >= self.pulse_search_params.sigma
+        return 100 * mask.mean()
+
     def plot_snrs(self) -> None:
         """
         Plot Signal to Noise Ratios as a function of time.
