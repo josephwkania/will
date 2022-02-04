@@ -635,7 +635,7 @@ class GaussPulse:
         sigma_time_samples = np.around(self.sigma_time / self.tsamp)
         gauss_width = int(
             8 * sigma_time_samples
-            + 8 * np.cos(self.pulse_drift_theta) * sigma_freq_samples
+            + 6 * np.sin(self.pulse_drift_theta) * sigma_freq_samples
         )
         self.pulse_width = int(gauss_width + np.around(8 * self.tau))
         time_indices = np.arange(0, self.pulse_width)
