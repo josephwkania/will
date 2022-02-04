@@ -335,6 +335,10 @@ class PulseSNRs:
 
     @property
     def percent_with_pulses(self):
+        """
+        The percent of pulse bins with a single above snr
+        present.
+        """
         mask = self.snrs >= self.pulse_search_params.sigma
         return 100 * mask.mean()
 

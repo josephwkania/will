@@ -5,7 +5,7 @@ Pulse creation routines.
 
 import logging
 from dataclasses import dataclass
-from typing import Callable, Union
+from typing import Callable, Tuple, Union
 
 import numpy as np
 from jess.calculators import median_abs_deviation_med, to_dtype
@@ -30,6 +30,56 @@ def gaussian(domain: np.ndarray, mu: float, sig: float) -> np.ndarray:
         Gaussian evaluated over x
     """
     return np.exp(-np.power(domain - mu, 2.0) / (2 * np.power(sig, 2.0)))
+
+
+def skewed_guass(
+    x: np.ndarray,
+    y: np.ndarray,
+    x_mu: float,
+    y_mu: float,
+    x_sig: float,
+    y_sig: float,
+    theta: float,
+) -> np.ndarray:
+    """
+    Two dimensional Gaussian with an angle theta.
+
+    Args:
+        x - Horizontal Domain from np.meshgrid
+
+        y - Vertical Domain from np.meshgrid
+
+        x_mu - Horizontal Location
+
+        y_mu - Vertical Distance
+
+        x_sig - Horizontal sigma
+
+        y_sig - Verticel Sigma
+
+        theta - Rotation angle increasing counterclockwise [radians]
+
+    Returns:
+        2D gaussian with amplitude one.
+
+    Notes:
+        Based on
+        https://docs.astropy.org/en/stable/api/astropy.modeling.functional_models.Gaussian2D.html
+    """
+
+    cos_t_2 = np.cos(theta) ** 2
+    sin_t_2 = np.sin(theta) ** 2
+    sin_2t = np.sin(2.0 * theta)
+    xstd_2 = x_sig ** 2
+    ystd_2 = y_sig ** 2
+    xdiff = x - x_mu
+    ydiff = y - y_mu
+
+    a = 0.5 * ((cos_t_2 / xstd_2) + (sin_t_2 / ystd_2))
+    b = 0.5 * ((sin_2t / xstd_2) - (sin_2t / ystd_2))
+    c = 0.5 * ((sin_t_2 / xstd_2) + (cos_t_2 / ystd_2))
+
+    return np.exp(-((a * xdiff ** 2) + (b * xdiff * ydiff) + (c * ydiff ** 2)))
 
 
 def pulse_with_tail(times: np.ndarray, tau: float = 50) -> np.ndarray:
@@ -252,31 +302,29 @@ def gauss_with_tail_locations(
 
 
 def build_pulse(
-    num_times: int, time_locs: np.ndarray, num_chans: int, chan_locs: np.ndarray
+    num_times: int,
+    num_chans: int,
+    locations: Union[np.ndarray, Tuple[np.ndarray, np.ndarray]],
 ) -> np.ndarray:
     """
-    Build the pulse from the time and freq locations.
+    Build the pulse from locations tuple.
 
     Args:
-        time_locs - Time locations
+        num_times - Length of the time samples axis
 
-        chan_locs - Channel locations
+        num_chans - Lenght of channel axis
 
     Returns:
         2D float array with the pulse, time on the ventricle
         axis
     """
-    ntimeloc = len(time_locs)
-    nchanloc = len(chan_locs)
-    if ntimeloc != nchanloc:
-        raise RuntimeError(f"Number time locs: {ntimeloc} not equal to chan {nchanloc}")
 
     array = np.zeros((num_times, num_chans), dtype=np.uint32)
     # https://stackoverflow.com/a/45711530
-    np.add.at(array, (time_locs, chan_locs), 1)
+    np.add.at(array, locations, 1)
 
     total_power = array.sum()
-    if total_power != len(time_locs):
+    if total_power != len(locations[0]):
         raise RuntimeError("Total power of the pulse is incorrect!")
 
     logging.debug("Created pulse with total counts %f", total_power)
@@ -359,7 +407,13 @@ def apply_scatter_profile(
     Return:
         Exponential scattering profile
     """
-    scatter = scatter_profile(chan_freqs, ref_freq, tau)
+    if axis is None:
+        scatter = scatter_profile(chan_freqs, ref_freq, tau)
+    elif axis == 0:
+        scatter = scatter_profile(chan_freqs, ref_freq, tau)[:, None]
+    else:
+        raise NotImplementedError(f"{axis=} is not implemented!")
+
     scattered = signal.fftconvolve(time_profile, scatter, "full", axes=axis)[
         : len(time_profile)
     ]
@@ -367,7 +421,7 @@ def apply_scatter_profile(
 
 
 @dataclass
-class GaussPulse:
+class SimpleGaussPulse:
     """
     Create a pulse from Gaussians in time and frequency.
     The time and frequency profiles are created with the
@@ -396,9 +450,6 @@ class GaussPulse:
 
         bandpass - scale frequency structure with bandpass if
                    not None
-
-    Returns:
-        dispersed pulse
     """
 
     sigma_time: float
@@ -485,18 +536,181 @@ class GaussPulse:
         time_locations = arbitrary_array_cdf(
             self.pulse_time_profile, locations=self.time_indices, num_samples=nsamp
         )
-        np.round(time_locations, out=time_locations)
-        time_locations = time_locations.astype(int)
+        time_locations = to_dtype(time_locations, int)
 
         freq_locations = arbitrary_array_cdf(
             self.pulse_freq_profile, locations=self.chan_indices, num_samples=nsamp
         )
-        np.around(freq_locations, out=freq_locations)
-        freq_locations = freq_locations.astype(int)
+        freq_locations = to_dtype(freq_locations, dtype=int)
 
         pulse_array = build_pulse(
-            self.pulse_width, time_locations, self.nchans, freq_locations
+            self.pulse_width, self.nchans, (time_locations, freq_locations)
         )
+
+        delay = delay_lost(dm=self.dm, chan_freqs=self.chan_freqs, tsamp=self.tsamp)
+        pulse_array_pad = np.zeros((self.pulse_width + delay, self.nchans), dtype=dtype)
+        pulse_array_pad[: self.pulse_width] = pulse_array
+        pulse_dispersed = dedisperse(
+            pulse_array_pad, dm=-self.dm, tsamp=self.tsamp, chan_freqs=self.chan_freqs
+        )
+
+        return pulse_dispersed
+
+
+@dataclass
+class GaussPulse:
+    """
+    Create a pulse from a 2D Gaussian.
+    This function can handle
+
+    The PDF is created ith the object.
+    To sample use sample_pulse(nsamps).
+
+
+
+    Args:
+        nsamp - Number of samples to add
+
+        sigma_time - time sigma in seconds
+
+        dm - Dispersion measure
+
+        tau - Scatter parameter
+
+        sigma_freq - Frequency Sigma in MHz
+
+        center_freq - Center Frequency in MHz
+
+        tsamp - Sampling time of dynamic spectra in second
+
+        spectra_index - Spectral index around center_freq
+
+        num_freq_scint - Number of frequency scintills
+
+        num_time_scint - Number of time scintills
+
+        phi_freq_scint - Phase of frequency scintillation
+
+        phi_time_scint - Phase of time scintillation
+
+        pulse_drift_theta - Angle of pulse drift
+
+        bandpass - scale frequency structure with bandpass if
+                   not None
+    """
+
+    sigma_time: float
+    dm: float
+    tau: float
+    sigma_freq: float
+    center_freq: float
+    chan_freqs: np.ndarray
+    tsamp: float
+    spectral_index_alpha: float
+    num_freq_scint: int
+    num_time_scint: int
+    phi_freq_scint: float
+    phi_time_scint: float
+    pulse_drift_theta: float = 0
+    bandpass: Union[np.ndarray, None] = None
+
+    def __post_init__(self):
+        """
+        Create the pulse when the object is created
+        """
+        self.create_pulse()
+
+    def create_pulse(self) -> None:
+        """
+        Create the pulse
+        """
+        logging.debug("Creating pulse profile.")
+
+        channel_bw = np.abs(self.chan_freqs[0] - self.chan_freqs[1])
+        sigma_freq_samples = np.around(self.sigma_freq / channel_bw)
+        freq_center_index = np.abs(self.chan_freqs - self.center_freq).argmin()
+        self.nchans = len(self.chan_freqs)
+        chan_indices = np.arange(0, self.nchans)
+
+        sigma_time_samples = np.around(self.sigma_time / self.tsamp)
+        gauss_width = int(
+            8 * sigma_time_samples
+            + 8 * np.cos(self.pulse_drift_theta) * sigma_freq_samples
+        )
+        self.pulse_width = int(gauss_width + np.around(8 * self.tau))
+        time_indices = np.arange(0, self.pulse_width)
+        chan_indices, time_indices = np.meshgrid(chan_indices, time_indices)
+
+        self.pulse_pdf = skewed_guass(
+            x=chan_indices,
+            y=time_indices,
+            x_mu=freq_center_index,
+            y_mu=gauss_width // 2,
+            x_sig=sigma_freq_samples,
+            y_sig=sigma_time_samples,
+            theta=self.pulse_drift_theta,
+        )
+
+        if self.tau > 0:
+            self.pulse_pdf = apply_scatter_profile(
+                self.pulse_pdf,
+                chan_freqs=self.chan_freqs,
+                ref_freq=self.chan_freqs[len(self.chan_freqs) // 2],
+                tau=self.tau,
+                axis=0,
+            )
+
+        if self.num_time_scint != 0:
+            self.pulse_pdf *= scintillation(
+                chan_freqs=time_indices,
+                freq_ref=len(time_indices),
+                nscint=self.num_time_scint,
+                phi=self.phi_time_scint,
+            )
+
+        if self.num_freq_scint != 0:
+            self.pulse_pdf *= scintillation(
+                chan_freqs=self.chan_freqs,
+                freq_ref=self.center_freq,
+                nscint=self.num_freq_scint,
+                phi=self.phi_freq_scint,
+            )
+
+        if self.spectral_index_alpha != 0:
+            self.pulse_pdf *= spectral_index(
+                chan_freqs=self.chan_freqs,
+                freq_ref=self.center_freq,
+                spectral_index_alpha=self.spectral_index_alpha,
+            )
+
+        if self.bandpass is not None:
+            self.pulse_pdf *= self.bandpass
+
+    def sample_pulse(self, nsamp: int, dtype: type = np.uint32) -> np.ndarray:
+        """
+        Sample the pulse with `nsamp` samples
+
+        Args:
+            nsamp - Number of samples in the pulse
+
+            dtype - Data type of the pulse
+
+        Returns:
+            2D ndarray with disperesed pulse
+        """
+        logging.debug("Calculating %i locations.", nsamp)
+
+        pulse_pdf_flat = self.pulse_pdf.flatten()
+        locations = arbitrary_array_cdf(
+            pulse_pdf_flat,
+            locations=np.arange(0, len(pulse_pdf_flat)),
+            num_samples=nsamp,
+        )
+        # np.nan_to_num(locations, nan=0, copy=False)
+        locations = to_dtype(locations, dtype=int)
+        locations = np.unravel_index(locations, self.pulse_pdf.shape)
+
+        pulse_array = build_pulse(self.pulse_width, self.nchans, locations)
 
         delay = delay_lost(dm=self.dm, chan_freqs=self.chan_freqs, tsamp=self.tsamp)
         pulse_array_pad = np.zeros((self.pulse_width + delay, self.nchans), dtype=dtype)
