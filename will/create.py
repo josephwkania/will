@@ -471,6 +471,13 @@ class SimpleGaussPulse:
         """
         self.create_pulse()
 
+    @property
+    def pulse_center(self) -> np.int64:
+        """
+        The location of the pulse maximum in time samples
+        """
+        return self.pulse_time_profile.argmax()
+
     def create_pulse(self) -> None:
         """
         Create the pulse
@@ -619,6 +626,13 @@ class GaussPulse:
         Create the pulse when the object is created
         """
         self.create_pulse()
+
+    @property
+    def pulse_center(self) -> int:
+        """
+        The location of the pulse maximum in time samples
+        """
+        return self.pulse_pdf.mean(axis=1).argmax()
 
     def create_pulse(self) -> None:
         """

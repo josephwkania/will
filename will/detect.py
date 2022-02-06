@@ -53,7 +53,7 @@ class PulseInfo:
     std - Standard devivation of time series
     """
 
-    locations: Union[int, float, np.ndarray]
+    locations: Union[np.int64, float, np.ndarray]
     snrs: float
     std: np.float64
 
@@ -264,6 +264,9 @@ def find_max_pulse(
     else:
         mask = (pulses.locations >= start_idx) & (pulses.locations <= end_idx)
 
+    # takes care if only one value is passed
+    assert isinstance(pulses.snrs, np.ndarray), "You need to provide an array"
+
     snrs = pulses.snrs[mask]
 
     npulse = len(snrs)
@@ -342,35 +345,52 @@ class PulseSNRs:
         mask = self.snrs >= self.pulse_search_params.sigma
         return 100 * mask.mean()
 
-    def plot_snrs(self) -> None:
+    def plot_snrs(self, cut_snrs: bool = False, title: Union[None, str] = None) -> None:
         """
         Plot Signal to Noise Ratios as a function of time.
+
+        Args:
+            cut_snrs: Don't plot SNRs below the cutoff specified in PulseSearchParamters
+
+            title - The title of the plot, default `SNR vs. Time`
         """
-        snr_mask = self.snrs > self.pulse_search_params.sigma
+
         # pulse locations in seconds
-        locs = (
-            self.pulse_locations[snr_mask]
-            * self.pulse_search_params.yr_obj.your_header.tsamp
-        )
-        plt.plot(locs, self.snrs[snr_mask])
+        locs = self.pulse_locations * self.pulse_search_params.yr_obj.your_header.tsamp
+        if cut_snrs:
+            snr_mask = self.snrs > self.pulse_search_params.sigma
+            plt.plot(locs[snr_mask], self.snrs[snr_mask])
+        else:
+            plt.plot(locs, self.snrs)
+
+        if title is None:
+            title = "SNR vs. Time"
+
         plt.xlabel("Time [Seconds]")
         plt.ylabel("SNR")
-        plt.title("SNR vs. Time")
+        plt.title(title)
         plt.show()
 
-    def plot_stds(self) -> None:
+    def plot_stds(self, title: Union[None, str]) -> None:
         """
         Plot Standard Deviation (As calculated via Median Absolute Deviation)
         as a function of time.
+
+        Args:
+            title - The tile of the plot, default `Standard Deviation vs. Time`
         """
         locs = self.pulse_locations * self.pulse_search_params.yr_obj.your_header.tsamp
+
+        if title is None:
+            title = "Standard Deviation vs. Time"
+
         plt.plot(locs, self.stds)
         plt.xlabel("Time [Seconds]")
         plt.ylabel("Standard Deviation")
-        plt.title("Standard Deviation vs. Time")
+        plt.title(title)
         plt.show()
 
-    def plot_folded_dynamic(self, median_filter_length=29) -> None:
+    def plot_folded_dynamic(self, median_filter_length: int = 29) -> None:
         """
         Plot the folded dynamic spectra.
 
