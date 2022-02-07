@@ -58,7 +58,9 @@ def find_first_pulse(
         chan_freqs=yr_obj.chan_freqs,
     )[:-lost]
 
-    dynamic_spectra -= median_fitter(np.median(dynamic_spectra, axis=0))
+    dynamic_spectra = dynamic_spectra - median_fitter(
+        np.median(dynamic_spectra, axis=0)
+    )
 
     if box_car_length > 1:
         _, nchans = dynamic_spectra.shape
