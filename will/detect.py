@@ -3,15 +3,103 @@
 Pulse analysis routine
 """
 import logging
+import os
 from dataclasses import dataclass
 from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+from jess.calculators import median_abs_deviation_med
 from jess.dispersion import dedisperse, delay_lost
+from jess.fitters import median_fitter
+from rich.console import Console
 from rich.progress import track
+from rich.table import Table
 from scipy import ndimage, signal, stats
 from your import Your
+
+
+# pylint: disable=invalid-name
+def find_first_pulse(
+    file: str,
+    dm: float,
+    start: int,
+    gulp: int,
+    box_car_length: int = 1,
+) -> None:
+    """
+    Help to find the index of the first pulse by ploting the
+    dedispersed dynamic spectra and time series.
+
+    Args:
+        file - Path to the file to investigate
+
+        dm - Dispersion measure of the pulsar
+
+        start - Start Index
+
+        gulp - Number of samples to get
+
+        box_car_length - If > 1, dynamic spectra and time series
+                         get convolved with a boxcar of this length
+
+        num_cands - Number of candidates to print
+
+    """
+    yr_obj = Your(file)
+    lost = delay_lost(
+        dm=dm, chan_freqs=yr_obj.chan_freqs, tsamp=yr_obj.your_header.tsamp
+    )
+    dynamic_spectra = yr_obj.get_data(start, gulp + lost)
+    dynamic_spectra = dedisperse(
+        dynamic_spectra,
+        dm=dm,
+        tsamp=yr_obj.your_header.tsamp,
+        chan_freqs=yr_obj.chan_freqs,
+    )[:-lost]
+
+    dynamic_spectra -= median_fitter(np.median(dynamic_spectra, axis=0))
+
+    if box_car_length > 1:
+        _, nchans = dynamic_spectra.shape
+        window = signal.boxcar(box_car_length) / np.sqrt(box_car_length)
+        dynamic_spectra = signal.fftconvolve(
+            np.broadcast_to(window[:, None], (box_car_length, nchans)),
+            dynamic_spectra,
+            "full",
+            axes=0,
+        )
+        dynamic_spectra = dynamic_spectra[
+            box_car_length // 2 - 1 : -box_car_length // 2
+        ]
+
+    time_series = dynamic_spectra.mean(axis=1)
+    ts_std, ts_med = median_abs_deviation_med(time_series, scale="Normal")
+    time_series -= ts_med
+    time_series /= ts_std
+    max_indices = time_series.argsort()[::-1][:5]
+    max_values = time_series[max_indices]
+    max_indices += start
+
+    std, med = median_abs_deviation_med(dynamic_spectra, scale="normal", axis=None)
+    fig, axis = plt.subplots(2, figsize=(10, 10), sharex=True)
+    fig.suptitle(os.path.basename(file), size=15)
+    axis[0].plot(time_series)
+    axis[0].set_ylabel("SNR", size=12)
+    axis[1].imshow(dynamic_spectra.T, vmin=med - 3 * std, vmax=med + 6 * std)
+    axis[1].set_xlabel("Time Sample #", size=12)
+    axis[1].set_ylabel("Channel #", size=12)
+    axis[1].set_aspect("auto")
+    plt.tight_layout()
+    plt.show()
+
+    table = Table(title="5 Largest SNRs")
+    table.add_column("Index", justify="center")
+    table.add_column("SNR", justify="center")
+    for loc, snr in zip(max_indices, max_values):
+        table.add_row(f"{loc}", f"{snr:.1f}")
+    console = Console()
+    console.print(table)
 
 
 def dedisped_time_series(
@@ -116,6 +204,7 @@ def detect_max_pulse(
     box_car_length: int,
     # sigma: float = 6,
     smoothing_factor: int = 4,
+    search_window_frac: float = 0.50,
 ) -> PulseInfo:
     """
     Detect the largest pulse in a dedisperesed series.
@@ -160,7 +249,14 @@ def detect_max_pulse(
         ]
 
     # Find max value
-    max_index = np.argmax(flattened_times_series)
+    bottom_limit = np.around((1 - search_window_frac / 2) * len(time_series)).astype(
+        int
+    )
+    top_limit = np.around((1 + search_window_frac / 2) * len(time_series)).astype(int)
+    window_slice = slice(bottom_limit, top_limit)
+    max_index = np.argmax(flattened_times_series[window_slice])
+    # adjust the index so it has the original value
+    max_index += bottom_limit
     max_value = flattened_times_series[max_index]
 
     # don't use pulse for calculating SNR
@@ -208,6 +304,12 @@ class PulseSearchParamters:
 
     box_car_length - Length of the boxcar for the matched filter.
 
+    samples_around_pulse - The number of samples on either side of
+                           of the boxcar
+
+    search_window_frac - The fraction, around the center, of the time
+                         series search for a pulse.
+
     sigma - Pulse threshold
 
     start - Start sample to process (default to first sample)
@@ -222,6 +324,7 @@ class PulseSearchParamters:
     dm: float
     box_car_length: int
     samples_around_pulse: int
+    search_window_frac: float = 0.50
     sigma: float = 6
     start: int = 0
     stop: int = -1
@@ -406,7 +509,9 @@ class PulseSNRs:
         plt.title("Folded Time Series")
         plt.show()
         max_pulse = detect_max_pulse(
-            time_series, box_car_length=self.pulse_search_params.box_car_length
+            time_series,
+            box_car_length=self.pulse_search_params.box_car_length,
+            search_window_frac=self.pulse_search_params.search_window_frac,
         )
         print(f"Folded Pulse SNR: {max_pulse.snrs:.2f}")
 
@@ -470,6 +575,7 @@ def search_file(
             time_series,
             box_car_length=pulse_search_params.box_car_length,
             # sigma=pulse_search_params.sigma,
+            search_window_frac=pulse_search_params.search_window_frac,
         )
 
         stds[j] = pulse.std
