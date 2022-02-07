@@ -251,10 +251,10 @@ def detect_max_pulse(
         ]
 
     # Find max value
-    bottom_limit = np.around((1 - search_window_frac / 2) * len(time_series)).astype(
+    bottom_limit = np.around((0.5 - search_window_frac / 2) * len(time_series)).astype(
         int
     )
-    top_limit = np.around((1 + search_window_frac / 2) * len(time_series)).astype(int)
+    top_limit = np.around((0.5 + search_window_frac / 2) * len(time_series)).astype(int)
     window_slice = slice(bottom_limit, top_limit)
     max_index = np.argmax(flattened_times_series[window_slice])
     # adjust the index so it has the original value
@@ -476,7 +476,7 @@ class PulseSNRs:
         plt.title(title)
         plt.show()
 
-    def plot_stds(self, title: Union[None, str]) -> None:
+    def plot_stds(self, title: Union[None, str] = None) -> None:
         """
         Plot Standard Deviation (As calculated via Median Absolute Deviation)
         as a function of time.
