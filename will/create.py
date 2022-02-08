@@ -3,6 +3,7 @@
 Pulse creation routines.
 """
 
+import functools
 import logging
 from dataclasses import dataclass
 from typing import Callable, Tuple, Union
@@ -420,6 +421,48 @@ def apply_scatter_profile(
     return scattered / scattered.max()
 
 
+def boxcar_convolved(time_profile: np.ndarray, boxcar_widths: np.ndarray) -> np.ndarray:
+    """
+    Calculate the pulse profile convolved with a boxcar width.
+
+    Args:
+        time_profile - Time profile of the pulse
+
+        boxcar_widths - Array of boxcar widths
+
+    Returns:
+        Pulse profile convolved with a boxcar
+    """
+    powers = np.zeros(boxcar_widths.shape, dtype=np.float64)
+    for j, width in enumerate(boxcar_widths):
+        if width > 1:
+            window = signal.boxcar(width) / np.sqrt(width)
+            time_profile = signal.fftconvolve(window, time_profile, "full")
+            time_profile = time_profile[width // 2 - 1 : -width // 2]
+        powers[j] = np.argmax(time_profile)
+    return powers
+
+
+def optimal_boxcar_width(
+    time_profile: np.ndarray, boxcar_widths: np.ndarray
+) -> np.int64:
+    """
+    Find the best boxcar width for a given time profile and array
+    of boxcar widths.
+
+    Args:
+        time_profile - The time profile of the pulse
+
+        boxcar_widths - Array of boxcar widths
+
+    Returns:
+        Length of the optimal boxcar
+    """
+    powers = boxcar_convolved(time_profile=time_profile, boxcar_widths=boxcar_widths)
+    max_idx = powers.argmax()
+    return boxcar_widths[max_idx]
+
+
 @dataclass
 class SimpleGaussPulse:
     """
@@ -477,6 +520,16 @@ class SimpleGaussPulse:
         The location of the pulse maximum in time samples
         """
         return self.pulse_time_profile.argmax()
+
+    @functools.cached_property
+    def optimal_boxcar_width(self) -> np.int64:
+        """
+        Find the optimal boxcar width
+        """
+        boxcar_widths = np.arange(1, self.pulse_width)
+        return optimal_boxcar_width(
+            time_profile=self.pulse_time_profile, boxcar_widths=boxcar_widths
+        )
 
     def create_pulse(self) -> None:
         """
@@ -633,6 +686,16 @@ class GaussPulse:
         The location of the pulse maximum in time samples
         """
         return self.pulse_pdf.mean(axis=1).argmax()
+
+    @functools.cached_property
+    def optimal_boxcar_width(self) -> np.int64:
+        """
+        Find the optimal boxcar width
+        """
+        boxcar_widths = np.arange(1, self.pulse_width)
+        return optimal_boxcar_width(
+            time_profile=self.pulse_pdf.mean(axis=1), boxcar_widths=boxcar_widths
+        )
 
     def create_pulse(self) -> None:
         """
