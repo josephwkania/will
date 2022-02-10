@@ -6,7 +6,7 @@ Pulse creation routines.
 import functools
 import logging
 from dataclasses import dataclass
-from typing import Callable, Tuple, Union
+from typing import Callable, Tuple, Union, Sequence
 
 import numpy as np
 from jess.calculators import median_abs_deviation_med, to_dtype
@@ -71,8 +71,8 @@ def skewed_guass(
     cos_t_2 = np.cos(theta) ** 2
     sin_t_2 = np.sin(theta) ** 2
     sin_2t = np.sin(2.0 * theta)
-    xstd_2 = x_sig ** 2
-    ystd_2 = y_sig ** 2
+    xstd_2 = x_sig**2
+    ystd_2 = y_sig**2
     xdiff = x - x_mu
     ydiff = y - y_mu
 
@@ -80,7 +80,42 @@ def skewed_guass(
     b = 0.5 * ((sin_2t / xstd_2) - (sin_2t / ystd_2))
     c = 0.5 * ((sin_t_2 / xstd_2) + (cos_t_2 / ystd_2))
 
-    return np.exp(-((a * xdiff ** 2) + (b * xdiff * ydiff) + (c * ydiff ** 2)))
+    return np.exp(-((a * xdiff**2) + (b * xdiff * ydiff) + (c * ydiff**2)))
+
+
+def twod_guass(
+    x: np.ndarray,
+    y: np.ndarray,
+    x_mu: float,
+    y_mu: float,
+    x_sig: float,
+    y_sig: float,
+) -> np.ndarray:
+    """
+    Two dimensional Gaussian with an angle theta.
+
+    Args:
+        x - Horizontal Domain from np.meshgrid
+
+        y - Vertical Domain from np.meshgrid
+
+        x_mu - Horizontal Location
+
+        y_mu - Vertical Distance
+
+        x_sig - Horizontal sigma
+
+        y_sig - Verticel Sigma
+
+    Returns:
+        2D gaussian
+    """
+    xstd_2 = 2 * x_sig**2
+    ystd_2 = 2 * y_sig**2
+    xdiff = x - x_mu
+    ydiff = y - y_mu
+
+    return np.exp(-(xdiff**2 / xstd_2) - (ydiff**2 / ystd_2))
 
 
 def pulse_with_tail(times: np.ndarray, tau: float = 50) -> np.ndarray:
@@ -113,8 +148,8 @@ def pulse_with_tail(times: np.ndarray, tau: float = 50) -> np.ndarray:
     #     np.sqrt(np.pi * tau / (4 * times ** 3))
     #     * np.exp(-np.pi ** 2 * tau / (16 * times)),
     # )
-    return np.sqrt(np.pi * tau / (4 * times ** 3)) * np.exp(
-        -np.pi ** 2 * tau / (16 * times)
+    return np.sqrt(np.pi * tau / (4 * times**3)) * np.exp(
+        -np.pi**2 * tau / (16 * times)
     )
 
 
@@ -496,10 +531,10 @@ class SimpleGaussPulse:
     """
 
     sigma_time: float
-    dm: float
-    tau: float
     sigma_freq: float
     center_freq: float
+    dm: float
+    tau: float
     chan_freqs: np.ndarray
     tsamp: float
     spectral_index_alpha: float
@@ -555,8 +590,10 @@ class SimpleGaussPulse:
 
         channel_bw = np.abs(self.chan_freqs[0] - self.chan_freqs[1])
         sigma_freq_samples = np.around(self.sigma_freq / channel_bw)
-        freq_center_index = np.abs(self.chan_freqs - self.center_freq).argmin()
-        self.nchans = len(self.chan_freqs)
+        freq_center_index = np.around(
+            (self.center_freq - self.chan_freqs.min()) / channel_bw
+        ).astype(int)
+        self.nchans = self.chan_freqs.size
         self.chan_indices = np.arange(0, self.nchans)
         self.pulse_freq_profile = gaussian(
             self.chan_indices,
@@ -609,7 +646,7 @@ class SimpleGaussPulse:
 
         delay = delay_lost(dm=self.dm, chan_freqs=self.chan_freqs, tsamp=self.tsamp)
         pulse_array_pad = np.zeros((self.pulse_width + delay, self.nchans), dtype=dtype)
-        pulse_array_pad[: self.pulse_width] = pulse_array
+        pulse_array_pad[-self.pulse_width :] = pulse_array
         pulse_dispersed = dedisperse(
             pulse_array_pad, dm=-self.dm, tsamp=self.tsamp, chan_freqs=self.chan_freqs
         )
@@ -626,20 +663,21 @@ class GaussPulse:
     The PDF is created ith the object.
     To sample use sample_pulse(nsamps).
 
-
-
     Args:
-        nsamp - Number of samples to add
+        relative_intensities - The relative intensities of the
+                               pule components.
 
         sigma_time - time sigma in seconds
-
-        dm - Dispersion measure
-
-        tau - Scatter parameter
 
         sigma_freq - Frequency Sigma in MHz
 
         center_freq - Center Frequency in MHz
+
+        nsamp - Number of samples to add
+
+        dm - Dispersion measure
+
+        tau - Scatter parameter
 
         tsamp - Sampling time of dynamic spectra in second
 
@@ -659,25 +697,44 @@ class GaussPulse:
                    not None
     """
 
-    sigma_time: float
+    relative_intesities: Union[Sequence, float]
+    sigma_times: Union[Sequence, float]
+    sigma_freqs: Union[Sequence, float]
+    center_freqs: Union[Sequence, float]
     dm: float
     tau: float
-    sigma_freq: float
-    center_freq: float
+    offsets: np.ndarray
     chan_freqs: np.ndarray
     tsamp: float
     spectral_index_alpha: float
-    num_freq_scint: int
-    num_time_scint: int
-    phi_freq_scint: float
-    phi_time_scint: float
-    pulse_drift_theta: float = 0
+    nscint: int
+    phi: float
     bandpass: Union[np.ndarray, None] = None
 
     def __post_init__(self):
         """
+        Convert Squencies to
+
         Create the pulse when the object is created
         """
+        self.relative_intesities = np.array(self.relative_intesities, ndmin=1)
+        self.sigma_times = np.array(self.sigma_times, ndmin=1)
+        self.sigma_freqs = np.array(self.sigma_freqs, ndmin=1)
+        self.center_freqs = np.array(self.center_freqs, ndmin=1)
+        self.offsets = np.array(self.offsets, ndmin=1)
+
+        # set will be unique
+        lengths_set = {
+            self.relative_intesities.size,
+            self.sigma_times.size,
+            self.sigma_freqs.size,
+            self.center_freqs.size,
+            self.offsets.size,
+        }
+
+        if len(lengths_set) > 1:
+            raise ValueError("Didn't provide info for all of the pulses")
+
         self.create_pulse()
 
     @property
@@ -704,29 +761,37 @@ class GaussPulse:
         logging.debug("Creating pulse profile.")
 
         channel_bw = np.abs(self.chan_freqs[0] - self.chan_freqs[1])
-        sigma_freq_samples = np.around(self.sigma_freq / channel_bw)
-        freq_center_index = np.abs(self.chan_freqs - self.center_freq).argmin()
-        self.nchans = len(self.chan_freqs)
+        sigmas_freq_samples = np.around(self.sigma_freqs / channel_bw)
+
+        freq_center_indicies = np.zeros(self.center_freqs.shape, dtype=int)
+        freq_center_indicies = np.around(
+            (self.center_freqs - self.chan_freqs.min()) / channel_bw
+        ).astype(int)
+        self.nchans = self.chan_freqs.size
         chan_indices = np.arange(0, self.nchans)
 
-        sigma_time_samples = np.around(self.sigma_time / self.tsamp)
-        gauss_width = int(
-            8 * sigma_time_samples
-            + 6 * np.sin(self.pulse_drift_theta) * sigma_freq_samples
+        sigmas_time_samples = np.around(self.sigma_times / self.tsamp)
+        gauss_widths = 8 * sigmas_time_samples
+        self.pulse_width = int(
+            gauss_widths[0]
+            + gauss_widths[-1]
+            + +self.offsets.sum()
+            + np.around(8 * self.tau)
         )
-        self.pulse_width = int(gauss_width + np.around(8 * self.tau))
         time_indices = np.arange(0, self.pulse_width)
         chan_indices, time_indices = np.meshgrid(chan_indices, time_indices)
 
-        self.pulse_pdf = skewed_guass(
-            x=chan_indices,
-            y=time_indices,
-            x_mu=freq_center_index,
-            y_mu=gauss_width // 2,
-            x_sig=sigma_freq_samples,
-            y_sig=sigma_time_samples,
-            theta=self.pulse_drift_theta,
-        )
+        self.pulse_pdf = np.zeros((self.pulse_width, self.nchans))
+        for j in range(self.relative_intesities.size):
+            logging.debug("Adding pulse #%i", j)
+            self.pulse_pdf += self.relative_intesities[j] * twod_guass(
+                x=chan_indices,
+                y=time_indices,
+                x_mu=freq_center_indicies[j],
+                y_mu=gauss_widths[j] // 2 + self.offsets[j],
+                x_sig=sigmas_freq_samples[j],
+                y_sig=sigmas_time_samples[j],
+            )
 
         if self.tau > 0:
             self.pulse_pdf = apply_scatter_profile(
@@ -737,26 +802,18 @@ class GaussPulse:
                 axis=0,
             )
 
-        if self.num_time_scint != 0:
-            self.pulse_pdf *= scintillation(
-                chan_freqs=time_indices,
-                freq_ref=len(time_indices),
-                nscint=self.num_time_scint,
-                phi=self.phi_time_scint,
-            )
-
-        if self.num_freq_scint != 0:
+        if self.nscint != 0:
             self.pulse_pdf *= scintillation(
                 chan_freqs=self.chan_freqs,
-                freq_ref=self.center_freq,
-                nscint=self.num_freq_scint,
-                phi=self.phi_freq_scint,
+                freq_ref=np.median(self.center_freqs),
+                nscint=self.nscint,
+                phi=self.phi,
             )
 
         if self.spectral_index_alpha != 0:
             self.pulse_pdf *= spectral_index(
                 chan_freqs=self.chan_freqs,
-                freq_ref=self.center_freq,
+                freq_ref=np.median(self.center_freqs),
                 spectral_index_alpha=self.spectral_index_alpha,
             )
 
@@ -791,7 +848,8 @@ class GaussPulse:
 
         delay = delay_lost(dm=self.dm, chan_freqs=self.chan_freqs, tsamp=self.tsamp)
         pulse_array_pad = np.zeros((self.pulse_width + delay, self.nchans), dtype=dtype)
-        pulse_array_pad[: self.pulse_width] = pulse_array
+        pulse_array_pad[-self.pulse_width :] = pulse_array
+        # pulse_array_pad[: self.pulse_width] = pulse_array
         pulse_dispersed = dedisperse(
             pulse_array_pad, dm=-self.dm, tsamp=self.tsamp, chan_freqs=self.chan_freqs
         )
@@ -839,7 +897,7 @@ def filter_weights(
 
 
 def dynamic_from_statistics(
-    medians: np.ndarray, stds: np.ndarray, dtype: np.dtype, nsamps: int = 2 ** 16
+    medians: np.ndarray, stds: np.ndarray, dtype: np.dtype, nsamps: int = 2**16
 ) -> np.ndarray:
     """
     Make a dynamic spectra from statistics.

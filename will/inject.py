@@ -19,7 +19,7 @@ def inject_constant_into_file(
     pulse: np.ndarray,
     start: float = 0,
     period: float = None,
-    gulp: int = 2 ** 16,
+    gulp: int = 2**16,
     out_fil: str = None,
     clip_powers: bool = True,
 ) -> Union[np.ndarray, None]:
@@ -121,7 +121,7 @@ def inject_constant_into_file(
             # Clip to stop wrapping
             np.clip(data, iinfo.min, iinfo.max, out=data)
 
-            data = data.astype(dtype)
+        data = data.astype(dtype)
 
         if out_fil is None:
             array[j:chunk_end] = data
@@ -139,7 +139,7 @@ def inject_distribution_into_file(
     pulse_counts: np.ndarray,
     start: float = 0,
     period: float = None,
-    gulp: int = 2 ** 16,
+    gulp: int = 2**16,
     out_fil: str = None,
     clip_powers: bool = True,
 ) -> Union[np.ndarray, None]:
@@ -250,7 +250,7 @@ def inject_distribution_into_file(
             # Clip to stop wrapping
             np.clip(data, iinfo.min, iinfo.max, out=data)
 
-            data = data.astype(dtype)
+        data = data.astype(dtype)
 
         if out_fil is None:
             array[j:chunk_end] = data
