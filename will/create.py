@@ -6,7 +6,7 @@ Pulse creation routines.
 import functools
 import logging
 from dataclasses import dataclass
-from typing import Callable, Tuple, Union, Sequence
+from typing import Callable, Sequence, Tuple, Union
 
 import numpy as np
 from jess.calculators import median_abs_deviation_med, to_dtype
@@ -646,7 +646,7 @@ class SimpleGaussPulse:
 
         delay = delay_lost(dm=self.dm, chan_freqs=self.chan_freqs, tsamp=self.tsamp)
         pulse_array_pad = np.zeros((self.pulse_width + delay, self.nchans), dtype=dtype)
-        pulse_array_pad[-self.pulse_width :] = pulse_array
+        pulse_array_pad[: self.pulse_width] = pulse_array
         pulse_dispersed = dedisperse(
             pulse_array_pad, dm=-self.dm, tsamp=self.tsamp, chan_freqs=self.chan_freqs
         )
@@ -763,19 +763,18 @@ class GaussPulse:
         channel_bw = np.abs(self.chan_freqs[0] - self.chan_freqs[1])
         sigmas_freq_samples = np.around(self.sigma_freqs / channel_bw)
 
-        freq_center_indicies = np.zeros(self.center_freqs.shape, dtype=int)
         freq_center_indicies = np.around(
             (self.center_freqs - self.chan_freqs.min()) / channel_bw
         ).astype(int)
         self.nchans = self.chan_freqs.size
-        chan_indices = np.arange(0, self.nchans)
+        chan_indices = np.arange(self.nchans, 0, step=-1)
 
         sigmas_time_samples = np.around(self.sigma_times / self.tsamp)
         gauss_widths = 8 * sigmas_time_samples
         self.pulse_width = int(
             gauss_widths[0]
             + gauss_widths[-1]
-            + +self.offsets.sum()
+            + self.offsets.sum()
             + np.around(8 * self.tau)
         )
         time_indices = np.arange(0, self.pulse_width)
@@ -788,7 +787,7 @@ class GaussPulse:
                 x=chan_indices,
                 y=time_indices,
                 x_mu=freq_center_indicies[j],
-                y_mu=gauss_widths[j] // 2 + self.offsets[j],
+                y_mu=self.offsets[j] + gauss_widths[0] // 2,
                 x_sig=sigmas_freq_samples[j],
                 y_sig=sigmas_time_samples[j],
             )
@@ -848,7 +847,7 @@ class GaussPulse:
 
         delay = delay_lost(dm=self.dm, chan_freqs=self.chan_freqs, tsamp=self.tsamp)
         pulse_array_pad = np.zeros((self.pulse_width + delay, self.nchans), dtype=dtype)
-        pulse_array_pad[-self.pulse_width :] = pulse_array
+        pulse_array_pad[: self.pulse_width] = pulse_array
         # pulse_array_pad[: self.pulse_width] = pulse_array
         pulse_dispersed = dedisperse(
             pulse_array_pad, dm=-self.dm, tsamp=self.tsamp, chan_freqs=self.chan_freqs
