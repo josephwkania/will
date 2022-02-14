@@ -5,6 +5,7 @@ Pulse creation routines.
 
 import functools
 import logging
+import warnings
 from dataclasses import dataclass
 from typing import Callable, Sequence, Tuple, Union
 
@@ -12,7 +13,54 @@ import numpy as np
 from jess.calculators import median_abs_deviation_med, to_dtype
 from jess.dispersion import dedisperse, delay_lost
 from jess.fitters import median_fitter
-from scipy import integrate, interpolate, ndimage, signal, stats
+from scipy import integrate, interpolate, ndimage, optimize, signal, stats
+
+
+# pylint: disable=invalid-name
+def std_min_func(sigma: float, mu: float, std: float) -> float:
+    """
+    The zeros of this function are the log normal sigma that will
+    have standard deviation `std`
+
+    Args:
+        sigma - lognormal sigma
+
+        mu - lognormal mu
+
+        std - The desired standard deviation
+
+    Returns:
+        desired variance - Actual variance(sigma, mu)
+    """
+    return std**2 - (np.exp(sigma**2) - 1) * np.exp(2 * mu + sigma**2)
+
+
+def log_normal_from_stats(median: float, std: float, size: int) -> np.ndarray:
+    """
+    Make a lognormal distrabution that has has a given median
+    and standard deviation.
+
+    Args:
+        median - median of resulting distrabution
+
+        std - Standard deviation of returned samples
+
+    Returns:
+        `size` numbers from the sampled from lognormal distrabution
+    """
+    mu = np.log(median)
+    sigma_guess = np.sqrt(mu - 0.5 * np.log(std**2))
+    if sigma_guess == 0:
+        sigma_guess = 0.01
+    logging.warning("sigma_guess=%.2f", sigma_guess)
+
+    # if the fitting does not converge,something went wrong
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        sigma = optimize.fsolve(std_min_func, sigma_guess, args=(mu, std))[0]
+    logging.warning("mu=%.2f, sigma=%.2f", mu, sigma)
+    normal_random = np.random.normal(size=size)
+    return np.exp(mu + sigma * normal_random)
 
 
 # pylint: disable=invalid-name
