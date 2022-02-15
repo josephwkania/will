@@ -5,6 +5,7 @@ Pulse creation routines.
 
 import functools
 import logging
+import operator
 import warnings
 from dataclasses import dataclass
 from typing import Callable, Sequence, Tuple, Union
@@ -61,6 +62,92 @@ def log_normal_from_stats(median: float, std: float, size: int) -> np.ndarray:
     logging.warning("mu=%.2f, sigma=%.2f", mu, sigma)
     normal_random = np.random.normal(size=size)
     return np.exp(mu + sigma * normal_random)
+
+
+def quicksort(
+    array: np.ndarray,
+    left: int = None,
+    right: int = None,
+    sort_fraction: float = 1.0,
+    sort_assend: bool = True,
+) -> None:
+    """
+    Quicksort in place.
+
+    Args:
+        array - Array to be sorted
+
+        left - Left most element of sort
+
+        right - Right most element of sort
+
+        sort_fraction - The fraction of the array to
+                        stop sorting.
+
+        sort_assend - Sort increating
+
+    Returns:
+        None - Sort in place
+    """
+    if left is None:
+        left = 0
+    if right is None:
+        right = len(array) - 1
+
+    if left >= sort_fraction * right:
+        return
+
+    pivot = array[right]
+    divider = left
+
+    if sort_assend:
+        compare = operator.lt
+    else:
+        compare = operator.gt
+
+    for j in range(left, right):
+        if compare(array[j], pivot):
+            array[divider], array[j] = array[j], array[divider]
+            divider += 1
+
+    array[divider], array[right] = array[right], array[divider]
+    pivot_idx = divider
+
+    quicksort(
+        array, left, pivot_idx - 1, sort_fraction=sort_fraction, sort_assend=sort_assend
+    )
+    quicksort(
+        array,
+        pivot_idx + 1,
+        right,
+        sort_fraction=sort_fraction,
+        sort_assend=sort_assend,
+    )
+
+
+def sort_subarrays(
+    array: np.ndarray, num_subarrays: int, sort_fraction: float = 1
+) -> np.ndarray:
+    """
+    Sort subband of array. Flips the sorts back and forth to get a sine wave
+    type shape.
+
+    Args:
+        array - array to sort
+
+        num_subarrays - Number of subarrays to sort
+
+        sort_fraction - The fraction of the subarray to
+                stop sorting.
+
+    Returns:
+        Subarray sorted (also is sorted in place)
+    """
+    splits = np.array_split(array, num_subarrays)
+    for j, split in enumerate(splits):
+        is_even = j % 2 == 0
+        quicksort(split, sort_assend=is_even, sort_fraction=sort_fraction)
+    return array
 
 
 # pylint: disable=invalid-name
