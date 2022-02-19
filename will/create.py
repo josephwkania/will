@@ -53,13 +53,13 @@ def log_normal_from_stats(median: float, std: float, size: int) -> np.ndarray:
     sigma_guess = np.sqrt(mu - 0.5 * np.log(std**2))
     if sigma_guess == 0:
         sigma_guess = 0.01
-    logging.warning("sigma_guess=%.2f", sigma_guess)
+    logging.debug("sigma_guess=%.2f", sigma_guess)
 
     # if the fitting does not converge,something went wrong
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         sigma = optimize.fsolve(std_min_func, sigma_guess, args=(mu, std))[0]
-    logging.warning("mu=%.2f, sigma=%.2f", mu, sigma)
+    logging.debug("mu=%.2f, sigma=%.2f", mu, sigma)
     normal_random = np.random.normal(size=size)
     return np.exp(mu + sigma * normal_random)
 
@@ -978,7 +978,8 @@ def filter_weights(
 
         sigma_cut - Cut values below (standard deviation)*(sigma cut)
 
-        smooth_sigma - Gaussian filter smoothing sigma
+        smooth_sigma - Gaussian filter smoothing sigma. If =0, return
+                       the mask where True=good channels
 
     Returns:
         Bandpass weights for sections of spectra with low values.
@@ -991,7 +992,10 @@ def filter_weights(
     if bandpass_smooth_length > 1:
         bandpass = median_fitter(bandpass, chans_per_fit=bandpass_smooth_length)
     mask = bandpass > threshold
-    return ndimage.gaussian_filter1d((mask).astype(float), sigma=smooth_sigma)
+
+    if smooth_sigma > 0:
+        return ndimage.gaussian_filter1d((mask).astype(float), sigma=smooth_sigma)
+    return mask
 
 
 def dynamic_from_statistics(
