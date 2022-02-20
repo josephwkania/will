@@ -555,16 +555,12 @@ def search_file(
                     the folded profile.
     """
 
-    offset = (
-        pulse_search_params.box_car_length // 2
-        + pulse_search_params.samples_around_pulse
-        + pulse_search_params.samples_lost
-    )
     nsamp = (
         pulse_search_params.box_car_length
         + 2 * pulse_search_params.samples_around_pulse
-        + 2 * pulse_search_params.samples_lost
+        + pulse_search_params.samples_lost
     )
+    offset = nsamp // 2
     snrs = np.zeros(pulse_locations.shape, dtype=np.float64)
     stds = np.zeros(pulse_locations.shape, dtype=np.float64)
     folded = np.zeros(
@@ -577,9 +573,12 @@ def search_file(
     )
 
     for j, location in enumerate(track(pulse_locations)):
-        dynamic_spectra = pulse_search_params.yr_obj.get_data(
-            int(location) - offset, nsamp
-        )
+        start = np.around(location).astype(int) - offset
+        # this seemed to happen occasionally, I think due to double counting
+        # the delay lost, this has been fixed.
+        if start < 0:
+            logging.warning("Start is before start of file %i", start)
+        dynamic_spectra = pulse_search_params.yr_obj.get_data(start, nsamp)
         dynamic_spectra_dispered = dedisperse(
             dynamic_spectra,
             dm=pulse_search_params.dm,
