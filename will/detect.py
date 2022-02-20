@@ -560,7 +560,10 @@ def search_file(
         + 2 * pulse_search_params.samples_around_pulse
         + pulse_search_params.samples_lost
     )
-    offset = nsamp // 2
+    offset = (
+        pulse_search_params.box_car_length // 2
+        + pulse_search_params.samples_around_pulse
+    )
     snrs = np.zeros(pulse_locations.shape, dtype=np.float64)
     stds = np.zeros(pulse_locations.shape, dtype=np.float64)
     folded = np.zeros(
