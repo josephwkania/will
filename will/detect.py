@@ -590,7 +590,7 @@ def search_file(
         )
         # cut the rolled part
         dynamic_spectra_trim = dynamic_spectra_dispered[
-            pulse_search_params.samples_lost : -pulse_search_params.samples_lost
+            : -pulse_search_params.samples_lost
         ]
         folded += dynamic_spectra_trim
         time_series = dynamic_spectra_trim.mean(axis=1)
