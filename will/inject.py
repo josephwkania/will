@@ -76,7 +76,11 @@ def inject_constant_into_file(
     # else:
     start_block = True
 
-    for j in track(range(0, yr_input.your_header.nspectra, gulp)):
+    for j in track(
+        range(0, yr_input.your_header.nspectra, gulp),
+        description="Injecting Pulses",
+        transient=True,
+    ):
         logging.debug("Adding pulse(s) to block starting at %i", j)
         chunk_end = j + gulp
         if chunk_end < yr_input.your_header.nspectra:
@@ -202,7 +206,11 @@ def inject_distribution_into_file(
     # use s Lifo queue because the while loop counts backwards
     pulse_queue: queue.LifoQueue = queue.LifoQueue()
     pulse_num = 0
-    for j in track(range(0, yr_input.your_header.nspectra, gulp)):
+    for j in track(
+        range(0, yr_input.your_header.nspectra, gulp),
+        description="Injecting Pulses",
+        transient=True,
+    ):
         logging.debug("Adding pulse(s) to block starting at %i", j)
         chunk_end = j + gulp
         if chunk_end < yr_input.your_header.nspectra:

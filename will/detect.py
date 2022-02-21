@@ -575,7 +575,9 @@ def search_file(
         dtype=np.float64,
     )
 
-    for j, location in enumerate(track(pulse_locations)):
+    for j, location in enumerate(
+        track(pulse_locations, description="Searching for Pulses", transient=True)
+    ):
         start = np.around(location).astype(int) - offset
         # this seemed to happen occasionally, I think due to double counting
         # the delay lost, this has been fixed.
