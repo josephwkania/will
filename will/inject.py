@@ -50,7 +50,7 @@ def inject_constant_into_file(
             f"Mismatch in number of channels, pulse: {nchans}, data: {d_chan}"
         )
 
-    if 2 * nsamples > gulp:
+    if nsamples > 2 * gulp:
         raise RuntimeError(f"{gulp=} is not two times larger that {nsamples=}")
 
     if clip_powers:
@@ -185,7 +185,7 @@ def inject_distribution_into_file(
             f"Mismatch in number of channels, pulse: {nchans}, data: {d_chan}"
         )
 
-    if 2 * nsamples > gulp:
+    if nsamples > 2 * gulp:
         raise RuntimeError(f"{gulp=} is not two times larger that {nsamples=}")
 
     if out_fil is None:
