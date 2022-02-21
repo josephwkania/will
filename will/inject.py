@@ -125,7 +125,7 @@ def inject_constant_into_file(
             # Clip to stop wrapping
             np.clip(data, iinfo.min, iinfo.max, out=data)
 
-        data = data.astype(dtype)
+        data = data.astype(yr_input.your_header.dtype)
 
         if out_fil is None:
             array[j:chunk_end] = data
@@ -258,7 +258,7 @@ def inject_distribution_into_file(
             # Clip to stop wrapping
             np.clip(data, iinfo.min, iinfo.max, out=data)
 
-        data = data.astype(dtype)
+        data = data.astype(yr_input.your_header.dtype)
 
         if out_fil is None:
             array[j:chunk_end] = data
