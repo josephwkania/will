@@ -450,6 +450,19 @@ class PulseSNRs:
         mask = self.snrs >= self.pulse_search_params.sigma
         return 100 * mask.mean()
 
+    @property
+    def folded_properties(self):
+        """
+        Get the pulse properties of the folded profile
+        """
+        time_series = self.folded.mean(axis=1)
+        max_pulse = detect_max_pulse(
+            time_series,
+            box_car_length=self.pulse_search_params.box_car_length,
+            search_window_frac=self.pulse_search_params.search_window_frac,
+        )
+        return max_pulse
+
     def plot_snrs(self, cut_snrs: bool = False, title: Union[None, str] = None) -> None:
         """
         Plot Signal to Noise Ratios as a function of time.
@@ -530,11 +543,7 @@ class PulseSNRs:
         plt.ylabel("Intensity")
         plt.title("Folded Time Series")
         plt.show()
-        max_pulse = detect_max_pulse(
-            time_series,
-            box_car_length=self.pulse_search_params.box_car_length,
-            search_window_frac=self.pulse_search_params.search_window_frac,
-        )
+        max_pulse = self.folded_properties
         print(f"Folded Pulse SNR: {max_pulse.snrs:.2f}")
 
 
