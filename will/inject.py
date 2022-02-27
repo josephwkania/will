@@ -14,7 +14,9 @@ from your.formats.filwriter import sigproc_object_from_writer
 from .create import GaussPulse
 
 
-def inject_constant_into_file(
+# both these functions are complicated, but I don't have
+# a straight forward way to simplify them
+def inject_constant_into_file(  # noqa: max-complexity:30
     yr_input: Your,
     pulse: np.ndarray,
     start: float = 0,
@@ -137,7 +139,7 @@ def inject_constant_into_file(
     return None
 
 
-def inject_distribution_into_file(
+def inject_distribution_into_file(  # noqa: max-complexity:30
     yr_input: Your,
     pulse_obj: GaussPulse,
     pulse_counts: np.ndarray,
