@@ -22,7 +22,11 @@ setup(
     author="Joseph W Kania",
     packages=find_packages(),
     # scripts=glob.glob("bin/*"),
-    python_requires=">=3.6, <4",
+    python_requires=">=3.7, <4",
     install_requires=required,
-    extras_require={"tests": ["pytest", "pytest-cov"], "cupy": ["cupy>=9.2"]},
+    extras_require={
+        "tests": ["pytest", "pytest-cov"],
+        "cupy": ["cupy>=9.2"],
+        "docs": ["sphinx", "nbsphinx", "pandoc"],
+    },
 )
