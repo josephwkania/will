@@ -3,7 +3,7 @@
 `will` is a library to create, inject, and detect pulses from Fast Radio Bursts and pulsars.
 
 <p align="center">
-  <img src="https://github.com/josephwkania/will/blob/master/examples/Multi-Component_Pulse.png" alt="Example pulse with multiple components">
+  <img src="https://github.com/josephwkania/will/blob/master/examples/Multi-Component_Pulse.png?raw=true" alt="Example pulse with multiple components">
 </p>
 
 <p align="center">
