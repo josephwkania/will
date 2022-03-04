@@ -168,7 +168,7 @@ def detect_all_pulses(
         smoothing_factor - Median filter is smoothing_factor*box_car_length
 
     Returns:
-        dataclass[Locations, SNRs]
+        PulseInfo[Locations, SNRs]
 
     Deterned the time series by subtracting off the running median
     Thesis described in Bardell Thesis, but Heimdall uses a different

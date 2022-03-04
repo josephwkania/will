@@ -11,7 +11,7 @@
 </p>
 
 # Overview
-There are [many](#Other Simulators) pulsar and FRB simulators. These lack ability to handle complex band shapes (from bandstop filters, rolloff, etc).
+There are [many](#Other-Simulators) pulsar and FRB simulators. These lack ability to handle complex band shapes (from bandstop filters, rolloff, etc).
 They also try to inject pulses at a given Signal-to-Noise ratio. This signal strength methodology can lead to circular logic, in worse radio frequency
 environments, the injected signal is brighter and still detectible. 
 
@@ -20,6 +20,24 @@ environments, the injected signal is brighter and still detectible.
 - Custom bandpass weighting
 - Straightforward Pulse Detection
 - Good Documentation
+
+There are three submodules `will.create`, `will.inject`, and `will.detect`. 
+
+## `create` 
+- `GaussPulse` can make multiple independent component pulses.
+- `SimpleGaussPulse` created pulses that are not correlated in frequency and time
+- `filter_weights` Uses Gaussian smoothing to create bandpass weights model filter and rolloff
+- `clone_spectra` makes dynamic spectra with Gaussian noise that copies statistics
+- `log_normal_from_stats` creates a log-normal distro. with given median and Stand. Dec.
+- `sort_subarrays` gives correlation to pulse powers
+
+## `inject`
+- `inject_constant_into_file` inject pulse(s) of the same intensity
+- `inject_distribution_into_file` allows you to specify the pulse energies
+
+## `detect`
+- `find_first_pulse` Helps find the first pulse in a file
+- `search_file` search a file for periodic pulses at given DM and pulse width
 
 # Installation
 To install directly into your current Python environment
