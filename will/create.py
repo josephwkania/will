@@ -330,13 +330,12 @@ class pulse_with_tail_dist(stats.rv_continuous):
 
 def gauss_with_tail_cdf(times: np.ndarray, tau: float) -> np.ndarray:
     """
-    Calculate the time locations for a Gaussian pulse with exponenital tail
+    Calculate the time locations for a Gaussian pulse with exponential tail
 
     Args:
         times - Array with times to consider
 
         tau - Pulse width
-
 
     Returns:
         Values sampled from pulse with tail distrution
@@ -450,9 +449,16 @@ def build_pulse(
 
         num_chans - Length of channel axis
 
+        locations - Locations of the points to increase the energy
+                    given as two arrays
+
     Returns:
         2D float array with the pulse, time on the ventricle
         axis
+
+    Example:
+        pulse = build_pulse(10, 10, [[2, 2, 2], [2, 0, 2]]) will
+        make a point value 2 at pulse[2,2] and one at pulse[2,0]
     """
 
     array = np.zeros((num_times, num_chans), dtype=np.uint32)
