@@ -236,9 +236,43 @@ def test_boxcar_convolved():
     """
     Test the boxcar convolver
     """
-    time_series = np.zeros(10)
-    time_series[4:6] = 1
-    convolved = create.boxcar_convolved(time_series, [1, 2])
+    time_profile = np.zeros(10)
+    # len 2 boxcar
+    widths = np.arange(1, 4)
+    time_profile[4:6] = 1
+    convolved = create.boxcar_convolved(time_profile, widths)
 
-    np.testing.assert_allclose(convolved[0], 1)
-    np.testing.assert_allclose(convolved[1], np.sqrt(2))
+    assert convolved.argmax() == 1
+    assert convolved[0] < convolved.max()
+    assert convolved[2] < convolved.max()
+
+
+class TestOptimalBoxcarWidth:
+    """
+    Test the optimal boxcar width against square and
+    Gaussian pulse.
+    """
+
+    @staticmethod
+    def test_square():
+        """
+        Test if the best boxcar width is returned for square
+        pulse
+        """
+        time_profile = np.zeros(70)
+        time_profile[20:40] += 1
+        widths = np.arange(2, 60)
+        opt = create.optimal_boxcar_width(time_profile, widths)
+        assert opt == 20
+
+    @staticmethod
+    def test_gauss():
+        """
+        Test if the best boxcarwidth is returned for a
+        Gauss pulse
+        """
+        time_profile = np.linspace(0, 100, 100)
+        time_profile = create.gaussian(time_profile, mu=50, sig=10)
+        widths = np.arange(2, 60)
+        opt = create.optimal_boxcar_width(time_profile, widths)
+        assert 15 < opt < 30

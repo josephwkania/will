@@ -604,9 +604,11 @@ def boxcar_convolved(time_profile: np.ndarray, boxcar_widths: np.ndarray) -> np.
     for j, width in enumerate(boxcar_widths):
         if width > 1:
             window = signal.boxcar(width) / np.sqrt(width)
-            time_profile = signal.fftconvolve(window, time_profile, "full")
-            time_profile = time_profile[width // 2 - 1 : -width // 2]
-        powers[j] = time_profile.max()
+            convolved_profile = signal.fftconvolve(window, time_profile, "full")
+            convolved_profile = convolved_profile[width // 2 - 1 : -width // 2]
+        else:
+            convolved_profile = time_profile
+        powers[j] = convolved_profile.max()
     return powers
 
 
@@ -626,7 +628,9 @@ def optimal_boxcar_width(
         Length of the optimal boxcar
     """
     powers = boxcar_convolved(time_profile=time_profile, boxcar_widths=boxcar_widths)
-    max_idx = powers.argmax()
+    # Get the last index of the larget value, this will be the one most robust to Gauss
+    # noise
+    max_idx = len(powers) - np.argmax(powers[::-1]) - 1
     return boxcar_widths[max_idx]
 
 
