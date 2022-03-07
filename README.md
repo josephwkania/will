@@ -28,8 +28,10 @@ There are three submodules `will.create`, `will.inject`, and `will.detect`.
 - `SimpleGaussPulse` created pulses that are not correlated in frequency and time
 - `filter_weights` Uses Gaussian smoothing to create bandpass weights model filter and rolloff
 - `clone_spectra` makes dynamic spectra with Gaussian noise that copies statistics
-- `log_normal_from_stats` creates a log-normal distro. with given median and Stand. Dec.
+- `log_normal_from_stats` creates a log-normal distro. with given median and Stand. Dev.
 - `sort_subarrays` gives correlation to pulse powers
+- `dynamic_from_statistics` Creates a noise dynamic spectra w/ given STD and median per channel
+- `clone_spectra` Makes a noise clone of a give dynamic spectra
 
 ## `inject`
 - `inject_constant_into_file` inject pulse(s) of the same intensity
@@ -48,14 +50,13 @@ pip install git+https://github.com/josephwkania/will.git
 If you want a local version
 ```bash
 git clone https://github.com/josephwkania/will.git
-cd will
-pip install .
+pip install will
 ```
 
 # Examples
 There are [example notebooks](https://github.com/josephwkania/will/tree/master/examples) that show how to create, inject, and detect pulses.
 
-# Question + Contributing
+# Questions + Contributing
 See [CONTRIBUTING.md](https://github.com/josephwkania/will/tree/master/CONTRIBUTING.md)
 
 # Other Simulators

@@ -6,7 +6,6 @@ Test Pulse creation routines.
 # Can't use inits with pytest, this error is unavoidable
 # pylint: disable=W0201
 
-
 import numpy as np
 import pytest
 
@@ -36,9 +35,9 @@ def test_log_normal_from_stats():
     num_samples = 100
     distro = create.log_normal_from_stats(median, std, num_samples)
 
-    # 15% seems generous enough
+    # 17% seems generous enough
     assert np.std(distro) / std - 1 < 0.15
-    assert np.median(distro) / median - 1 < 0.15
+    assert np.median(distro) / median - 1 < 0.17
     assert len(distro) == num_samples
 
 
@@ -317,7 +316,7 @@ class TestSimplePulse:
         """
         Zero weights at the slice, these should be zero
         """
-        assert self.pulse[self.splice].sum() == 0
+        assert self.pulse[:, self.splice].sum() < 10
 
     def test_optimal_width(self):
         """
@@ -334,3 +333,129 @@ class TestSimplePulse:
         center = self.simple_pulse.pulse_center
         assert center > 0
         assert center < self.pulse.shape[0]
+
+
+class TestGaussPulse:
+    """
+    Test the multicomponent pulse
+    """
+
+    def setup_class(self):
+        """
+        Create the pulse
+        """
+        nchans = 4096
+        bandpass = np.ones(nchans)
+        self.splice = slice(2000, 2048)
+        bandpass[self.splice] = 0
+
+        self.num_samples = 10000
+        self.complex_pulse = create.GaussPulse(
+            relative_intensities=(1, 0.8, 0.8, 0.8),
+            sigma_times=(0.005, 0.001, 0.001, 0.006),
+            sigma_freqs=(150, 120, 120, 90),
+            pulse_thetas=(0, 0, 0, -np.pi / 60),
+            center_freqs=(1500, 1400, 1350, 1200),
+            dm=155,
+            tau=25,
+            offsets=(0, 0.01536, 0.02304, 0.03968),  # all from start of window
+            chan_freqs=np.linspace(1919, 960, nchans),
+            tsamp=0.000256,
+            spectral_index_alpha=0,
+            nscint=2,
+            phi=0,
+            bandpass=bandpass,
+        )
+        # pulse with 3e5 samples
+        self.pulse = self.complex_pulse.sample_pulse(nsamp=self.num_samples)
+
+    def test_power(self):
+        """
+        Test the powser levels
+        """
+        assert self.pulse.sum() == self.num_samples
+
+    def test_bandpass(self):
+        """
+        Zero weights at the slice, these should be zero
+        but might be small.
+        """
+        assert self.pulse[:, self.splice].sum() < 10
+
+    def test_optimal_width(self):
+        """
+        Test optimal location
+        """
+        optimal_width = self.complex_pulse.optimal_boxcar_width
+        assert optimal_width > 0
+        assert optimal_width < self.pulse.shape[0]
+
+    def test_center(self):
+        """
+        Test optimal location
+        """
+        center = self.complex_pulse.pulse_center
+        assert center > 0
+        assert center < self.pulse.shape[0]
+
+
+def test_filter_weights():
+    """
+    Test the filter_weights by creating a dynamic
+    spectra with a bandstop filter
+    """
+    nchans = 512
+    nsamps = 16
+    dynamic = 150 * np.ones(nchans)
+    diff = 150
+    start = 200
+    dynamic[start : start + diff] = 0
+    dynamic = dynamic + np.random.normal(size=nchans * nsamps).reshape(nsamps, nchans)
+    weights = create.filter_weights(dynamic, smooth_sigma=5)
+
+    np.testing.assert_allclose(weights[start + diff // 2], 0)
+    np.testing.assert_allclose(weights[start // 2], 1)
+
+
+class TestDynamicCreator:
+    """
+    Test dynamic spectra creators
+    """
+
+    def setup_class(self):
+        """
+        Create dynamic spectra
+        """
+        self.nchans = 128
+        self.nsamps = 2**8
+        self.medians = 15 * np.ones(self.nchans)
+        self.medians[10:15] += 10
+        self.stds = 5 * np.ones(self.nchans)
+        self.stds[60:70] += 14
+        self.dynamic = create.dynamic_from_statistics(
+            self.medians, self.stds, dtype=np.uint8, nsamps=self.nsamps
+        )
+
+    def test_dynamic_from_statistics(self):
+        """
+        Test dynamic_from_statistics returns resonoable results
+        """
+        assert (self.nsamps, self.nchans) == (self.dynamic.shape)
+        np.testing.assert_array_almost_equal(
+            self.medians, np.median(self.dynamic, axis=0), decimal=-1
+        )
+        np.testing.assert_array_almost_equal(
+            self.stds, self.dynamic.std(axis=0), decimal=-1
+        )
+
+    def test_clone_spectra(self):
+        """
+        Test cloning the above dynamic spectra
+        """
+        dynamic_clone = create.clone_spectra(self.dynamic)
+        np.testing.assert_array_almost_equal(
+            self.medians, np.median(dynamic_clone, axis=0), decimal=-1
+        )
+        np.testing.assert_array_almost_equal(
+            self.stds, dynamic_clone.std(axis=0), decimal=-1
+        )

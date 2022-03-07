@@ -240,8 +240,8 @@ def pulse_with_tail(times: np.ndarray, tau: float = 50) -> np.ndarray:
     but this slows down the rvs sampler by a factor of ~4
 
     Example:
-        times = np.linspace(1, 256, 256)
-        pulse = create.pulse_with_tail(times, 50)
+    times = np.linspace(1, 256, 256)
+    pulse = create.pulse_with_tail(times, 50)
     """
     # center: int = 0
     # times -= center
@@ -905,6 +905,7 @@ class GaussPulse:
         chan_indices = np.arange(self.nchans, 0, step=-1)
 
         sigmas_time_samples = np.around(self.sigma_times / self.tsamp)
+        self.offsets = np.around(self.offsets / self.tsamp)
         gauss_widths = 8 * sigmas_time_samples
         self.pulse_width = int(
             gauss_widths[0]

@@ -13,6 +13,7 @@
 - Formatting is <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 - Code should pass [flake8](https://flake8.pycqa.org/en/latest/) tests
 - Should have Docstrings
+- Should have unit tests (`will` uses pytest)
 - When ready, open a new [Pull Request](https://github.com/josephwkania/will/pulls)
 
 ## Behavior

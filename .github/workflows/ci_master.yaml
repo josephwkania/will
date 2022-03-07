@@ -26,7 +26,7 @@ jobs:
       #     pip install .[tests]
       - name: Install CI dependencies
         run: |
-          pip install flake8 black
+          pip install flake8 black[jupyter]
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
@@ -39,7 +39,7 @@ jobs:
       # - name: Pytest + Coverage Report
       #   run: |
       #     python -m pytest --cov=jess --cov-report=xml
-      # - name: Upoaed to Codecov
+      # - name: Upload to Codecov
       #   uses: codecov/codecov-action@v1
       #   with:
       #     token: ${{ secrets.CODECOV_TOKEN }}
