@@ -238,6 +238,10 @@ def pulse_with_tail(times: np.ndarray, tau: float = 50) -> np.ndarray:
 
     I tried moving the center to match the other Gaussian,
     but this slows down the rvs sampler by a factor of ~4
+
+    Example:
+        times = np.linspace(1, 256, 256)
+        pulse = create.pulse_with_tail(times, 50)
     """
     # center: int = 0
     # times -= center
@@ -392,7 +396,9 @@ def gauss_with_tail_locations(
     back_end: str = "cdf",
 ) -> np.ndarray:
     """
-    Locations based on Gaussian location
+    Locations based on Gaussian with an exponential tail.
+    You probably want to use GaussPulse or Simple Gauss pulse.
+    This provides a comparison between the cdf and rvs samplers.
 
     Args:
         start - Start index
@@ -410,6 +416,8 @@ def gauss_with_tail_locations(
     Returns:
         Location indices for one axis
 
+    Example:
+        gauss_with_tail_locations(0.1, 1024, 20, int(5e2), back_end="rvs")
     """
     # center: int = None,
     # if center is None:
@@ -497,16 +505,33 @@ def scintillation(
     chan_freqs: np.ndarray, freq_ref: float, nscint: int = 3, phi: float = 0
 ) -> np.ndarray:
     """
-    Add Scintillation that is abs(cos(band))
+    Adds Scintillation that is abs(cos(band))
+
+    Args:
+        chan_freqs - Array of channel Frequencies
+
+        freq_freq - Reference Frequency
+
+        nscint - number of scintills
+
+        phi - phase of of scintillation
+
+    Returns:
+        scintillation intensities
+
+    Notes:
+        Similar to https://arxiv.org/abs/2003.14272
+        added abs as it seems more relativistic to me
     """
-    # nscint = np.random.randint(0, 5)
     logging.debug("Scintillating with nscint %i and phi %f", nscint, phi)
 
     envelope = np.abs(np.cos(2 * np.pi * nscint * (chan_freqs / freq_ref) ** 2 + phi))
     return envelope
 
 
-def scatter_profile(freqs: np.ndarray, ref_freq: float, tau: float = 1.0) -> np.ndarray:
+def scatter_profile(
+    chan_freqs: np.ndarray, ref_freq: float, tau: float = 1.0
+) -> np.ndarray:
     """
     Create exponential scattering profile.
 
@@ -520,8 +545,8 @@ def scatter_profile(freqs: np.ndarray, ref_freq: float, tau: float = 1.0) -> np.
     Return:
         Exponential scattering profile
     """
-    num_times = len(freqs)
-    tau_nu = tau * (freqs / ref_freq) ** -4.0
+    num_times = len(chan_freqs)
+    tau_nu = tau * (chan_freqs / ref_freq) ** -4.0
     times = np.linspace(0.0, num_times // 2, num_times)
     prof = (1 / tau_nu) * np.exp(-times / tau_nu)
     return prof / prof.max()
@@ -574,13 +599,14 @@ def boxcar_convolved(time_profile: np.ndarray, boxcar_widths: np.ndarray) -> np.
     Returns:
         Pulse profile convolved with a boxcar
     """
+    boxcar_widths = np.array(boxcar_widths, ndmin=1)
     powers = np.zeros(boxcar_widths.shape, dtype=np.float64)
     for j, width in enumerate(boxcar_widths):
         if width > 1:
             window = signal.boxcar(width) / np.sqrt(width)
             time_profile = signal.fftconvolve(window, time_profile, "full")
             time_profile = time_profile[width // 2 - 1 : -width // 2]
-        powers[j] = np.argmax(time_profile)
+        powers[j] = time_profile.max()
     return powers
 
 
