@@ -656,7 +656,7 @@ class SimpleGaussPulse:
 
         tsamp - sampling time of dynamic spectra in second
 
-        spectra_index - spectral index around center_freq
+        spectra_index_alpha - spectral index around center_freq
 
         nscint - number of scintills
 

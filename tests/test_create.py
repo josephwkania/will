@@ -276,3 +276,61 @@ class TestOptimalBoxcarWidth:
         widths = np.arange(2, 60)
         opt = create.optimal_boxcar_width(time_profile, widths)
         assert 15 < opt < 30
+
+
+class TestSimplePulse:
+    """
+    Test the simple pulse
+    """
+
+    def setup_class(self):
+        """
+        Create the pulse
+        """
+        nchans = 4096
+        bandpass = np.ones(nchans)
+        self.splice = slice(2000, 2048)
+        bandpass[self.splice] = 0
+        self.simple_pulse = create.SimpleGaussPulse(
+            0.01,
+            dm=10,
+            tau=5,
+            chan_freqs=np.linspace(1919, 960, nchans),
+            sigma_freq=600,
+            center_freq=1500,
+            tsamp=0.000256,
+            spectral_index_alpha=1,
+            nscint=1,
+            phi=1,
+            bandpass=bandpass,
+        )
+        self.num_samples = 10000
+        self.pulse = self.simple_pulse.sample_pulse(self.num_samples)
+
+    def test_power(self):
+        """
+        Test the powser levels
+        """
+        assert self.pulse.sum() == self.num_samples
+
+    def test_bandpass(self):
+        """
+        Zero weights at the slice, these should be zero
+        """
+        assert self.pulse[self.splice].sum() == 0
+
+    def test_optimal_width(self):
+        """
+        Test optimal location
+        """
+        optimal_width = self.simple_pulse.optimal_boxcar_width
+        assert optimal_width > 0
+        assert optimal_width < self.pulse.shape[0]
+
+    def test_center(self):
+        """
+        Test optimal location
+        """
+        center = self.simple_pulse.pulse_center
+        assert center > 0
+        assert center < self.pulse.shape[0]
