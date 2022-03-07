@@ -36,7 +36,7 @@ def test_log_normal_from_stats():
     distro = create.log_normal_from_stats(median, std, num_samples)
 
     # 17% seems generous enough
-    assert np.std(distro) / std - 1 < 0.15
+    assert np.std(distro) / std - 1 < 0.17
     assert np.median(distro) / median - 1 < 0.17
     assert len(distro) == num_samples
 

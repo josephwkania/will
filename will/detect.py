@@ -291,6 +291,45 @@ class MaxPulse:
     snr: Union[np.float64, float]
 
 
+def find_max_pulse(
+    pulses: PulseInfo, start_idx: int = 0, end_idx: int = -1
+) -> MaxPulse:
+    """
+    Find the maximum pulse between two indices.
+
+    Args:
+        pulses - The dataclass from detected pulses
+
+        start_idx - Start index of the the range
+
+        end_idx - End index of range
+
+    Returns:
+        dataclass(location index, SNR)
+        if no pulse in range, returns (None, None)
+    """
+    if end_idx == -1:
+        mask = pulses.locations >= start_idx
+    else:
+        mask = (pulses.locations >= start_idx) & (pulses.locations <= end_idx)
+
+    # takes care if only one value is passed
+    assert isinstance(pulses.snrs, np.ndarray), "You need to provide an array"
+
+    snrs = pulses.snrs[mask]
+
+    npulse = len(snrs)
+    if npulse > 0:
+        logging.debug("Found %i pulses", npulse)
+        max_pulse_location = np.argmax(snrs)
+        return MaxPulse(
+            pulses.locations[mask][max_pulse_location], snrs[max_pulse_location]
+        )
+    logging.debug("No suitable pulses!")
+    # No suitable pulses
+    return MaxPulse(np.nan, np.nan)
+
+
 @dataclass
 class PulseSearchParamters:
     """
@@ -345,45 +384,6 @@ class PulseSearchParamters:
 
         if self.stop == -1:
             self.stop = self.yr_obj.your_header.nspectra
-
-
-def find_max_pulse(
-    pulses: PulseInfo, start_idx: int = 0, end_idx: int = -1
-) -> MaxPulse:
-    """
-    Find the maximum pulse between two indices.
-
-    Args:
-        pulses - The dataclass from detected pulses
-
-        start_idx - Start index of the the range
-
-        end_idx - End index of range
-
-    Returns:
-        dataclass(location index, SNR)
-        if no pulse in range, returns (None, None)
-    """
-    if end_idx == -1:
-        mask = pulses.locations >= start_idx
-    else:
-        mask = (pulses.locations >= start_idx) & (pulses.locations <= end_idx)
-
-    # takes care if only one value is passed
-    assert isinstance(pulses.snrs, np.ndarray), "You need to provide an array"
-
-    snrs = pulses.snrs[mask]
-
-    npulse = len(snrs)
-    if npulse > 0:
-        logging.debug("Found %i pulses", npulse)
-        max_pulse_location = np.argmax(snrs)
-        return MaxPulse(
-            pulses.locations[mask][max_pulse_location], snrs[max_pulse_location]
-        )
-    logging.debug("No suitable pulses!")
-    # No suitable pulses
-    return MaxPulse(np.nan, np.nan)
 
 
 def locations_of_pulses(pulse_search_params: PulseSearchParamters) -> np.ndarray:
