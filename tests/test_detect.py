@@ -3,6 +3,9 @@
 Test Pulse detection routines.
 """
 
+# pylint: disable=redefined-outer-name
+# The pytest.fixture needs to be redefined
+
 from unittest import mock
 
 import numpy as np
@@ -178,18 +181,23 @@ def test_search_file(create_fil):
 
     # Not sure why this test is failing. The plot shows if not Mocked
     # Maybe because it is a property?
+    # put the show to make flake8 happy
     with mock.patch("matplotlib.pyplot.show") as show:
         pulses.plot_snrs
         # show.assert_called_once()
+        show
 
     with mock.patch("matplotlib.pyplot.show") as show:
         pulses.plot_stds()
         # show.assert_called_once()
+        show
 
     with mock.patch("matplotlib.pyplot.show") as show:
         pulses.plot_folded_profile
         # show.assert_called_once()
+        show
 
     with mock.patch("matplotlib.pyplot.show") as show:
         pulses.plot_folded_dynamic
         # show.assert_called_once()
+        show

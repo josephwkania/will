@@ -65,7 +65,7 @@ def inject_constant_into_file(  # noqa: max-complexity:30
     if out_fil is None:
         array = np.zeros(
             (yr_input.your_header.nspectra, yr_input.your_header.nchans),
-            dtype=dtype,
+            dtype=yr_input.your_header.dtype,
         )
     else:
         wrt = Writer(yr_input, outname=out_fil)
@@ -135,7 +135,7 @@ def inject_constant_into_file(  # noqa: max-complexity:30
             sigproc_obj.append_spectra(data, out_fil)
 
     if out_fil is None:
-        return data
+        return array
     return None
 
 
@@ -193,7 +193,7 @@ def inject_distribution_into_file(  # noqa: max-complexity:30
     if out_fil is None:
         array = np.zeros(
             (yr_input.your_header.nspectra, yr_input.your_header.nchans),
-            dtype=dtype,
+            dtype=yr_input.your_header.dtype,
         )
     else:
         wrt = Writer(yr_input, outname=out_fil)
@@ -205,7 +205,7 @@ def inject_distribution_into_file(  # noqa: max-complexity:30
         # start_block = False
     # else:
     start_block = True
-    # use s Lifo queue because the while loop counts backwards
+    # use a Lifo queue because the while loop counts backwards
     pulse_queue: queue.LifoQueue = queue.LifoQueue()
     pulse_num = 0
     for j in track(
@@ -268,7 +268,7 @@ def inject_distribution_into_file(  # noqa: max-complexity:30
             sigproc_obj.append_spectra(data, out_fil)
 
     if out_fil is None:
-        return data
+        return array
     return None
 
 
