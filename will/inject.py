@@ -107,6 +107,8 @@ def inject_constant_into_file(  # noqa: max-complexity:30
                 if period is not None:
                     _start -= period
                     end -= period
+                else:
+                    break
 
         while j <= start <= chunk_end:
             offset = np.around(start).astype(int) - j
@@ -239,6 +241,8 @@ def inject_distribution_into_file(  # noqa: max-complexity:30
                 if period is not None:
                     _start -= period
                     end -= period
+                else:
+                    break
 
         while j <= start <= chunk_end:
             offset = np.around(start).astype(int) - j
