@@ -5,7 +5,7 @@
 - If not, [open a new issue](https://github.com/josephwkania/will/issues/new). More information about the environment and circumstances, the better.
 
 ## Questions
-- Open a [issue](https://github.com/josephwkania/will/issues/new)]
+- Open a [issue](https://github.com/josephwkania/will/issues/new)
 
 ## Contributions
 - Contributions are welcome and appreciated

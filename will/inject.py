@@ -98,6 +98,8 @@ def inject_constant_into_file(  # noqa: max-complexity:30
             # Pulse comes from last section
             if period is not None:
                 _start = start - period
+            else:
+                _start = start
             end = _start + nsamples
             while _start <= j <= end <= chunk_end:
                 offset = np.around(_start).astype(int) - j + nsamples
@@ -228,6 +230,8 @@ def inject_distribution_into_file(  # noqa: max-complexity:30
             # Pulse comes from last section
             if period is not None:
                 _start = start - period
+            else:
+                _start = start
             end = _start + nsamples
             while _start <= j <= end <= chunk_end:
                 offset = np.around(_start).astype(int) - j + nsamples
