@@ -27,6 +27,6 @@ setup(
     extras_require={
         "tests": ["pytest", "pytest-cov"],
         "cupy": ["cupy>=9.2"],
-        "docs": ["sphinx", "nbsphinx", "pandoc"],
+        "docs": ["sphinx", "nbsphinx", "pandoc", "myst-parser"],
     },
 )

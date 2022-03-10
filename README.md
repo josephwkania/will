@@ -51,6 +51,8 @@ If you want a local version
 ```bash
 git clone https://github.com/josephwkania/will.git
 pip install will
+
+For tests `pip install will[tests]`, for docs `pip install will[docs]`
 ```
 
 # Examples
@@ -66,6 +68,7 @@ See [CONTRIBUTING.md](https://github.com/josephwkania/will/tree/master/CONTRIBUT
 - https://github.com/liamconnor/injectfrb
 - https://github.com/vivgastro/Furby
 - https://github.com/astrogewgaw/pataka
+- https://github.com/jayanthc/fakefrb
 - https://gitlab.com/houben.ljm/frb-faker
 
 ## Pulsars
