@@ -82,6 +82,7 @@ def inject_constant_into_file(  # noqa: max-complexity:30
         range(0, yr_input.your_header.nspectra, gulp),
         description="Injecting Pulses",
         transient=True,
+        refresh_per_second=1,
     ):
         logging.debug("Adding pulse(s) to block starting at %i", j)
         chunk_end = j + gulp
@@ -216,6 +217,7 @@ def inject_distribution_into_file(  # noqa: max-complexity:30
         range(0, yr_input.your_header.nspectra, gulp),
         description="Injecting Pulses",
         transient=True,
+        refresh_per_second=1,
     ):
         logging.debug("Adding pulse(s) to block starting at %i", j)
         chunk_end = j + gulp

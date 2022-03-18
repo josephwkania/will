@@ -585,7 +585,12 @@ def search_file(
     )
 
     for j, location in enumerate(
-        track(pulse_locations, description="Searching for Pulses", transient=True)
+        track(
+            pulse_locations,
+            description="Searching for Pulses",
+            transient=True,
+            refresh_per_second=1,
+        )
     ):
         start = np.around(location).astype(int) - offset
         # this seemed to happen occasionally, I think due to double counting
