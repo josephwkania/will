@@ -46,6 +46,7 @@ def find_first_pulse(
         num_cands - Number of candidates to print
 
     """
+    start = np.around(start).astype(int)
     yr_obj = Your(file)
     lost = delay_lost(
         dm=dm, chan_freqs=yr_obj.chan_freqs, tsamp=yr_obj.your_header.tsamp
