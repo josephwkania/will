@@ -88,6 +88,12 @@ def test_find_first_pulse(create_fil):
         detect.find_first_pulse(create_fil[0], start=0, dm=DM, gulp=NUM_SAMP)
         show.assert_called_once()
 
+    with mock.patch("matplotlib.pyplot.show") as show:
+        detect.find_first_pulse(
+            create_fil[0], start=0, dm=DM, gulp=NUM_SAMP, box_car_length=4
+        )
+        show.assert_called_once()
+
 
 # tried to combine theses three info class but unsure how
 # to handle the pytest.fixture argument
@@ -111,7 +117,7 @@ def test_find_all_pulses(create_fil):
     all_pulses = detect.detect_all_pulses(time_series=time_series, box_car_length=111)
 
     assert len(all_pulses.locations) > 0
-    assert all_pulses.snrs.shape == all_pulses.locations.shape
+    assert len(all_pulses.snrs) == len(all_pulses.locations)
     assert all_pulses.std > 0
 
     max_pulse = detect.find_max_pulse(all_pulses)
@@ -183,21 +189,17 @@ def test_search_file(create_fil):
     # Maybe because it is a property?
     # put the show to make flake8 happy
     with mock.patch("matplotlib.pyplot.show") as show:
-        pulses.plot_snrs
-        # show.assert_called_once()
-        show
+        pulses.plot_snrs()
+        show.assert_called_once()
 
     with mock.patch("matplotlib.pyplot.show") as show:
         pulses.plot_stds()
-        # show.assert_called_once()
-        show
+        show.assert_called_once()
 
     with mock.patch("matplotlib.pyplot.show") as show:
-        pulses.plot_folded_profile
-        # show.assert_called_once()
-        show
+        pulses.plot_folded_profile()
+        show.assert_called_once()
 
     with mock.patch("matplotlib.pyplot.show") as show:
-        pulses.plot_folded_dynamic
-        # show.assert_called_once()
-        show
+        pulses.plot_folded_dynamic()
+        show.assert_called_once()

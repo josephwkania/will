@@ -168,6 +168,15 @@ class TestGaussWithTailLocations:
         assert isinstance(locations[0], np.integer)
         assert locations.size == num_samples
 
+    @staticmethod
+    def test_not_implemented():
+        """
+        Test that not implemented is called
+        """
+        with pytest.raises(NotImplementedError):
+            num_samples = 10
+            create.gauss_with_tail_locations(0.1, 1024, 20, num_samples, back_end="joe")
+
 
 class TestBuildPulse:
     """
@@ -416,6 +425,8 @@ def test_filter_weights():
     np.testing.assert_allclose(weights[start + diff // 2], 0)
     np.testing.assert_allclose(weights[start // 2], 1)
 
+    assert len(create.filter_weights(dynamic, smooth_sigma=0))
+
 
 class TestDynamicCreator:
     """
@@ -459,3 +470,6 @@ class TestDynamicCreator:
         np.testing.assert_array_almost_equal(
             self.stds, dynamic_clone.std(axis=0), decimal=-1
         )
+
+        clone_shape = create.clone_spectra(self.dynamic, median_filter_length=2).shape
+        assert clone_shape == self.dynamic.shape
