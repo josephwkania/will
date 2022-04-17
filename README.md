@@ -41,6 +41,10 @@ There are three submodules `will.create`, `will.inject`, and `will.detect`.
 - `find_first_pulse` Helps find the first pulse in a file
 - `search_file` search a file for periodic pulses at given DM and pulse width
 
+## Documentation
+We have a [docs website](https://josephwkania.github.io/will/)
+which contains the examples and and [API documentation](https://josephwkania.github.io/will/py-modindex.html)
+
 # Installation
 To install directly into your current Python environment
 ```bash
