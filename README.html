@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>WILL - Weighted Injector of Luminous Lighthouses &#8212; WILL 0.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Create &amp; Inject Pulses" href="examples/inject_pulse.html" />
+    <link rel="prev" title="Welcome to WILL’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="will-weighted-injector-of-luminous-lighthouses">
+<h1>WILL - Weighted Injector of Luminous Lighthouses<a class="headerlink" href="#will-weighted-injector-of-luminous-lighthouses" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">will</span></code> is a library to create, inject, and detect pulses from Fast Radio Bursts (FRBs) and pulsars.</p>
+<p align="center">
+  <img src="https://github.com/josephwkania/will/blob/master/examples/Multi-Component_Pulse.png?raw=true" alt="Example pulse with multiple components">
+</p>
+<p align="center">
+  <img src="https://github.com/josephwkania/will/blob/master/examples/Pulsar_with_Varying_Intensities.png" alt="Example pulsar">
+</p>
+</section>
+<section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>There are <span class="xref myst">many</span> pulsar and FRB simulators. These lack ability to handle complex band shapes (from bandstop filters, rolloff, etc).
+They also try to inject pulses at a given Signal-to-Noise ratio. This signal strength methodology can lead to circular logic, in worse radio frequency
+environments, the injected signal is brighter and still detectible.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Will</span></code> attempts the following</p>
+<ul class="simple">
+<li><p>Signal energy fidelity</p></li>
+<li><p>Custom bandpass weighting</p></li>
+<li><p>Straightforward Pulse Detection</p></li>
+<li><p>Good Documentation</p></li>
+</ul>
+<p>There are three submodules <code class="docutils literal notranslate"><span class="pre">will.create</span></code>, <code class="docutils literal notranslate"><span class="pre">will.inject</span></code>, and <code class="docutils literal notranslate"><span class="pre">will.detect</span></code>.</p>
+<section id="create">
+<h2><code class="docutils literal notranslate"><span class="pre">create</span></code><a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GaussPulse</span></code> can make multiple independent component pulses.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SimpleGaussPulse</span></code> created pulses that are not correlated in frequency and time</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter_weights</span></code> Uses Gaussian smoothing to create bandpass weights model filter and rolloff</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clone_spectra</span></code> makes dynamic spectra with Gaussian noise that copies statistics</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">log_normal_from_stats</span></code> creates a log-normal distro. with given median and Stand. Dev.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sort_subarrays</span></code> gives correlation to pulse powers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dynamic_from_statistics</span></code> Creates a noise dynamic spectra w/ given STD and median per channel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clone_spectra</span></code> Makes a noise clone of a give dynamic spectra</p></li>
+</ul>
+</section>
+<section id="inject">
+<h2><code class="docutils literal notranslate"><span class="pre">inject</span></code><a class="headerlink" href="#inject" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">inject_constant_into_file</span></code> inject pulse(s) of the same intensity</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inject_distribution_into_file</span></code> allows you to specify the pulse energies</p></li>
+</ul>
+</section>
+<section id="detect">
+<h2><code class="docutils literal notranslate"><span class="pre">detect</span></code><a class="headerlink" href="#detect" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">find_first_pulse</span></code> Helps find the first pulse in a file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">search_file</span></code> search a file for periodic pulses at given DM and pulse width</p></li>
+</ul>
+</section>
+</section>
+<section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>To install directly into your current Python environment</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/josephwkania/will.git
+</pre></div>
+</div>
+<p>If you want a local version</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/josephwkania/will.git
+pip install will
+
+For tests <span class="sb">`</span>pip install will<span class="o">[</span>tests<span class="o">]</span><span class="sb">`</span>, <span class="k">for</span> docs <span class="sb">`</span>pip install will<span class="o">[</span>docs<span class="o">]</span><span class="sb">`</span>
+</pre></div>
+</div>
+</section>
+<section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>There are <a class="reference external" href="https://github.com/josephwkania/will/tree/master/examples">example notebooks</a> that show how to create, inject, and detect pulses.</p>
+</section>
+<section id="questions-contributing">
+<h1>Questions + Contributing<a class="headerlink" href="#questions-contributing" title="Permalink to this headline">¶</a></h1>
+<p>See <a class="reference external" href="https://github.com/josephwkania/will/tree/master/CONTRIBUTING.md">CONTRIBUTING.md</a></p>
+</section>
+<section id="other-simulators">
+<h1>Other Simulators<a class="headerlink" href="#other-simulators" title="Permalink to this headline">¶</a></h1>
+<section id="single-pulses">
+<h2>Single Pulses<a class="headerlink" href="#single-pulses" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>https://github.com/kiyo-masui/burst_search/blob/master/burst_search/simulate.py</p></li>
+<li><p>https://github.com/kmsmith137/simpulse</p></li>
+<li><p>https://github.com/liamconnor/injectfrb</p></li>
+<li><p>https://github.com/vivgastro/Furby</p></li>
+<li><p>https://github.com/astrogewgaw/pataka</p></li>
+<li><p>https://github.com/jayanthc/fakefrb</p></li>
+<li><p>https://gitlab.com/houben.ljm/frb-faker</p></li>
+</ul>
+</section>
+<section id="pulsars">
+<h2>Pulsars<a class="headerlink" href="#pulsars" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>https://github.com/SixByNine/sigproc/blob/master/src/fake.c</p></li>
+<li><p>https://github.com/PsrSigSim/PsrSigSim</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">WILL</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">WILL - Weighted Injector of Luminous Lighthouses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#create"><code class="docutils literal notranslate"><span class="pre">create</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inject"><code class="docutils literal notranslate"><span class="pre">inject</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detect"><code class="docutils literal notranslate"><span class="pre">detect</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#questions-contributing">Questions + Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#other-simulators">Other Simulators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#single-pulses">Single Pulses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pulsars">Pulsars</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples/inject_pulse.html">Create &amp; Inject Pulses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/detect_pulse.html">Detect Pulses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="will.html">will package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to WILL’s documentation!</a></li>
+      <li>Next: <a href="examples/inject_pulse.html" title="next chapter">Create &amp; Inject Pulses</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Joseph W. Kania.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/README.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,1140 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>will package &#8212; WILL 0.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Detect Pulses" href="examples/detect_pulse.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="will-package">
+<h1>will package<a class="headerlink" href="#will-package" title="Permalink to this headline">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-will.create">
+<span id="will-create-module"></span><h2>will.create module<a class="headerlink" href="#module-will.create" title="Permalink to this headline">¶</a></h2>
+<p>Pulse creation routines.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="will.create.GaussPulse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">GaussPulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_intensities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_thetas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tsamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectral_index_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nscint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandpass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.create.GaussPulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create a pulse from a 2D Gaussian.
+This function can handle</p>
+<p>The PDF is created ith the object.
+To sample use sample_pulse(nsamps).</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>relative_intensities - The relative intensities of the</dt><dd><p>pule components.</p>
+</dd>
+</dl>
+<p>sigma_time - time sigma in seconds</p>
+<p>sigma_freq - Frequency Sigma in MHz</p>
+<p>center_freq - Center Frequency in MHz</p>
+<p>pulse_theta - Angle of pulse components</p>
+<p>nsamp - Number of samples to add</p>
+<p>dm - Dispersion measure</p>
+<p>tau - Scatter parameter</p>
+<p>tsamp - Sampling time of dynamic spectra in second</p>
+<p>spectra_index_alpha - Spectral index powser around center_freq</p>
+<p>nscint - Number of frequency scintills</p>
+<p>phi - Phase of frequency scintillation</p>
+<dl class="simple">
+<dt>bandpass - scale frequency structure with bandpass if</dt><dd><p>not None</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.bandpass">
+<span class="sig-name descname"><span class="pre">bandpass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#will.create.GaussPulse.bandpass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.center_freqs">
+<span class="sig-name descname"><span class="pre">center_freqs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#will.create.GaussPulse.center_freqs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.chan_freqs">
+<span class="sig-name descname"><span class="pre">chan_freqs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#will.create.GaussPulse.chan_freqs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="will.create.GaussPulse.create_pulse">
+<span class="sig-name descname"><span class="pre">create_pulse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.create.GaussPulse.create_pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the pulse</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.dm">
+<span class="sig-name descname"><span class="pre">dm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.GaussPulse.dm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.nscint">
+<span class="sig-name descname"><span class="pre">nscint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#will.create.GaussPulse.nscint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.offsets">
+<span class="sig-name descname"><span class="pre">offsets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#will.create.GaussPulse.offsets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="will.create.GaussPulse.optimal_boxcar_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">optimal_boxcar_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.int64</span></em><a class="headerlink" href="#will.create.GaussPulse.optimal_boxcar_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the optimal boxcar width</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.phi">
+<span class="sig-name descname"><span class="pre">phi</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.GaussPulse.phi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="will.create.GaussPulse.pulse_center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pulse_center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#will.create.GaussPulse.pulse_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>The location of the pulse maximum in time samples</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.pulse_thetas">
+<span class="sig-name descname"><span class="pre">pulse_thetas</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#will.create.GaussPulse.pulse_thetas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.relative_intensities">
+<span class="sig-name descname"><span class="pre">relative_intensities</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#will.create.GaussPulse.relative_intensities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="will.create.GaussPulse.sample_pulse">
+<span class="sig-name descname"><span class="pre">sample_pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nsamp:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.uint32'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.GaussPulse.sample_pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample the pulse with <cite>nsamp</cite> samples</p>
+<dl>
+<dt>Args:</dt><dd><p>nsamp - Number of samples in the pulse</p>
+<p>dtype - Data type of the pulse</p>
+</dd>
+<dt>Returns:</dt><dd><p>2D ndarray with disperesed pulse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.sigma_freqs">
+<span class="sig-name descname"><span class="pre">sigma_freqs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#will.create.GaussPulse.sigma_freqs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.sigma_times">
+<span class="sig-name descname"><span class="pre">sigma_times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#will.create.GaussPulse.sigma_times" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.spectral_index_alpha">
+<span class="sig-name descname"><span class="pre">spectral_index_alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.GaussPulse.spectral_index_alpha" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.tau">
+<span class="sig-name descname"><span class="pre">tau</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.GaussPulse.tau" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.GaussPulse.tsamp">
+<span class="sig-name descname"><span class="pre">tsamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.GaussPulse.tsamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">SimpleGaussPulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tsamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectral_index_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nscint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandpass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.create.SimpleGaussPulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create a pulse from Gaussians in time and frequency.
+The time and frequency profiles are created with the
+object. To sample use .sample_pulse(nsamps)
+to sample the pulse.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>sigma_time - time sigma in seconds</p>
+<p>dm - Dispersion measure</p>
+<p>tau - scatter</p>
+<p>sigma_freq - Frequency Sigma in MHz</p>
+<p>center_freq - Center Frequency in MHz</p>
+<p>tsamp - sampling time of dynamic spectra in second</p>
+<p>spectra_index_alpha - spectral index around center_freq</p>
+<p>nscint - number of scintills</p>
+<p>phi - phase of of scintillation</p>
+<dl class="simple">
+<dt>bandpass - scale frequency structure with bandpass if</dt><dd><p>not None</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.bandpass">
+<span class="sig-name descname"><span class="pre">bandpass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.bandpass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.center_freq">
+<span class="sig-name descname"><span class="pre">center_freq</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.center_freq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.chan_freqs">
+<span class="sig-name descname"><span class="pre">chan_freqs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.chan_freqs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.create_pulse">
+<span class="sig-name descname"><span class="pre">create_pulse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.create.SimpleGaussPulse.create_pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the pulse</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.dm">
+<span class="sig-name descname"><span class="pre">dm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.dm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.nscint">
+<span class="sig-name descname"><span class="pre">nscint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.nscint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.optimal_boxcar_width">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">optimal_boxcar_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.int64</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.optimal_boxcar_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the optimal boxcar width</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.phi">
+<span class="sig-name descname"><span class="pre">phi</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.phi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.pulse_center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pulse_center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.int64</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.pulse_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>The location of the pulse maximum in time samples</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.sample_pulse">
+<span class="sig-name descname"><span class="pre">sample_pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nsamp:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.uint32'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.SimpleGaussPulse.sample_pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample the pulse with <cite>nsamp</cite> samples</p>
+<dl>
+<dt>Args:</dt><dd><p>nsamp - Number of samples in the pulse</p>
+<p>dtype - Data type of the pulse</p>
+</dd>
+<dt>Returns:</dt><dd><p>2D ndarray with disperesed pulse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.sigma_freq">
+<span class="sig-name descname"><span class="pre">sigma_freq</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.sigma_freq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.sigma_time">
+<span class="sig-name descname"><span class="pre">sigma_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.sigma_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.spectral_index_alpha">
+<span class="sig-name descname"><span class="pre">spectral_index_alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.spectral_index_alpha" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.tau">
+<span class="sig-name descname"><span class="pre">tau</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.tau" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.create.SimpleGaussPulse.tsamp">
+<span class="sig-name descname"><span class="pre">tsamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.create.SimpleGaussPulse.tsamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.apply_scatter_profile">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">apply_scatter_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.apply_scatter_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create exponential scattering profile.</p>
+<dl>
+<dt>Args:</dt><dd><p>freq - Frequencies array</p>
+<p>ref_freq - Reference Frequency</p>
+<p>tau - Scattering parameter</p>
+<p>axis - Axis to perform convolution</p>
+</dd>
+<dt>Return:</dt><dd><p>Exponential scattering profile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.arbitrary_array_cdf">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">arbitrary_array_cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.arbitrary_array_cdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the time locations from a given array</p>
+<dl>
+<dt>Args:</dt><dd><p>times - Array with times to consider</p>
+<p>tau - Pulse width</p>
+</dd>
+<dt>Returns:</dt><dd><p>Values sampled from pulse with tail distrution</p>
+</dd>
+<dt>Notes:</dt><dd><p>based on
+<a class="reference external" href="https://harry45.github.io/blog/2016/10/Sampling-From-Any-Distribution">https://harry45.github.io/blog/2016/10/Sampling-From-Any-Distribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.boxcar_convolved">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">boxcar_convolved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxcar_widths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.boxcar_convolved" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the pulse profile convolved with a boxcar width.</p>
+<dl>
+<dt>Args:</dt><dd><p>time_profile - Time profile of the pulse</p>
+<p>boxcar_widths - Array of boxcar widths</p>
+</dd>
+<dt>Returns:</dt><dd><p>Pulse profile convolved with a boxcar</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.build_pulse">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">build_pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_chans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.build_pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build the pulse from locations tuple.</p>
+<dl>
+<dt>Args:</dt><dd><p>num_times - Length of the time samples axis</p>
+<p>num_chans - Length of channel axis</p>
+<dl class="simple">
+<dt>locations - Locations of the points to increase the energy</dt><dd><p>given as two arrays</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>2D float array with the pulse, time on the ventricle
+axis</p>
+</dd>
+<dt>Example:</dt><dd><p>pulse = build_pulse(10, 10, [[2, 2, 2], [2, 0, 2]]) will
+make a point value 2 at pulse[2,2] and one at pulse[2,0]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.clone_spectra">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">clone_spectra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dynamic_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">median_filter_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.clone_spectra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clone a section of dynamic spectra using Gaussian random numbers.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>2D array of dynamic spectra</p>
+</dd>
+<dt>Returns:</dt><dd><p>Dynamic spectra that has simlar statstics as the given dynamic
+spectra.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.dynamic_from_statistics">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">dynamic_from_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">medians</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsamps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">65536</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.dynamic_from_statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a dynamic spectra from statistics.</p>
+<dl>
+<dt>Args:</dt><dd><p>medians - Bandpass medians</p>
+<p>stds - Standard deviation of the bandpass</p>
+<p>dtype - data type of fake file</p>
+<p>nsamps - Number of time samples</p>
+</dd>
+<dt>Returns:</dt><dd><p>2D random arrays</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.filter_weights">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">filter_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dynamic_spectra:</span> <span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric:</span> <span class="pre">typing.Callable</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">median&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandpass_smooth_length:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_sigma:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.6666666666666666</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth_sigma:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">30</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.filter_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes weights based on low values of some meteric.
+This is designed to ignore bandpass filters or tapers
+at the end of the bandpass.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>dynamic_spectra - 2D dynamic spectra with time on the</dt><dd><p>vertical axis</p>
+</dd>
+</dl>
+<p>metric - The statistic to sample.</p>
+<dl class="simple">
+<dt>bandpass_smooth_length - length of the median filter to</dt><dd><p>smooth the bandpass</p>
+</dd>
+</dl>
+<p>sigma_cut - Cut values below (standard deviation)*(sigma cut)</p>
+<dl class="simple">
+<dt>smooth_sigma - Gaussian filter smoothing sigma. If =0, return</dt><dd><p>the mask where True=good channels</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>Bandpass weights for sections of spectra with low values.
+0 where the value is below the threshold and 1 elsewhere,
+with a Gaussian taper.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.gauss_with_tail_cdf">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">gauss_with_tail_cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.gauss_with_tail_cdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the time locations for a Gaussian pulse with exponential tail</p>
+<dl>
+<dt>Args:</dt><dd><p>times - Array with times to consider</p>
+<p>tau - Pulse width</p>
+</dd>
+<dt>Returns:</dt><dd><p>Values sampled from pulse with tail distrution</p>
+</dd>
+<dt>Notes:</dt><dd><p>based on
+<a class="reference external" href="https://harry45.github.io/blog/2016/10/Sampling-From-Any-Distribution">https://harry45.github.io/blog/2016/10/Sampling-From-Any-Distribution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.gauss_with_tail_locations">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">gauss_with_tail_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">back_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cdf'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.gauss_with_tail_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Locations based on Gaussian with an exponential tail.
+You probably want to use GaussPulse or Simple Gauss pulse.
+This provides a comparison between the cdf and rvs samplers.</p>
+<dl>
+<dt>Args:</dt><dd><p>start - Start index</p>
+<p>stop - Stop index</p>
+<p>sigma - Gaussian sigma</p>
+<p>num_locations - The number of locations to generate</p>
+<dl class="simple">
+<dt>back_end - How the samples are calculated [rvs] uses the rv_continous class,</dt><dd><p>cdf creates a CDF an linearly interpolates it. The latter is
+much faster.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>Location indices for one axis</p>
+</dd>
+<dt>Example:</dt><dd><p>gauss_with_tail_locations(0.1, 1024, 20, int(5e2), back_end=”rvs”)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.gaussian">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">gaussian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.gaussian" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Gaussian</p>
+<dl>
+<dt>Args:</dt><dd><p>domain - Domain to calculate the Gaussian</p>
+<p>mu - Center location</p>
+<p>sig - Pulse width</p>
+</dd>
+<dt>Returns:</dt><dd><p>Gaussian evaluated over x</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.log_normal_from_stats">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">log_normal_from_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">median</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.log_normal_from_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a lognormal distrabution that has has a given median
+and standard deviation.</p>
+<dl>
+<dt>Args:</dt><dd><p>median - median of resulting distrabution</p>
+<p>std - Standard deviation of returned samples</p>
+</dd>
+<dt>Returns:</dt><dd><p><cite>size</cite> numbers from the sampled from lognormal distrabution</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.optimal_boxcar_width">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">optimal_boxcar_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxcar_widths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.int64</span></span></span><a class="headerlink" href="#will.create.optimal_boxcar_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the best boxcar width for a given time profile and array
+of boxcar widths.</p>
+<dl>
+<dt>Args:</dt><dd><p>time_profile - The time profile of the pulse</p>
+<p>boxcar_widths - Array of boxcar widths</p>
+</dd>
+<dt>Returns:</dt><dd><p>Length of the optimal boxcar</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.pulse_with_tail">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">pulse_with_tail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.pulse_with_tail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Gaussian Pulse with a scattering tail</p>
+<dl>
+<dt>Args:</dt><dd><p>Times - Time array</p>
+<p>tau - With paramater</p>
+</dd>
+<dt>Returns:</dt><dd><p>pulse profile</p>
+</dd>
+</dl>
+<p>Notes:
+Based on
+Ian P. Williamson, Pulse Broadening due to Multiple Scattering
+in the Interstellar Medium
+<a class="reference external" href="https://academic.oup.com/mnras/article/157/1/55/2604596">https://academic.oup.com/mnras/article/157/1/55/2604596</a></p>
+<p>I tried moving the center to match the other Gaussian,
+but this slows down the rvs sampler by a factor of ~4</p>
+<p>Example:
+times = np.linspace(1, 256, 256)
+pulse = create.pulse_with_tail(times, 50)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="will.create.pulse_with_tail_dist">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">pulse_with_tail_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">momtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-14</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">badvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">longname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extradoc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.create.pulse_with_tail_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.stats._distn_infrastructure.rv_continuous</span></code></p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>rv_continuous class</p>
+</dd>
+</dl>
+<p>Thanks to
+<a class="reference external" href="https://harry45.github.io/blog/2016/10/Sampling-From-Any-Distribution">https://harry45.github.io/blog/2016/10/Sampling-From-Any-Distribution</a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.quicksort">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">quicksort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_assend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.create.quicksort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quicksort in place.</p>
+<dl>
+<dt>Args:</dt><dd><p>array - Array to be sorted</p>
+<p>left - Left most element of sort</p>
+<p>right - Right most element of sort</p>
+<dl class="simple">
+<dt>sort_fraction - The fraction of the array to</dt><dd><p>stop sorting.</p>
+</dd>
+</dl>
+<p>sort_assend - Sort increating</p>
+</dd>
+<dt>Returns:</dt><dd><p>None - Sort in place</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.scatter_profile">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">scatter_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chan_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.scatter_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create exponential scattering profile.</p>
+<dl>
+<dt>Args:</dt><dd><p>freq - Frequencies array</p>
+<p>ref_freq - Reference Frequency</p>
+<p>tau - Scattering parameter</p>
+</dd>
+<dt>Return:</dt><dd><p>Exponential scattering profile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.scintillation">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">scintillation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chan_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nscint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.scintillation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds Scintillation that is abs(cos(band))</p>
+<dl>
+<dt>Args:</dt><dd><p>chan_freqs - Array of channel Frequencies</p>
+<p>freq_freq - Reference Frequency</p>
+<p>nscint - number of scintills</p>
+<p>phi - phase of of scintillation</p>
+</dd>
+<dt>Returns:</dt><dd><p>scintillation intensities</p>
+</dd>
+<dt>Notes:</dt><dd><p>Similar to <a class="reference external" href="https://arxiv.org/abs/2003.14272">https://arxiv.org/abs/2003.14272</a>
+added abs as it seems more relativistic to me</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.skewed_gauss">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">skewed_gauss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_sig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_sig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.skewed_gauss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Two dimensional Gaussian with an angle theta.</p>
+<dl>
+<dt>Args:</dt><dd><p>x - Horizontal Domain from np.meshgrid</p>
+<p>y - Vertical Domain from np.meshgrid</p>
+<p>x_mu - Horizontal Location</p>
+<p>y_mu - Vertical Distance</p>
+<p>x_sig - Horizontal sigma</p>
+<p>y_sig - Verticel Sigma</p>
+<p>theta - Rotation angle increasing counterclockwise [radians]</p>
+</dd>
+<dt>Returns:</dt><dd><p>2D gaussian with amplitude one.</p>
+</dd>
+<dt>Notes:</dt><dd><p>Based on
+<a class="reference external" href="https://docs.astropy.org/en/stable/api/astropy.modeling.functional_models.Gaussian2D.html">https://docs.astropy.org/en/stable/api/astropy.modeling.functional_models.Gaussian2D.html</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.sort_subarrays">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">sort_subarrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_subarrays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.sort_subarrays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort subband of array. Flips the sorts back and forth to get a sine wave
+type shape.</p>
+<dl>
+<dt>Args:</dt><dd><p>array - array to sort</p>
+<p>num_subarrays - Number of subarrays to sort</p>
+<dl class="simple">
+<dt>sort_fraction - The fraction of the subarray to</dt><dd><p>stop sorting.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>Subarray sorted (also is sorted in place)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.spectral_index">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">spectral_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chan_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectral_index_alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.spectral_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add spectral index to pulse profile</p>
+<dl>
+<dt>Args:</dt><dd><p>frequencies - Frequencies of the bandpass</p>
+<p>freq_ref - Reference frequency</p>
+<p>spectral index - Spectral index</p>
+</dd>
+<dt>Returns:</dt><dd><p>pulse profile modulated by spectral index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.std_min_func">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">std_min_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#will.create.std_min_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>The zeros of this function are the log normal sigma that will
+have standard deviation <cite>std</cite></p>
+<dl>
+<dt>Args:</dt><dd><p>sigma - lognormal sigma</p>
+<p>mu - lognormal mu</p>
+<p>std - The desired standard deviation</p>
+</dd>
+<dt>Returns:</dt><dd><p>desired variance - Actual variance(sigma, mu)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.create.uniform_locations">
+<span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">uniform_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.create.uniform_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Locations based on uniform sampling</p>
+<dl>
+<dt>Args:</dt><dd><p>start - Start index</p>
+<p>stop - Stop index</p>
+<p>num_locations - The number of locations to generate</p>
+</dd>
+<dt>returns:</dt><dd><p>location indices for one axis</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-will.detect">
+<span id="will-detect-module"></span><h2>will.detect module<a class="headerlink" href="#module-will.detect" title="Permalink to this headline">¶</a></h2>
+<p>Pulse analysis routine</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="will.detect.MaxPulse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">MaxPulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.detect.MaxPulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Max pulse location</p>
+<p>location - Sample location of max pulse</p>
+<p>snr - Signal to noise ratio</p>
+<p>If <cite>None</cite>, no pulse fitting requirements found.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.MaxPulse.location">
+<span class="sig-name descname"><span class="pre">location</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#will.detect.MaxPulse.location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.MaxPulse.snr">
+<span class="sig-name descname"><span class="pre">snr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#will.detect.MaxPulse.snr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="will.detect.PulseInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">PulseInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.float64</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.detect.PulseInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pulse info result</p>
+<p>locations - sample location of the pulses</p>
+<p>snrs - Signal to noise of pulses</p>
+<p>std - Standard devivation of time series</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseInfo.locations">
+<span class="sig-name descname"><span class="pre">locations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#will.detect.PulseInfo.locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseInfo.snrs">
+<span class="sig-name descname"><span class="pre">snrs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.detect.PulseInfo.snrs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseInfo.std">
+<span class="sig-name descname"><span class="pre">std</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.float64</span></em><a class="headerlink" href="#will.detect.PulseInfo.std" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">PulseSNRs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_search_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#will.detect.PulseSearchParamters" title="will.detect.PulseSearchParamters"><span class="pre">will.detect.PulseSearchParamters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.detect.PulseSNRs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Results of pulse search</p>
+<p>snrs - Pulse Signal to Noise Ratio</p>
+<dl class="simple">
+<dt>stds - Standard Deviations of pulse block</dt><dd><p>Computed via Median Abs Deviation</p>
+</dd>
+</dl>
+<p>folded - Folded dynamic spectra</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.folded">
+<span class="sig-name descname"><span class="pre">folded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#will.detect.PulseSNRs.folded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.folded_properties">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">folded_properties</span></span><a class="headerlink" href="#will.detect.PulseSNRs.folded_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the pulse properties of the folded profile</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.percent_with_pulses">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">percent_with_pulses</span></span><a class="headerlink" href="#will.detect.PulseSNRs.percent_with_pulses" title="Permalink to this definition">¶</a></dt>
+<dd><p>The percent of pulse bins with a single above snr
+present.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.plot_folded_dynamic">
+<span class="sig-name descname"><span class="pre">plot_folded_dynamic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">median_filter_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">29</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.detect.PulseSNRs.plot_folded_dynamic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the folded dynamic spectra.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>median_filter_length - The length of the median filter used to</dt><dd><p>remove the bandpass</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.plot_folded_profile">
+<span class="sig-name descname"><span class="pre">plot_folded_profile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.detect.PulseSNRs.plot_folded_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the folded pulse profile and print the Signal to Noise</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.plot_snrs">
+<span class="sig-name descname"><span class="pre">plot_snrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cut_snrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.detect.PulseSNRs.plot_snrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot Signal to Noise Ratios as a function of time.</p>
+<dl>
+<dt>Args:</dt><dd><p>cut_snrs: Don’t plot SNRs below the cutoff specified in PulseSearchParamters</p>
+<p>title - The title of the plot, default <cite>SNR vs. Time</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.plot_stds">
+<span class="sig-name descname"><span class="pre">plot_stds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.detect.PulseSNRs.plot_stds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot Standard Deviation (As calculated via Median Absolute Deviation)
+as a function of time.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>title - The tile of the plot, default <cite>Standard Deviation vs. Time</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.pulse_locations">
+<span class="sig-name descname"><span class="pre">pulse_locations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#will.detect.PulseSNRs.pulse_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.pulse_search_params">
+<span class="sig-name descname"><span class="pre">pulse_search_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#will.detect.PulseSearchParamters" title="will.detect.PulseSearchParamters"><span class="pre">will.detect.PulseSearchParamters</span></a></em><a class="headerlink" href="#will.detect.PulseSNRs.pulse_search_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.snrs">
+<span class="sig-name descname"><span class="pre">snrs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#will.detect.PulseSNRs.snrs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSNRs.stds">
+<span class="sig-name descname"><span class="pre">stds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#will.detect.PulseSNRs.stds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">PulseSearchParamters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_pulse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_car_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples_around_pulse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_window_frac</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.detect.PulseSearchParamters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The parameters to use for the single pulse search.</p>
+<p>file - Fits for Fil contaning the pulse.</p>
+<p>first_pulse - Location of the first pulse in seconds.</p>
+<p>period - Period of the pulse in seconds.</p>
+<p>dm - Dispersion Measure of the pulse</p>
+<p>box_car_length - Length of the boxcar for the matched filter.</p>
+<dl class="simple">
+<dt>samples_around_pulse - The number of samples on either side of</dt><dd><p>of the boxcar</p>
+</dd>
+<dt>search_window_frac - The fraction, around the center, of the time</dt><dd><p>series search for a pulse.</p>
+</dd>
+</dl>
+<p>sigma - Pulse threshold</p>
+<p>start - Start sample to process (default to first sample)</p>
+<p>stop - Final sample to process (default is EOF)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.box_car_length">
+<span class="sig-name descname"><span class="pre">box_car_length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.box_car_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.dm">
+<span class="sig-name descname"><span class="pre">dm</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.dm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.file">
+<span class="sig-name descname"><span class="pre">file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.first_pulse">
+<span class="sig-name descname"><span class="pre">first_pulse</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.first_pulse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.period">
+<span class="sig-name descname"><span class="pre">period</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.period" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.samples_around_pulse">
+<span class="sig-name descname"><span class="pre">samples_around_pulse</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.samples_around_pulse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.search_window_frac">
+<span class="sig-name descname"><span class="pre">search_window_frac</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.search_window_frac" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.sigma">
+<span class="sig-name descname"><span class="pre">sigma</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.sigma" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.start">
+<span class="sig-name descname"><span class="pre">start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.PulseSearchParamters.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#will.detect.PulseSearchParamters.stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.detect.dedisped_time_series">
+<span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">dedisped_time_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dynamic_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tsamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.detect.dedisped_time_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the dedispered time series from a chunk of dynamic spectra.</p>
+<dl>
+<dt>Args:</dt><dd><p>dynamic_spectra - 2D spectra with time on the vertical axis</p>
+<p>dm - The dispersion measure</p>
+<p>tsamp - Time sample of the data</p>
+<p>chan_freqs - The channel frequencies</p>
+</dd>
+<dt>Returns:</dt><dd><p>Time series at a the given DM</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.detect.detect_all_pulses">
+<span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">detect_all_pulses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_series</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_car_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#will.detect.PulseInfo" title="will.detect.PulseInfo"><span class="pre">will.detect.PulseInfo</span></a></span></span><a class="headerlink" href="#will.detect.detect_all_pulses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect pulses in a dedisperesed series.</p>
+<dl>
+<dt>Args:</dt><dd><p>time_series - The dedispersed time series</p>
+<p>box_car_length - Length of the boxcar</p>
+<dl class="simple">
+<dt>sigma - Return pulses with significance above</dt><dd><p>this</p>
+</dd>
+</dl>
+<p>smoothing_factor - Median filter is smoothing_factor*box_car_length</p>
+</dd>
+<dt>Returns:</dt><dd><p>PulseInfo[Locations, SNRs]</p>
+</dd>
+</dl>
+<p>Deterned the time series by subtracting off the running median
+Thesis described in Bardell Thesis, but Heimdall uses a different
+method</p>
+<p>Don’t scale SNR as described in <a class="reference external" href="https://arxiv.org/pdf/2011.10191.pdf">https://arxiv.org/pdf/2011.10191.pdf</a>
+because we want the actual SNR of the time series.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.detect.detect_max_pulse">
+<span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">detect_max_pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_series</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_car_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_window_frac</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#will.detect.PulseInfo" title="will.detect.PulseInfo"><span class="pre">will.detect.PulseInfo</span></a></span></span><a class="headerlink" href="#will.detect.detect_max_pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect the largest pulse in a dedisperesed series.
+reports back the location, pulse SNR and time series
+standard deviation as computed by Median Absolute Deviation.</p>
+<dl>
+<dt>Args:</dt><dd><p>time_series - The dedispersed time series</p>
+<p>box_car_length - Length of the boxcar</p>
+<dl class="simple">
+<dt>sigma - Return pulses with significance above</dt><dd><p>this</p>
+</dd>
+</dl>
+<p>smoothing_factor - Median filter is smoothing_factor*box_car_length</p>
+</dd>
+<dt>Returns:</dt><dd><p>dataclass[Locations, SNRs]</p>
+</dd>
+</dl>
+<p>Deterned the time series by subtracting off the running median
+Thesis described in Bardell Thesis, but Heimdall uses a different
+method</p>
+<p>Don’t scale SNR as described in <a class="reference external" href="https://arxiv.org/pdf/2011.10191.pdf">https://arxiv.org/pdf/2011.10191.pdf</a>
+because we want the actual SNR of the time series.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.detect.find_first_pulse">
+<span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">find_first_pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gulp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_car_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.detect.find_first_pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Help to find the index of the first pulse by ploting the
+dedispersed dynamic spectra and time series.</p>
+<dl>
+<dt>Args:</dt><dd><p>file - Path to the file to investigate</p>
+<p>dm - Dispersion measure of the pulsar</p>
+<p>start - Start Index</p>
+<p>gulp - Number of samples to get</p>
+<dl class="simple">
+<dt>box_car_length - If &gt; 1, dynamic spectra and time series</dt><dd><p>get convolved with a boxcar of this length</p>
+</dd>
+</dl>
+<p>num_cands - Number of candidates to print</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.detect.find_max_pulse">
+<span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">find_max_pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pulses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#will.detect.PulseInfo" title="will.detect.PulseInfo"><span class="pre">will.detect.PulseInfo</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#will.detect.MaxPulse" title="will.detect.MaxPulse"><span class="pre">will.detect.MaxPulse</span></a></span></span><a class="headerlink" href="#will.detect.find_max_pulse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the maximum pulse between two indices.</p>
+<dl>
+<dt>Args:</dt><dd><p>pulses - The dataclass from detected pulses</p>
+<p>start_idx - Start index of the the range</p>
+<p>end_idx - End index of range</p>
+</dd>
+<dt>Returns:</dt><dd><p>dataclass(location index, SNR)
+if no pulse in range, returns (None, None)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.detect.locations_of_pulses">
+<span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">locations_of_pulses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pulse_search_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#will.detect.PulseSearchParamters" title="will.detect.PulseSearchParamters"><span class="pre">will.detect.PulseSearchParamters</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.detect.locations_of_pulses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an array of pulse locations from the start location and period.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pulse_search_params - The dataclass that has the search parameters</p>
+</dd>
+<dt>Returns:</dt><dd><p>Location of the pulses in samples</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.detect.search_file">
+<span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">search_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pulse_search_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#will.detect.PulseSearchParamters" title="will.detect.PulseSearchParamters"><span class="pre">will.detect.PulseSearchParamters</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#will.detect.PulseSNRs" title="will.detect.PulseSNRs"><span class="pre">will.detect.PulseSNRs</span></a></span></span><a class="headerlink" href="#will.detect.search_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search a Fil or Fits file for pulses.</p>
+<dl>
+<dt>Args:</dt><dd><p>pulse_search_params - dataclass with the pulse search paramters.</p>
+<p>pulse_locations - Array with the locations of the center of the pulse.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>PulseSNRs - Dataclass that has the pulse snrs, standard deviations, and</dt><dd><p>the folded profile.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-will.inject">
+<span id="will-inject-module"></span><h2>will.inject module<a class="headerlink" href="#module-will.inject" title="Permalink to this headline">¶</a></h2>
+<p>Pulse injection routines</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="will.inject.inject_constant_into_file">
+<span class="sig-prename descclassname"><span class="pre">will.inject.</span></span><span class="sig-name descname"><span class="pre">inject_constant_into_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yr_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">your.your.Your</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gulp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">65536</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_fil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_powers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#will.inject.inject_constant_into_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inject a (the same) pulse(s) into a file.</p>
+<dl>
+<dt>Args:</dt><dd><p>yr_input - Your object for file to inject pulse</p>
+<p>pulse - 2D array that contains the pulse</p>
+<p>start - Start sample of the pulse</p>
+<p>period - Sample period of injected pulse</p>
+<p>out_fil - Out filterbank, if None, returns array</p>
+<p>clip_powers - Clip powers instead of wrap</p>
+</dd>
+<dt>Returns</dt><dd><p>None if out_fil, else dynamic spectra with injected pulse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.inject.inject_distribution_into_file">
+<span class="sig-prename descclassname"><span class="pre">will.inject.</span></span><span class="sig-name descname"><span class="pre">inject_distribution_into_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yr_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">your.your.Your</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#will.create.GaussPulse" title="will.create.GaussPulse"><span class="pre">will.create.GaussPulse</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_counts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gulp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">65536</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_fil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_powers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#will.inject.inject_distribution_into_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inject a pulse(s) into a file. From a given distributution.</p>
+<dl>
+<dt>Args:</dt><dd><p>yr_input - Your object for file to inject pulse</p>
+<p>pulse_obj - Object that creates the pulses</p>
+<p>pulse_counts - The number of samples for each pulse</p>
+<p>start - Start sample of the pulse</p>
+<p>period - Sample period of injected pulse</p>
+<p>out_fil - Out filterbank, if None, returns array</p>
+<p>clip_powers - Clip powers instead of wrap</p>
+</dd>
+<dt>Returns</dt><dd><p>None if out_fil, else dynamic spectra with injected pulse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.inject.num_pulses">
+<span class="sig-prename descclassname"><span class="pre">will.inject.</span></span><span class="sig-name descname"><span class="pre">num_pulses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nspectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#will.inject.num_pulses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the number of pulses needed for a chunk of data</p>
+<dl>
+<dt>Args:</dt><dd><p>period - Period of pulse</p>
+<p>nspectra - Number of spectra in chunk</p>
+<p>start - Start of first pulse</p>
+</dd>
+<dt>Returns:</dt><dd><p>Number of pulses within a data chunk, including partial pulses</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-will">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-will" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">WILL</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">WILL - Weighted Injector of Luminous Lighthouses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#questions-contributing">Questions + Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#other-simulators">Other Simulators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/inject_pulse.html">Create &amp; Inject Pulses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/detect_pulse.html">Detect Pulses</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">will package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-will.create">will.create module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-will.detect">will.detect module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-will.inject">will.inject module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-will">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="examples/detect_pulse.html" title="previous chapter">Detect Pulses</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Joseph W. Kania.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/will.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
