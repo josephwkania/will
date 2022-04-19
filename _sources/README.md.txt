@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/josephwkania/will/blob/master/examples/Pulsar_with_Varying_Intensities.png" alt="Example pulsar">
+  <img src="https://github.com/josephwkania/will/blob/master/examples/Pulsar_with_Varying_Intensities.png?raw=true" alt="Example pulsar">
 </p>
 
 # Overview
@@ -40,6 +40,10 @@ There are three submodules `will.create`, `will.inject`, and `will.detect`.
 ## `detect`
 - `find_first_pulse` Helps find the first pulse in a file
 - `search_file` search a file for periodic pulses at given DM and pulse width
+
+## Documentation
+We have a [docs website](https://josephwkania.github.io/will/)
+which contains the examples and and [API documentation](https://josephwkania.github.io/will/py-modindex.html)
 
 # Installation
 To install directly into your current Python environment
