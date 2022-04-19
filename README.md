@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/josephwkania/will/blob/master/examples/Pulsar_with_Varying_Intensities.png" alt="Example pulsar">
+  <img src="https://github.com/josephwkania/will/blob/master/examples/Pulsar_with_Varying_Intensities.png?raw=true" alt="Example pulsar">
 </p>
 
 # Overview
