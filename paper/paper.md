@@ -7,24 +7,24 @@ tags:
   - neutron stars
   - fast radio bursts
 
-  authors:
-    - name Joseph W Kania
+authors:
+  - name: Joseph W Kania
     orcid: 0000-0002-3354-3859
     affiliation: "1,2"
-    - name Kevin Bandura
+  - name: Kevin Bandura
     ocrid: 0000-0003-3772-2798
-    affiliation: "2,3"
+    affiliation: "2, 3"
 
 affiliations:
- - name: West Virginia University, Department of Physics and Astronomy, P. O. Box 6315, Morgantown 26506, WV, USA
-   index: 1
+- name: West Virginia University, Department of Physics and Astronomy, P. O. Box 6315, Morgantown 26506, WV, USA
+  index: 1
 - name: Center for Gravitational Waves and Cosmology, West Virginia University, Chestnut Ridge Research Building, Morgantown 26506, WV, USA
-   index: 2
+  index: 2
 - name: Lane Department of Computer Science and Electrical Engineering, 1220 Evansdale Drive, PO Box 6109, Morgantown, WV 26506, USA
-   index: 3
+  index: 3
 
+date: 30 April 2022
 bibliography: paper.bib
-
 ---
  
 # Summary
@@ -80,7 +80,15 @@ statistics. This would lead to the incorrect conclusion that the filter is malfu
 `will.detect` provides straightforward pulse detection at given width and DM. This allows analysis of pulsar pulses over an observation.
 You can also see the folded pulse dynamic spectra, time series, and SNR. You can use this functionality to see how see how the pulses
 respond to RFI filters using a full pulse search pipeline, reducing the degrees of freedom searched.
- 
+
+# Figure
+
+![Injected multicomponent pulse
+](https://github.com/josephwkania/will/blob/master/examples/Multi-Component_Pulse.png?raw=true)
+A dedispersed four component pulse created with `WILL`, the last component is rotated compared to the other components. The pulse has no power between channels 2500 to 3000, correctly accounting for the bandstop filter at these
+ frequencies.
+
+
 # Acknowledgment
 Will was developed with support from NSF Award 2006548.
 
