@@ -37,8 +37,8 @@ this science we need to understand the selection function of the search pipeline
 by the telescope, then possibly filtered, and finally digitized. The digital is cleaned of Radio Frequency Interference (RFI). This signal
 pass through ionized media, this causes a quadratic delay in arrival time as a function of frequency. This must be corrected for a range of possible
 Dispersion Measures (DMs). The DM-time matrix is then searched over a range of pulse widths. The candidates are then clustered together to report
-one candidate that may show up at multiple dispersion measures or widths. See [@barsdell-2012] for a discussion of search pipeline
-on a Graphical Processing Unit (GPU). Candidates are then reviewed by humans or machine learned models such as [@fetch].
+one candidate that may show up at multiple dispersion measures or widths. See @Barsdell-2012 for a discussion of search pipeline
+on a Graphical Processing Unit (GPU). Candidates are then reviewed by humans or machine learned models such as @fetch.
 
 To understand the pipeline selection function, the pipeline needs to be tested over a wide variety of pulse morphologies.
 Pulses can vary in sky location, arrival time, time duration, center frequency, frequency width, number of scintiles, scintile phase, spectral index, scatter
@@ -50,7 +50,7 @@ higher DMs, we need to make synthetic pulses, which can be done with `WILL`.
 
 Radio Frequency Interference (RFI) are anthropomorphic signals that are inadvertently received by radio telescopes. RFI can
 degrade the observation by obscuring the astronomical signal, and can produce false positive candidates. There are many RFI removal
-algorithms, some built into the pipeline [@barsdell-2012] [@ransom], others as stand alone packages [@iqrm], [@rficlean], [@jess] that
+algorithms, some built into the pipeline [@Barsdell-2012; @Ransom], others as stand alone packages [@iqrm; @rficlean; @jess] that
 clean the data before the pipeline. Ideally these filters completely remove RFI while retaining all of the pulse energy. This does not
 happen in practice, some RFI remains and bright parts of the pulse are removed. To better understand how these filters interact with
 the pulse, we can create fake pulses and run them through a search pipeline. We can also use `WILL`'s pulse detection to see how
@@ -60,10 +60,11 @@ the signal to noise level changes for a given width and DM.
 We looked for pulse simulation software, and we found [seven existing pulse simulators](https://github.com/josephwkania/will#single-pulses).
 However none met all of our needs. Many had missing or incomplete documentation, making it impossible to know how to port the software to our
 data or how to use it. Other burst simulators failed to run on our data. Finally some simulators only work on synthetic noise, this includes both
-pulse simulators. We then proceeded to develop `WILL` to overcome these problems. Will uses [@your] to write and write file files, allowing
-`WILL` to read both Filerbank and PSRFITS files. We also have a [documentation website](https://josephwkania.github.io/will/) which has function
+pulse simulators. We then proceeded to develop `WILL` to overcome these problems. Will uses @Your to write and write file files, allowing
+`WILL` to read both Filerbank [@sigproc] and PSRFITS [@psrfits] files. We also have a [documentation website](https://josephwkania.github.io/will/) 
+which has function
 documentation as well as example notebooks showing how to create & inject pulses, pulse detection, pulsar analysis, and an example showing `Will`
-being used with [@SciPy] to optimize filter inputs.
+being used with SciPy to optimize filter inputs.
  
 While writing `WILL` we came up with several improvements that improve the usefulness of the synthetic pulses. Many pulse simulators attempt
 to inject a pulse at a given Signal to Noise Ratio (SNR), the notable exception being [FRB Faker](https://gitlab.com/houben.ljm/frb-faker).
@@ -81,15 +82,19 @@ statistics. This would lead to the incorrect conclusion that the filter is malfu
 You can also see the folded pulse dynamic spectra, time series, and SNR. You can use this functionality to see how see how the pulses
 respond to RFI filters using a full pulse search pipeline, reducing the degrees of freedom searched.
 
+`WILL` uses NumPy [@NumPy], [rich](https://github.com/Textualize/rich), SciPy [@SciPy], jess [@jess], and your [@Your].
+We found `injectfrb` [@injectfrb] to have useful pulse modeling functions, these were used in [@greenburst], and built
+upon in `will.create`.  
+
 # Figure
 
 ![Injected multicomponent pulse
 ](https://github.com/josephwkania/will/blob/master/examples/Multi-Component_Pulse.png?raw=true)
-A dedispersed four component pulse created with `WILL`, the last component is rotated compared to the other components. The pulse has no power between channels 2500 to 3000, correctly accounting for the bandstop filter at these
- frequencies.
+A dedispersed four component pulse created with `WILL`, the last component is rotated compared to the other components. 
+The pulse has no power between channels 2500 to 3000, correctly accounting for the bandstop filter at these frequencies.
 
 
 # Acknowledgment
-Will was developed with support from NSF Award 2006548.
+`WILL` was developed with support from NSF Award 2006548.
 
 # References
