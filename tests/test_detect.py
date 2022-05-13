@@ -203,3 +203,40 @@ def test_search_file(create_fil):
     with mock.patch("matplotlib.pyplot.show") as show:
         pulses.plot_folded_dynamic()
         show.assert_called_once()
+
+
+def test_process_dynamic_spectra():
+    """
+    Test the cadidate the preprocessor
+    """
+    size = 10
+    dtype = np.float32
+    fake_cand = np.ones((size, size))
+    fake_cand += 10 * np.linspace(0, size, num=size)
+    fake_cand = fake_cand.astype(np.int8)
+    processed = detect.process_dynamic_spectra(fake_cand, sigma=1, dtype=dtype)
+
+    np.testing.assert_allclose(np.median(processed, axis=0), np.zeros(size))
+    np.testing.assert_almost_equal(processed.mean(), 0)
+    assert processed.dtype == dtype
+
+
+def test_extract_pulses(create_fil):
+    """
+    Test the extract pulses
+    """
+    offset = 164  # = simple_pulse.pulse_center
+    pulse_params = detect.PulseSearchParamters(
+        create_fil[0],
+        first_pulse=offset + 64,
+        period=128 * TSAMP,  # in seconds
+        dm=DM,
+        box_car_length=111,
+        samples_around_pulse=128,
+    )
+    pulse_locations = detect.locations_of_pulses(pulse_params)
+    pulses = detect.extract_pulses(pulse_params, pulse_locations)
+
+    assert len(pulses.dynamic_spectra) == len(pulse_locations)
+    assert len(pulses.times) == len(pulse_locations)
+    assert len(pulses.bandpass_labels) > 0

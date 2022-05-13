@@ -629,3 +629,121 @@ def search_file(
         pulse_search_params=pulse_search_params,
         pulse_locations=pulse_locations,
     )
+
+
+def process_dynamic_spectra(
+    dynamic_spectra: np.ndarray, sigma: float, dtype: type
+) -> np.ndarray:
+    """
+    Process the dynamic spectra for PCA by subtracting off the bandpass,
+    optionally running a Gaussain filter, and zero centering.
+
+    Args:
+        dynamic_spectra - dynamic spectra to process
+
+        sigma - Sigma for Gaussian filter, if zero filter not applied
+
+        dtype - data type of output file
+
+    Returns:
+        processed to dynamic spectra
+    """
+    dynamic_spectra = dynamic_spectra - np.median(dynamic_spectra, axis=0).astype(dtype)
+
+    if sigma > 0:
+        ndimage.gaussian_filter(dynamic_spectra, sigma=sigma, output=dynamic_spectra)
+
+    dynamic_spectra -= dynamic_spectra.mean()
+    return dynamic_spectra
+
+
+@dataclass
+class ExtractPulses:
+    """
+    Results of extracting single pulses.
+
+    dynamic_spectra - Pulse dynamic spectra
+
+    bandpass_labels - Frequency labels
+
+    times - Time labels
+    """
+
+    dynamic_spectra: np.ndarray
+    bandpass_labels: np.ndarray
+    times: np.ndarray
+
+
+def extract_pulses(
+    pulse_search_params: PulseSearchParamters,
+    pulse_locations: np.ndarray,
+    sigma: float = 0,
+    dtype: type = np.float32,
+) -> ExtractPulses:
+    """
+    Search a Fil or Fits file for pulses.
+    Args:
+        pulse_search_params - dataclass with the pulse search paramters.
+        pulse_locations - Array with the locations of the center of the pulse.
+        sigma - Sigma of Gauss filter, if 0 no filter is applied
+
+    Returns:
+        PulseSNRs - Dataclass that has the pulse snrs, standard deviations, and
+                    the folded profile.
+    """
+
+    nsamp = (
+        pulse_search_params.box_car_length
+        + 2 * pulse_search_params.samples_around_pulse
+        + pulse_search_params.samples_lost
+    )
+    offset = (
+        pulse_search_params.box_car_length // 2
+        + pulse_search_params.samples_around_pulse
+    )
+    pulses = np.zeros(
+        (
+            len(pulse_locations),
+            pulse_search_params.box_car_length
+            + 2 * pulse_search_params.samples_around_pulse,
+            pulse_search_params.yr_obj.your_header.nchans,
+        ),
+        dtype=dtype,
+    )
+
+    for j, location in enumerate(
+        track(
+            pulse_locations,
+            description="Searching for Pulses",
+            transient=True,
+            refresh_per_second=1,
+        )
+    ):
+        start = np.around(location).astype(int) - offset
+        # this seemed to happen occasionally, I think due to double counting
+        # the delay lost, this has been fixed.
+        if start < 0:
+            logging.warning("Start is before start of file %i", start)
+        dynamic_spectra = pulse_search_params.yr_obj.get_data(start, nsamp)
+        dynamic_spectra_dispered = dedisperse(
+            dynamic_spectra,
+            dm=pulse_search_params.dm,
+            tsamp=pulse_search_params.yr_obj.your_header.tsamp,
+            chan_freqs=pulse_search_params.yr_obj.chan_freqs,
+        )
+        # cut the rolled part
+        dynamic_spectra_trim = dynamic_spectra_dispered[
+            : -pulse_search_params.samples_lost
+        ]
+
+        pulses[j] = process_dynamic_spectra(
+            dynamic_spectra_trim, sigma=sigma, dtype=dtype
+        )
+
+    times = np.arange(
+        pulse_search_params.yr_obj.tsamp * len(pulses[0]),
+        step=pulse_search_params.yr_obj.tsamp,
+    )
+    times = np.broadcast_to(times, (pulse_locations.size, times.size))
+
+    return ExtractPulses(pulses, pulse_search_params.yr_obj.chan_freqs, times)
