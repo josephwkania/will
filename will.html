@@ -663,6 +663,31 @@ have standard deviation <cite>std</cite></p>
 <span id="will-detect-module"></span><h2>will.detect module<a class="headerlink" href="#module-will.detect" title="Permalink to this headline">¶</a></h2>
 <p>Pulse analysis routine</p>
 <dl class="py class">
+<dt class="sig sig-object py" id="will.detect.ExtractPulses">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">ExtractPulses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dynamic_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandpass_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.detect.ExtractPulses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Results of extracting single pulses.</p>
+<p>dynamic_spectra - Pulse dynamic spectra</p>
+<p>bandpass_labels - Frequency labels</p>
+<p>times - Time labels</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.ExtractPulses.bandpass_labels">
+<span class="sig-name descname"><span class="pre">bandpass_labels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#will.detect.ExtractPulses.bandpass_labels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.ExtractPulses.dynamic_spectra">
+<span class="sig-name descname"><span class="pre">dynamic_spectra</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#will.detect.ExtractPulses.dynamic_spectra" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="will.detect.ExtractPulses.times">
+<span class="sig-name descname"><span class="pre">times</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></em><a class="headerlink" href="#will.detect.ExtractPulses.times" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="will.detect.MaxPulse">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">MaxPulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.int64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.detect.MaxPulse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -934,6 +959,25 @@ because we want the actual SNR of the time series.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="will.detect.extract_pulses">
+<span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">extract_pulses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pulse_search_params:</span> <span class="pre">will.detect.PulseSearchParamters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_locations:</span> <span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#will.detect.ExtractPulses" title="will.detect.ExtractPulses"><span class="pre">will.detect.ExtractPulses</span></a></span></span><a class="headerlink" href="#will.detect.extract_pulses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search a Fil or Fits file for pulses.
+Args:</p>
+<blockquote>
+<div><p>pulse_search_params - dataclass with the pulse search paramters.
+pulse_locations - Array with the locations of the center of the pulse.
+sigma - Sigma of Gauss filter, if 0 no filter is applied</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>PulseSNRs - Dataclass that has the pulse snrs, standard deviations, and</dt><dd><p>the folded profile.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="will.detect.find_first_pulse">
 <span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">find_first_pulse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gulp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_car_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.detect.find_first_pulse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Help to find the index of the first pulse by ploting the
@@ -975,6 +1019,21 @@ if no pulse in range, returns (None, None)</p>
 <dt>Args:</dt><dd><p>pulse_search_params - The dataclass that has the search parameters</p>
 </dd>
 <dt>Returns:</dt><dd><p>Location of the pulses in samples</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="will.detect.process_dynamic_spectra">
+<span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">process_dynamic_spectra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dynamic_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#will.detect.process_dynamic_spectra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process the dynamic spectra for PCA by subtracting off the bandpass,
+optionally running a Gaussain filter, and zero centering.</p>
+<dl>
+<dt>Args:</dt><dd><p>dynamic_spectra - dynamic spectra to process</p>
+<p>sigma - Sigma for Gaussian filter, if zero filter not applied</p>
+<p>dtype - data type of output file</p>
+</dd>
+<dt>Returns:</dt><dd><p>processed to dynamic spectra</p>
 </dd>
 </dl>
 </dd></dl>
