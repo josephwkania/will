@@ -521,6 +521,8 @@ def scintillation(
 
     Notes:
         Similar to https://arxiv.org/abs/2003.14272
+        and
+        https://github.com/liamconnor/injectfrb/blob/a4dd5f22438ba7bdfaa2eb792eb54736cde53fed/injectfrb/simulate_frb.py#L77
         added abs as it seems more relativistic to me
     """
     logging.debug("Scintillating with nscint %i and phi %f", nscint, phi)
@@ -544,6 +546,10 @@ def scatter_profile(
 
     Return:
         Exponential scattering profile
+
+    Notes:
+        Bases on
+        https://github.com/liamconnor/injectfrb/blob/a4dd5f22438ba7bdfaa2eb792eb54736cde53fed/injectfrb/simulate_frb.py#L111
     """
     num_times = len(chan_freqs)
     tau_nu = tau * (chan_freqs / ref_freq) ** -4.0
