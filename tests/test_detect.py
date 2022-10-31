@@ -214,10 +214,14 @@ def test_process_dynamic_spectra():
     fake_cand = np.ones((size, size))
     fake_cand += 10 * np.linspace(0, size, num=size)
     fake_cand = fake_cand.astype(np.int8)
-    processed = detect.process_dynamic_spectra(fake_cand, sigma=1, dtype=dtype)
-
+    processed, centering_mean = detect.process_dynamic_spectra(
+        fake_cand, sigma=1, dtype=dtype
+    )
     np.testing.assert_allclose(np.median(processed, axis=0), np.zeros(size))
+    # bandpass gets subtracted off my median removal
+    # mean should be close to zero
     np.testing.assert_almost_equal(processed.mean(), 0)
+    np.testing.assert_almost_equal(centering_mean, 0)
     assert processed.dtype == dtype
 
 
@@ -240,3 +244,4 @@ def test_extract_pulses(create_fil):
     assert len(pulses.dynamic_spectra) == len(pulse_locations)
     assert len(pulses.times) == len(pulse_locations)
     assert len(pulses.bandpass_labels) > 0
+    assert len(pulses.dynamic_spectra) == len(pulses.centering_means)

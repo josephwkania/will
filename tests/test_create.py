@@ -344,6 +344,52 @@ class TestSimplePulse:
         assert center < self.pulse.shape[0]
 
 
+class TestTwoDimensionalPulse:
+    """
+    Test the two dimensional pdf.
+    """
+
+    def setup_class(self):
+        """
+        Create the pdf and pulse object
+        """
+        size_pdf = 100
+        self.num_samples = 10000
+        pulse_pdf = np.zeros((size_pdf, size_pdf))
+        self.sin = np.sin(np.linspace(0, np.pi, size_pdf))
+        self.sin /= self.sin.sum()
+        pulse_pdf += self.sin[:, None]
+        self.twod_pulse = create.TwoDimensionalPulse(
+            pulse_pdf=pulse_pdf,
+            chan_freqs=np.linspace(1919, 960, size_pdf),
+            tsamp=0.000256,
+            dm=155,
+        )
+        self.pulse = self.twod_pulse.sample_pulse(nsamp=self.num_samples)
+
+    def test_bandpass(self):
+        """
+        Pulse pdf should be what we put it in.
+        """
+        assert np.allclose(self.twod_pulse.pulse_pdf.mean(axis=1), self.sin)
+
+    def test_optimal_width(self):
+        """
+        Test optimal location
+        """
+        optimal_width = self.twod_pulse.optimal_boxcar_width
+        assert optimal_width > 0
+        assert optimal_width < self.pulse.shape[0]
+
+    def test_center(self):
+        """
+        Test optimal location
+        """
+        center = self.twod_pulse.pulse_center
+        assert center > 0
+        assert center < self.pulse.shape[0]
+
+
 class TestGaussPulse:
     """
     Test the multicomponent pulse

@@ -52,8 +52,8 @@ def inject_constant_into_file(  # noqa: max-complexity:30
             f"Mismatch in number of channels, pulse: {nchans}, data: {d_chan}"
         )
 
-    if nsamples > 2 * gulp:
-        raise RuntimeError(f"{gulp=} is not two times larger that {nsamples=}")
+    if nsamples > gulp:
+        raise RuntimeError(f"{gulp=} is not larger that {nsamples=}")
 
     if clip_powers:
         iinfo = np.iinfo(yr_input.your_header.dtype)

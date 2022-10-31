@@ -646,15 +646,16 @@ def process_dynamic_spectra(
         dtype - data type of output file
 
     Returns:
-        processed to dynamic spectra
+        processed to dynamic spectra, mean used to center the data
     """
     dynamic_spectra = dynamic_spectra - np.median(dynamic_spectra, axis=0).astype(dtype)
 
     if sigma > 0:
         ndimage.gaussian_filter(dynamic_spectra, sigma=sigma, output=dynamic_spectra)
 
-    dynamic_spectra -= dynamic_spectra.mean()
-    return dynamic_spectra
+    centering_mean = dynamic_spectra.mean()
+    dynamic_spectra -= centering_mean
+    return dynamic_spectra, centering_mean
 
 
 @dataclass
@@ -662,16 +663,19 @@ class ExtractPulses:
     """
     Results of extracting single pulses.
 
-    dynamic_spectra - Pulse dynamic spectra
+    dynamic_spectra - Pulse dynamic spectra.
 
-    bandpass_labels - Frequency labels
+    bandpass_labels - Frequency labels.
 
-    times - Time labels
+    times - Time labels.
+
+    centering_means - The means used to center the pulses.
     """
 
     dynamic_spectra: np.ndarray
     bandpass_labels: np.ndarray
     times: np.ndarray
+    centering_means: np.ndarray
 
 
 def extract_pulses(
@@ -688,8 +692,8 @@ def extract_pulses(
         sigma - Sigma of Gauss filter, if 0 no filter is applied
 
     Returns:
-        PulseSNRs - Dataclass that has the pulse snrs, standard deviations, and
-                    the folded profile.
+        ExtractPulses - Dataclass that has the pulse dynamic spectra,
+                        bandpass labels, times, and means used to center
     """
 
     nsamp = (
@@ -710,6 +714,7 @@ def extract_pulses(
         ),
         dtype=dtype,
     )
+    centering_means = np.zeros(len(pulse_locations), dtype=dtype)
 
     for j, location in enumerate(
         track(
@@ -736,7 +741,7 @@ def extract_pulses(
             : -pulse_search_params.samples_lost
         ]
 
-        pulses[j] = process_dynamic_spectra(
+        pulses[j], centering_means[j] = process_dynamic_spectra(
             dynamic_spectra_trim, sigma=sigma, dtype=dtype
         )
 
@@ -746,4 +751,6 @@ def extract_pulses(
     )
     times = np.broadcast_to(times, (pulse_locations.size, times.size))
 
-    return ExtractPulses(pulses, pulse_search_params.yr_obj.chan_freqs, times)
+    return ExtractPulses(
+        pulses, pulse_search_params.yr_obj.chan_freqs, times, centering_means
+    )

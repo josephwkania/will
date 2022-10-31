@@ -42,12 +42,12 @@ def log_normal_from_stats(median: float, std: float, size: int) -> np.ndarray:
     and standard deviation.
 
     Args:
-        median - median of resulting distrabution
+        median - median of resulting distribution
 
         std - Standard deviation of returned samples
 
     Returns:
-        `size` numbers from the sampled from lognormal distrabution
+        `size` numbers from the sampled from lognormal distribution
     """
     mu = np.log(median)
     sigma_guess = np.sqrt(mu - 0.5 * np.log(std**2))
@@ -84,7 +84,7 @@ def quicksort(
         sort_fraction - The fraction of the array to
                         stop sorting.
 
-        sort_assend - Sort increating
+        sort_assend - Sort increasing
 
     Returns:
         None - Sort in place
@@ -191,7 +191,7 @@ def skewed_gauss(
 
         x_sig - Horizontal sigma
 
-        y_sig - Verticel Sigma
+        y_sig - Vertical Sigma
 
         theta - Rotation angle increasing counterclockwise [radians]
 
@@ -225,7 +225,7 @@ def pulse_with_tail(times: np.ndarray, tau: float = 50) -> np.ndarray:
     Args:
         Times - Time array
 
-        tau - With paramater
+        tau - With parameter
 
     Returns:
         pulse profile
@@ -326,7 +326,7 @@ class pulse_with_tail_dist(stats.rv_continuous):
             norm_constant - Normalization Constant
 
         Returns:
-            Values sampled from pulse with tail distrution
+            Values sampled from pulse with tail distribution
         """
         # center: int
         return (1.0 / norm_const) * pulse_with_tail(times, tau=tau)
@@ -342,7 +342,7 @@ def gauss_with_tail_cdf(times: np.ndarray, tau: float) -> np.ndarray:
         tau - Pulse width
 
     Returns:
-        Values sampled from pulse with tail distrution
+        Values sampled from pulse with tail distribution
 
     Notes:
         based on
@@ -372,13 +372,16 @@ def arbitrary_array_cdf(
 
 
     Returns:
-        Values sampled from pulse with tail distrution
+        Values sampled from pulse with tail distribution
 
     Notes:
         based on
         https://harry45.github.io/blog/2016/10/Sampling-From-Any-Distribution
     """
     logging.debug("Sampling given array")
+    # if array has negatives, pulse_cdf will not be monotonic
+    # and interpolation is difficult
+    assert array.min() >= 0, "Probability array must be non-negative!"
     pulse_cdf = np.cumsum(array)
     pulse_cdf /= np.max(pulse_cdf)
     cdf_interp = interpolate.interp1d(pulse_cdf, locations)
@@ -660,6 +663,8 @@ class SimpleGaussPulse:
 
         center_freq - Center Frequency in MHz
 
+        chan_freq - Array of channel frequencies in MHz
+
         tsamp - sampling time of dynamic spectra in second
 
         spectra_index_alpha - spectral index around center_freq
@@ -797,6 +802,84 @@ class SimpleGaussPulse:
 
 
 @dataclass
+class TwoDimensionalPulse:
+    """
+    Create a pulse from a 2D pulse Probability Distribution Function (PDF).
+
+    Args:
+        pulse_pdf - The 2D array containing pulse the pulse profile at
+                    0 DM.
+
+        chan_freq - Array of channel frequencies in MHz
+
+        tsamp - sampling time of dynamic spectra in second
+
+        dm - Dispersion Measure
+
+    """
+
+    pulse_pdf: np.ndarray
+    chan_freqs: np.ndarray
+    tsamp: float
+    dm: float
+
+    def __post_init__(self):
+        self.pulse_width = len(self.pulse_pdf)
+        self.nchans = self.chan_freqs.size
+
+    @property
+    def pulse_center(self) -> int:
+        """
+        The location of the pulse maximum in time samples
+        """
+        return self.pulse_pdf.mean(axis=1).argmax()
+
+    @functools.cached_property
+    def optimal_boxcar_width(self) -> np.int64:
+        """
+        Find the optimal boxcar width
+        """
+        boxcar_widths = np.arange(1, self.pulse_width)
+        return optimal_boxcar_width(
+            time_profile=self.pulse_pdf.mean(axis=1), boxcar_widths=boxcar_widths
+        )
+
+    def sample_pulse(self, nsamp: int, dtype: type = np.uint32) -> np.ndarray:
+        """
+        Sample the pulse with `nsamp` samples
+
+        Args:
+            nsamp - Number of samples in the pulse
+
+            dtype - Data type of the pulse
+
+        Returns:
+            2D ndarray with disperesed pulse
+        """
+        logging.debug("Calculating %i locations.", nsamp)
+
+        pulse_pdf_flat = self.pulse_pdf.flatten()
+        locations = arbitrary_array_cdf(
+            pulse_pdf_flat,
+            locations=np.arange(0, len(pulse_pdf_flat)),
+            num_samples=nsamp,
+        )
+        locations = to_dtype(locations, dtype=int)
+        locations = np.unravel_index(locations, self.pulse_pdf.shape)
+
+        pulse_array = build_pulse(self.pulse_width, self.nchans, locations)
+
+        delay = delay_lost(dm=self.dm, chan_freqs=self.chan_freqs, tsamp=self.tsamp)
+        pulse_array_pad = np.zeros((self.pulse_width + delay, self.nchans), dtype=dtype)
+        pulse_array_pad[: self.pulse_width] = pulse_array
+        pulse_dispersed = dedisperse(
+            pulse_array_pad, dm=-self.dm, tsamp=self.tsamp, chan_freqs=self.chan_freqs
+        )
+
+        return pulse_dispersed
+
+
+@dataclass
 class GaussPulse:
     """
     Create a pulse from a 2D Gaussian.
@@ -813,13 +896,15 @@ class GaussPulse:
 
         sigma_freq - Frequency Sigma in MHz
 
-        center_freq - Center Frequency in MHz
+        chan_freq - Array of channgel freuqncies in MHz
+
+        tsamp - sampling time of dynamic spectra in second
 
         pulse_theta - Angle of pulse components
 
         nsamp - Number of samples to add
 
-        dm - Dispersion measure
+        dm - Dispersion Measure
 
         tau - Scatter parameter
 
