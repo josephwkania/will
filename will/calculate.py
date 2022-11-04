@@ -5,7 +5,7 @@ Math functions.
 import logging
 import operator
 import warnings
-from collections.abc import Callable
+from typing import Callable
 
 import numpy as np
 from scipy import optimize, signal

@@ -21,15 +21,13 @@ environments, the injected signal is brighter and still detectible.
 - Straightforward Pulse Detection
 - Good Documentation
 
-There are three submodules `will.create`, `will.inject`, and `will.detect`. 
+There are four submodules `will.create`, `will.inject`, `will.detect`, and `will.calculate`. 
 
 ## `create` 
 - `GaussPulse` can make multiple independent component pulses.
 - `SimpleGaussPulse` created pulses that are not correlated in frequency and time
 - `filter_weights` Uses Gaussian smoothing to create bandpass weights model filter and rolloff
 - `clone_spectra` makes dynamic spectra with Gaussian noise that copies statistics
-- `log_normal_from_stats` creates a log-normal distro. with given median and Stand. Dev.
-- `sort_subarrays` gives correlation to pulse powers
 - `dynamic_from_statistics` Creates a noise dynamic spectra w/ given STD and median per channel
 - `clone_spectra` Makes a noise clone of a give dynamic spectra
 
@@ -40,6 +38,10 @@ There are three submodules `will.create`, `will.inject`, and `will.detect`.
 ## `detect`
 - `find_first_pulse` Helps find the first pulse in a file
 - `search_file` search a file for periodic pulses at given DM and pulse width
+
+## `calculate`
+- `log_normal_from_stats` creates a log-normal distro. with given median and Stand. Dev.
+- `sort_subarrays` gives correlation across time to pulse powers
 
 ## Documentation
 We have a [docs website](https://josephwkania.github.io/will/)
@@ -78,3 +80,4 @@ See [CONTRIBUTING.md](https://github.com/josephwkania/will/tree/master/CONTRIBUT
 ## Pulsars
 - https://github.com/SixByNine/sigproc/blob/master/src/fake.c
 - https://github.com/PsrSigSim/PsrSigSim
+- https://github.com/scottransom/presto/blob/master/bin/injectpsr.py
