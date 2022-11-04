@@ -167,7 +167,6 @@ def calculate_dm_widths(
 
 def calculate_dm_boxcar_widths(
     dm: float,
-    channel_width: float,
     sampling_time: float,
     chan_freqs: np.ndarray,
 ) -> np.ndarray:
@@ -179,13 +178,14 @@ def calculate_dm_boxcar_widths(
      Args:
          dm - Dispersion Measure in pc/cm^3.
 
-         channel_width - The channel width in MHz.
+         sampling_time - Sampling time of data.
 
          chan_freqs - The channel frequencies in MHz.
 
      Returns:
          Array with boxcar lengths in samples.
     """
+    channel_width = np.abs(chan_freqs[1] - chan_freqs[0])
     dm_widths_sec = calculate_dm_widths(dm, channel_width, chan_freqs)
     dm_widths_samples = np.around(dm_widths_sec / sampling_time).astype(int)
     dm_widths_samples[1 > dm_widths_samples] = 1
@@ -193,7 +193,9 @@ def calculate_dm_boxcar_widths(
 
 
 def generate_boxcar_array(
-    boxcar_lengths: np.ndarray, normalization_func: Callable = np.sqrt
+    boxcar_lengths: np.ndarray,
+    normalization_func: Callable = np.sqrt,
+    return_max: bool = False,
 ) -> np.ndarray:
     """
     Make a 2D array of boxcars for the given boxcar_lengths.
@@ -204,8 +206,11 @@ def generate_boxcar_array(
         normalization_func - Function to normalize the boxcar, default
                              is to use sqrt.
 
+        return_max - Return max boxcar length
+
     Returns:
         Array of boxcars, with the boxcars stacked horizontally.
+        (Optional) max boxcar length
     """
     max_boxcar = boxcar_lengths.max()
     boxcars = np.zeros((max_boxcar, len(boxcar_lengths)))
@@ -214,10 +219,12 @@ def generate_boxcar_array(
         boxcars[offset : offset + boxcar_length, j] = 1 / normalization_func(
             boxcar_length
         )
+    if return_max:
+        return boxcars, max_boxcar
     return boxcars
 
 
-def convolve_mutli_boxcar(profile: np.ndarray, boxcar_array: np.ndarray) -> np.ndarray:
+def convolve_multi_boxcar(profile: np.ndarray, boxcar_array: np.ndarray) -> np.ndarray:
     """
     Convolve an profile array with an array that contains multiple boxcars.
 

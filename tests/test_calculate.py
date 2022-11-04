@@ -2,6 +2,8 @@
 """
 Test will.calculate
 """
+# Can't use inits with pytest, this error is unavoidable
+# pylint: disable=W0201
 import numpy as np
 
 from will import calculate
@@ -131,7 +133,7 @@ class TestCalculateDMBoxcarWidths:
         Should return ones.
         """
         widths = calculate.calculate_dm_boxcar_widths(
-            0, self.chan_width, self.sampling_time, self.chan_freqs
+            0, self.sampling_time, self.chan_freqs
         )
         assert np.all(widths == 1)
 
@@ -141,7 +143,7 @@ class TestCalculateDMBoxcarWidths:
         """
         dm = 10000
         widths = calculate.calculate_dm_boxcar_widths(
-            dm, self.chan_width, self.sampling_time, self.chan_freqs
+            dm, self.sampling_time, self.chan_freqs
         )
         assert widths[0] == 1
         sec_width = calculate.calculate_dm_widths(
@@ -163,7 +165,9 @@ class TestGenerateBoxcarArray:
         """
         self.num_boxcars = 8
         self.boxcarwidths = 2 ** np.arange(0, self.num_boxcars)
-        self.sqrt_array = calculate.generate_boxcar_array(self.boxcarwidths)
+        self.sqrt_array, self.max_boxcar = calculate.generate_boxcar_array(
+            self.boxcarwidths, return_max=True
+        )
 
     def test_size(self):
         """
@@ -172,6 +176,7 @@ class TestGenerateBoxcarArray:
         num_rows, num_cols = self.sqrt_array.shape
         assert num_rows == self.boxcarwidths.max()
         assert num_cols == self.num_boxcars
+        assert self.boxcarwidths.max() == self.max_boxcar
 
     def test_normalization_sqrt(self):
         """
@@ -193,7 +198,7 @@ class TestGenerateBoxcarArray:
         )
 
 
-class TestConvolveMutliBoxcar:
+class TestConvolveMultiBoxcar:
     """
     Test the multi boxcar convolver
     """
@@ -214,7 +219,7 @@ class TestConvolveMutliBoxcar:
         Test a single profile, sqrt normalization.
         """
 
-        convolved = calculate.convolve_mutli_boxcar(self.profile, self.sqrt_array)
+        convolved = calculate.convolve_multi_boxcar(self.profile, self.sqrt_array)
         num_rows, num_cols = convolved.shape
         assert self.num_boxcars == num_cols
         assert len(self.profile) == num_rows
@@ -230,7 +235,7 @@ class TestConvolveMutliBoxcar:
         Test a single profile, unity normalization.
         """
         unity_array = calculate.generate_boxcar_array(self.boxcarwidths, lambda x: x)
-        convolved = calculate.convolve_mutli_boxcar(self.profile, unity_array)
+        convolved = calculate.convolve_multi_boxcar(self.profile, unity_array)
         total_power = convolved.sum(axis=0)
         np.testing.assert_allclose(total_power, np.ones_like(total_power))
 

@@ -14,7 +14,7 @@ from jess.dispersion import dedisperse, delay_lost
 from jess.fitters import median_fitter
 from scipy import integrate, interpolate, ndimage, signal, stats
 
-from .calculate import boxcar_convolved
+from . import calculate
 
 
 # pylint: disable=invalid-name
@@ -478,7 +478,9 @@ def optimal_boxcar_width(
     Returns:
         Length of the optimal boxcar
     """
-    powers = boxcar_convolved(time_profile=time_profile, boxcar_widths=boxcar_widths)
+    powers = calculate.boxcar_convolved(
+        time_profile=time_profile, boxcar_widths=boxcar_widths
+    )
     # Get the last index of the larget value, this will be the one most robust to Gauss
     # noise
     max_idx = len(powers) - np.argmax(powers[::-1]) - 1
@@ -738,7 +740,7 @@ class GaussPulse:
 
         sigma_freq - Frequency Sigma in MHz
 
-        chan_freq - Array of channgel freuqncies in MHz
+        chan_freq - Array of channel frequencies in MHz
 
         tsamp - sampling time of dynamic spectra in second
 
@@ -752,14 +754,17 @@ class GaussPulse:
 
         tsamp - Sampling time of dynamic spectra in second
 
-        spectra_index_alpha - Spectral index powser around center_freq
+        spectra_index_alpha - Spectral index power around center_freq
 
         nscint - Number of frequency scintills
 
         phi - Phase of frequency scintillation
 
-        bandpass - scale frequency structure with bandpass if
+        bandpass - Scale frequency structure with bandpass if
                    not None
+
+        dm_interchan_smear - Interchannel DM smearing simulated by
+                             boxcar convolution
     """
 
     relative_intensities: Union[Sequence, float]
@@ -776,6 +781,7 @@ class GaussPulse:
     nscint: int
     phi: float
     bandpass: Union[np.ndarray, None] = None
+    dm_interchan_smear: bool = False
 
     def __post_init__(self):
         """
@@ -837,6 +843,16 @@ class GaussPulse:
         self.nchans = self.chan_freqs.size
         chan_indices = np.arange(self.nchans, 0, step=-1)
 
+        if self.dm_interchan_smear:
+            boxcar_widths = calculate.calculate_dm_boxcar_widths(
+                self.dm, self.tsamp, self.chan_freqs
+            )
+            dm_smear_boxcars, max_dm_boxcar = calculate.generate_boxcar_array(
+                boxcar_widths, return_max=True
+            )
+        else:
+            max_dm_boxcar = 0
+
         sigmas_time_samples = np.around(self.sigma_times / self.tsamp)
         self.offsets = np.around(self.offsets / self.tsamp)
         gauss_widths = 8 * sigmas_time_samples
@@ -846,6 +862,7 @@ class GaussPulse:
             + self.offsets.sum()
             + np.around(8 * self.tau)
             + 3 * (np.sin(self.pulse_thetas) * sigmas_freq_samples).argmax()
+            + max_dm_boxcar,
         )
         time_indices = np.arange(0, self.pulse_width)
         chan_indices, time_indices = np.meshgrid(chan_indices, time_indices)
@@ -889,6 +906,14 @@ class GaussPulse:
 
         if self.bandpass is not None:
             self.pulse_pdf *= self.bandpass
+
+        if self.dm_interchan_smear and max_dm_boxcar > 1:
+            # only do the convoulution if the boxcar is bigger than one,
+            # otherwise convolvue_multi_boxcar cuts returns any empty
+            # because it trimes off excess, which there is none.
+            self.pulse_pdf = calculate.convolve_multi_boxcar(
+                self.pulse_pdf, dm_smear_boxcars
+            )
 
     def sample_pulse(self, nsamp: int, dtype: type = np.uint32) -> np.ndarray:
         """

@@ -336,6 +336,7 @@ class TestGaussPulse:
             nscint=2,
             phi=0,
             bandpass=bandpass,
+            dm_interchan_smear=True,
         )
         # pulse with 3e5 samples
         self.pulse = self.complex_pulse.sample_pulse(nsamp=self.num_samples)
