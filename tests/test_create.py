@@ -11,75 +11,6 @@ import pytest
 
 from will import create
 
-rng = np.random.default_rng(2022)
-
-
-def test_std_min_func():
-    """
-    Test the std minimization function
-    We know where it should give zeros
-    """
-    # if sigma is zero, std must also be zero
-    assert create.std_min_func(0, 1, 0) == 0
-    # calculate the expected varience for mu=sigma=1
-    assert create.std_min_func(1, 1, np.sqrt((np.exp(1) - 1) * np.exp(2 + 1))) == 0
-
-
-def test_log_normal_from_stats():
-    """
-    Test if the properties of the log normal distro are
-    expected
-    """
-    median = 5e5
-    std = 0.1 * median
-    num_samples = 100
-    distro = create.log_normal_from_stats(median, std, num_samples)
-
-    # 17% seems generous enough
-    assert np.std(distro) / std - 1 < 0.17
-    assert np.median(distro) / median - 1 < 0.17
-    assert len(distro) == num_samples
-
-
-class TestQuickSort:
-    """
-    Test the quicksort
-    """
-
-    def setup_class(self):
-        """
-        Random array to sort
-        """
-        self.rands = rng.normal(size=20)
-
-    def test_sort_assent(self):
-        """
-        Test quicksort assending
-        """
-        rands_copy = self.rands.copy()
-        create.quicksort(rands_copy, sort_assend=True)
-        np.testing.assert_allclose(rands_copy, np.sort(self.rands))
-
-    def test_sort_desend(self):
-        """
-        Test quicksort desending
-        """
-        rands_copy = self.rands.copy()
-        create.quicksort(rands_copy, sort_assend=False)
-        np.testing.assert_allclose(rands_copy, np.sort(self.rands)[::-1])
-
-    def test_subsort_array(self):
-        """
-        Split an array in two and split
-        """
-        split = len(self.rands) // 2
-        array_split = np.concatenate(
-            [np.sort(self.rands[:split]), np.sort(self.rands[split:])[::-1]]
-        )
-        quicksort_split = self.rands.copy()
-        quicksort_split = create.sort_subarrays(quicksort_split, num_subarrays=2)
-        np.testing.assert_array_equal(quicksort_split, array_split)
-
 
 def test_gaussian():
     """
@@ -238,21 +169,6 @@ def test_scatter_profile():
     assert scatter[0] == 1
     np.testing.assert_almost_equal(scatter[-1], 0, decimal=3)
     assert scatter.size == nchans
-
-
-def test_boxcar_convolved():
-    """
-    Test the boxcar convolver
-    """
-    time_profile = np.zeros(10)
-    # len 2 boxcar
-    widths = np.arange(1, 4)
-    time_profile[4:6] = 1
-    convolved = create.boxcar_convolved(time_profile, widths)
-
-    assert convolved.argmax() == 1
-    assert convolved[0] < convolved.max()
-    assert convolved[2] < convolved.max()
 
 
 class TestOptimalBoxcarWidth:

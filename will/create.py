@@ -5,8 +5,6 @@ Pulse creation routines.
 
 import functools
 import logging
-import operator
-import warnings
 from dataclasses import dataclass
 from typing import Callable, Sequence, Tuple, Union
 
@@ -14,140 +12,9 @@ import numpy as np
 from jess.calculators import median_abs_deviation_med, to_dtype
 from jess.dispersion import dedisperse, delay_lost
 from jess.fitters import median_fitter
-from scipy import integrate, interpolate, ndimage, optimize, signal, stats
+from scipy import integrate, interpolate, ndimage, signal, stats
 
-
-# pylint: disable=invalid-name
-def std_min_func(sigma: float, mu: float, std: float) -> float:
-    """
-    The zeros of this function are the log normal sigma that will
-    have standard deviation `std`
-
-    Args:
-        sigma - lognormal sigma
-
-        mu - lognormal mu
-
-        std - The desired standard deviation
-
-    Returns:
-        desired variance - Actual variance(sigma, mu)
-    """
-    return std**2 - (np.exp(sigma**2) - 1) * np.exp(2 * mu + sigma**2)
-
-
-def log_normal_from_stats(median: float, std: float, size: int) -> np.ndarray:
-    """
-    Make a lognormal distrabution that has has a given median
-    and standard deviation.
-
-    Args:
-        median - median of resulting distribution
-
-        std - Standard deviation of returned samples
-
-    Returns:
-        `size` numbers from the sampled from lognormal distribution
-    """
-    mu = np.log(median)
-    sigma_guess = np.sqrt(mu - 0.5 * np.log(std**2))
-    if sigma_guess == 0:
-        sigma_guess = 0.01
-    logging.debug("sigma_guess=%.2f", sigma_guess)
-
-    # if the fitting does not converge,something went wrong
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        sigma = optimize.fsolve(std_min_func, sigma_guess, args=(mu, std))[0]
-    logging.debug("mu=%.2f, sigma=%.2f", mu, sigma)
-    normal_random = np.random.normal(size=size)
-    return np.exp(mu + sigma * normal_random)
-
-
-def quicksort(
-    array: np.ndarray,
-    left: int = None,
-    right: int = None,
-    sort_fraction: float = 1.0,
-    sort_assend: bool = True,
-) -> None:
-    """
-    Quicksort in place.
-
-    Args:
-        array - Array to be sorted
-
-        left - Left most element of sort
-
-        right - Right most element of sort
-
-        sort_fraction - The fraction of the array to
-                        stop sorting.
-
-        sort_assend - Sort increasing
-
-    Returns:
-        None - Sort in place
-    """
-    if left is None:
-        left = 0
-    if right is None:
-        right = len(array) - 1
-
-    if left >= sort_fraction * right:
-        return
-
-    pivot = array[right]
-    divider = left
-
-    if sort_assend:
-        compare = operator.lt
-    else:
-        compare = operator.gt
-
-    for j in range(left, right):
-        if compare(array[j], pivot):
-            array[divider], array[j] = array[j], array[divider]
-            divider += 1
-
-    array[divider], array[right] = array[right], array[divider]
-    pivot_idx = divider
-
-    quicksort(
-        array, left, pivot_idx - 1, sort_fraction=sort_fraction, sort_assend=sort_assend
-    )
-    quicksort(
-        array,
-        pivot_idx + 1,
-        right,
-        sort_fraction=sort_fraction,
-        sort_assend=sort_assend,
-    )
-
-
-def sort_subarrays(
-    array: np.ndarray, num_subarrays: int, sort_fraction: float = 1
-) -> np.ndarray:
-    """
-    Sort subband of array. Flips the sorts back and forth to get a sine wave
-    type shape.
-
-    Args:
-        array - array to sort
-
-        num_subarrays - Number of subarrays to sort
-
-        sort_fraction - The fraction of the subarray to
-                stop sorting.
-
-    Returns:
-        Subarray sorted (also is sorted in place)
-    """
-    splits = np.array_split(array, num_subarrays)
-    for j, split in enumerate(splits):
-        is_even = j % 2 == 0
-        quicksort(split, sort_assend=is_even, sort_fraction=sort_fraction)
-    return array
+from .calculate import boxcar_convolved
 
 
 # pylint: disable=invalid-name
@@ -594,31 +461,6 @@ def apply_scatter_profile(
         : len(time_profile)
     ]
     return scattered / scattered.max()
-
-
-def boxcar_convolved(time_profile: np.ndarray, boxcar_widths: np.ndarray) -> np.ndarray:
-    """
-    Calculate the pulse profile convolved with a boxcar width.
-
-    Args:
-        time_profile - Time profile of the pulse
-
-        boxcar_widths - Array of boxcar widths
-
-    Returns:
-        Pulse profile convolved with a boxcar
-    """
-    boxcar_widths = np.array(boxcar_widths, ndmin=1)
-    powers = np.zeros(boxcar_widths.shape, dtype=np.float64)
-    for j, width in enumerate(boxcar_widths):
-        if width > 1:
-            window = signal.boxcar(width) / np.sqrt(width)
-            convolved_profile = signal.fftconvolve(window, time_profile, "full")
-            convolved_profile = convolved_profile[width // 2 - 1 : -width // 2]
-        else:
-            convolved_profile = time_profile
-        powers[j] = convolved_profile.max()
-    return powers
 
 
 def optimal_boxcar_width(
