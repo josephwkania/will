@@ -5,6 +5,7 @@ Test will.calculate
 # Can't use inits with pytest, this error is unavoidable
 # pylint: disable=W0201
 import numpy as np
+import pytest
 
 from will import calculate
 
@@ -51,18 +52,18 @@ class TestQuickSort:
 
     def test_sort_assent(self):
         """
-        Test quicksort assending
+        Test quicksort ascending
         """
         rands_copy = self.rands.copy()
-        calculate.quicksort(rands_copy, sort_assend=True)
+        calculate.quicksort(rands_copy, sort_ascend=True)
         np.testing.assert_allclose(rands_copy, np.sort(self.rands))
 
-    def test_sort_desend(self):
+    def test_sort_descend(self):
         """
-        Test quicksort desending
+        Test quicksort descending
         """
         rands_copy = self.rands.copy()
-        calculate.quicksort(rands_copy, sort_assend=False)
+        calculate.quicksort(rands_copy, sort_ascend=False)
         np.testing.assert_allclose(rands_copy, np.sort(self.rands)[::-1])
 
     def test_subsort_array(self):
@@ -164,9 +165,9 @@ class TestGenerateBoxcarArray:
         Boxcar widths
         """
         self.num_boxcars = 8
-        self.boxcarwidths = 2 ** np.arange(0, self.num_boxcars)
+        self.boxcar_widths = 2 ** np.arange(0, self.num_boxcars)
         self.sqrt_array, self.max_boxcar = calculate.generate_boxcar_array(
-            self.boxcarwidths, return_max=True
+            self.boxcar_widths, return_max=True
         )
 
     def test_size(self):
@@ -174,9 +175,9 @@ class TestGenerateBoxcarArray:
         Test the size of the array.
         """
         num_rows, num_cols = self.sqrt_array.shape
-        assert num_rows == self.boxcarwidths.max()
+        assert num_rows == self.boxcar_widths.max()
         assert num_cols == self.num_boxcars
-        assert self.boxcarwidths.max() == self.max_boxcar
+        assert self.boxcar_widths.max() == self.max_boxcar
 
     def test_normalization_sqrt(self):
         """
@@ -184,7 +185,7 @@ class TestGenerateBoxcarArray:
         for Gaussian noise (scale sqrt)
         """
         np.testing.assert_almost_equal(
-            self.sqrt_array.sum(axis=0), np.sqrt(self.boxcarwidths)
+            self.sqrt_array.sum(axis=0), np.sqrt(self.boxcar_widths)
         )
 
     def test_normalization_unity(self):
@@ -192,7 +193,7 @@ class TestGenerateBoxcarArray:
         Test the normalization of the boxcars
         for power preserving boxcar.
         """
-        unity_array = calculate.generate_boxcar_array(self.boxcarwidths, lambda x: x)
+        unity_array = calculate.generate_boxcar_array(self.boxcar_widths, lambda x: x)
         np.testing.assert_almost_equal(
             unity_array.sum(axis=0), np.ones(self.num_boxcars)
         )
@@ -208,9 +209,9 @@ class TestConvolveMultiBoxcar:
         Boxcar widths
         """
         self.num_boxcars = 3
-        self.boxcarwidths = 2 ** np.arange(0, self.num_boxcars)
-        self.max_boxcar = self.boxcarwidths.max()
-        self.sqrt_array = calculate.generate_boxcar_array(self.boxcarwidths)
+        self.boxcar_widths = 2 ** np.arange(0, self.num_boxcars)
+        self.max_boxcar = self.boxcar_widths.max()
+        self.sqrt_array = calculate.generate_boxcar_array(self.boxcar_widths)
         self.profile = np.zeros(2 * self.max_boxcar)
         self.profile[self.max_boxcar] = 1
 
@@ -225,19 +226,29 @@ class TestConvolveMultiBoxcar:
         assert len(self.profile) == num_rows
 
         above_zero = convolved > 0.1
-        np.testing.assert_equal(above_zero.sum(axis=0), self.boxcarwidths)
+        np.testing.assert_equal(above_zero.sum(axis=0), self.boxcar_widths)
         np.testing.assert_almost_equal(
-            convolved.sum(axis=0), np.sqrt(self.boxcarwidths)
+            convolved.sum(axis=0), np.sqrt(self.boxcar_widths)
         )
 
     def test_single_profile_unity(self):
         """
         Test a single profile, unity normalization.
         """
-        unity_array = calculate.generate_boxcar_array(self.boxcarwidths, lambda x: x)
+        unity_array = calculate.generate_boxcar_array(self.boxcar_widths, lambda x: x)
         convolved = calculate.convolve_multi_boxcar(self.profile, unity_array)
         total_power = convolved.sum(axis=0)
         np.testing.assert_allclose(total_power, np.ones_like(total_power))
+
+    def test_high_dimension_error(self):
+        """
+        If profile is above two, raise NotImplementedError
+        """
+        print(self.profile[:, None].shape)
+        with pytest.raises(NotImplementedError):
+            calculate.convolve_multi_boxcar(
+                self.profile[:, None, None], self.sqrt_array
+            )
 
 
 def test_boxcar_convolved():

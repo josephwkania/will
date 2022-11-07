@@ -279,7 +279,7 @@ def gauss_with_tail_locations(
 
         num_locations - The number of locations to generate
 
-        back_end - How the samples are calculated [rvs] uses the rv_continous class,
+        back_end - How the samples are calculated [rvs] uses the rv_continuous class,
                    cdf creates a CDF an linearly interpolates it. The latter is
                    much faster.
 

@@ -32,7 +32,7 @@ def std_min_func(sigma: float, mu: float, std: float) -> float:
 
 def log_normal_from_stats(median: float, std: float, size: int) -> np.ndarray:
     """
-    Make a lognormal distrabution that has has a given median
+    Make a lognormal distribution that has has a given median
     and standard deviation.
 
     Args:
@@ -63,7 +63,7 @@ def quicksort(
     left: int = None,
     right: int = None,
     sort_fraction: float = 1.0,
-    sort_assend: bool = True,
+    sort_ascend: bool = True,
 ) -> None:
     """
     Quicksort in place.
@@ -78,7 +78,7 @@ def quicksort(
         sort_fraction - The fraction of the array to
                         stop sorting.
 
-        sort_assend - Sort increasing
+        sort_ascend - Sort increasing
 
     Returns:
         None - Sort in place
@@ -94,7 +94,7 @@ def quicksort(
     pivot = array[right]
     divider = left
 
-    if sort_assend:
+    if sort_ascend:
         compare = operator.lt
     else:
         compare = operator.gt
@@ -108,14 +108,14 @@ def quicksort(
     pivot_idx = divider
 
     quicksort(
-        array, left, pivot_idx - 1, sort_fraction=sort_fraction, sort_assend=sort_assend
+        array, left, pivot_idx - 1, sort_fraction=sort_fraction, sort_ascend=sort_ascend
     )
     quicksort(
         array,
         pivot_idx + 1,
         right,
         sort_fraction=sort_fraction,
-        sort_assend=sort_assend,
+        sort_ascend=sort_ascend,
     )
 
 
@@ -140,7 +140,7 @@ def sort_subarrays(
     splits = np.array_split(array, num_subarrays)
     for j, split in enumerate(splits):
         is_even = j % 2 == 0
-        quicksort(split, sort_assend=is_even, sort_fraction=sort_fraction)
+        quicksort(split, sort_ascend=is_even, sort_fraction=sort_fraction)
     return array
 
 
@@ -248,7 +248,7 @@ def convolve_multi_boxcar(profile: np.ndarray, boxcar_array: np.ndarray) -> np.n
         )
         profile = np.broadcast_to(profile[:, None], (num_profiles, num_boxcar))
     elif profile.ndim > 2:
-        raise NotImplementedError(f"Cannot convolve {profile.ndim} dimenion array.")
+        raise NotImplementedError(f"Cannot convolve {profile.ndim} dimension array.")
     convolved_profile = signal.fftconvolve(
         boxcar_array,
         profile,

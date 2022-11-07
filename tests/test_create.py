@@ -315,10 +315,10 @@ class TestGaussPulse:
         """
         Create the pulse
         """
-        nchans = 4096
-        bandpass = np.ones(nchans)
+        self.nchans = 4096
+        self.bandpass = np.ones(self.nchans)
         self.splice = slice(2000, 2048)
-        bandpass[self.splice] = 0
+        self.bandpass[self.splice] = 0
 
         self.num_samples = 10000
         self.complex_pulse = create.GaussPulse(
@@ -330,13 +330,13 @@ class TestGaussPulse:
             dm=155,
             tau=25,
             offsets=(0, 0.01536, 0.02304, 0.03968),  # all from start of window
-            chan_freqs=np.linspace(1919, 960, nchans),
+            chan_freqs=np.linspace(1919, 960, self.nchans),
             tsamp=0.000256,
             spectral_index_alpha=0,
             nscint=2,
             phi=0,
-            bandpass=bandpass,
-            dm_interchan_smear=True,
+            bandpass=self.bandpass,
+            dm_interchan_smear=False,
         )
         # pulse with 3e5 samples
         self.pulse = self.complex_pulse.sample_pulse(nsamp=self.num_samples)
@@ -369,6 +369,54 @@ class TestGaussPulse:
         center = self.complex_pulse.pulse_center
         assert center > 0
         assert center < self.pulse.shape[0]
+
+    def test_missing_value(self):
+        """
+        If values are not provided for all pulses,
+        raise ValueError.
+        """
+        with pytest.raises(ValueError):
+            create.GaussPulse(
+                relative_intensities=(1, 0.8, 0.8),  # only 3
+                sigma_times=(0.005, 0.001, 0.001, 0.006),
+                sigma_freqs=(150, 120, 120, 90),
+                pulse_thetas=(0, 0, 0, -np.pi / 60),
+                center_freqs=(1500, 1400, 1350, 1200),
+                dm=155,
+                tau=25,
+                offsets=(0, 0.01536, 0.02304, 0.03968),
+                chan_freqs=np.linspace(1919, 960, self.nchans),
+                tsamp=0.000256,
+                spectral_index_alpha=1.1,
+                nscint=2,
+                phi=0,
+                dm_interchan_smear=True,
+            )
+
+    def test_dm_smear(self):
+        """
+        Check if pulse is made when interchannel DM smearing is
+        on.
+        """
+        nsamp = 1000
+        complex_pulse = create.GaussPulse(
+            relative_intensities=1,
+            sigma_times=0.005,
+            sigma_freqs=150,
+            pulse_thetas=0,
+            center_freqs=1500,
+            dm=2000,
+            tau=25,
+            offsets=0,
+            chan_freqs=np.linspace(1919, 960, self.nchans),
+            tsamp=0.000256,
+            spectral_index_alpha=1.1,
+            nscint=2,
+            phi=0,
+            bandpass=self.bandpass,
+            dm_interchan_smear=True,
+        )
+        assert nsamp == complex_pulse.sample_pulse(nsamp=nsamp).sum()
 
 
 def test_filter_weights():
