@@ -5,10 +5,16 @@ Math functions.
 import logging
 import operator
 import warnings
-from typing import Callable
+from dataclasses import dataclass
+from functools import partial
+from typing import Callable, Tuple, Union
 
+import matplotlib.pyplot as plt
 import numpy as np
-from scipy import optimize, signal
+from jess.dispersion import dedisperse, delay_lost
+from rich.progress import track
+from scipy import interpolate, optimize, signal, stats
+from your import Your
 
 
 # pylint: disable=invalid-name
@@ -196,7 +202,7 @@ def generate_boxcar_array(
     boxcar_lengths: np.ndarray,
     normalization_func: Callable = np.sqrt,
     return_max: bool = False,
-) -> np.ndarray:
+) -> Union[np.ndarray, Tuple[np.ndarray, int]]:
     """
     Make a 2D array of boxcars for the given boxcar_lengths.
 
@@ -281,3 +287,223 @@ def boxcar_convolved(time_profile: np.ndarray, boxcar_widths: np.ndarray) -> np.
             convolved_profile = time_profile
         powers[j] = convolved_profile.max()
     return powers
+
+
+def median_line_detrend(array: np.ndarray, num_sample: int) -> np.ndarray:
+    """
+    Detrend an array by finding medians of sections and fitting a line
+    to these medians, then subtracting this line.
+
+    Args:
+        array - Array to detrend.
+
+        num_samples - Number of samples per median block.
+
+    Return:
+        array with trend subtracted.
+
+    Inspired by 'Advanced Architectures for Astrophysical Supercomputing',
+    section 4.2.3
+    """
+    len_array = len(array)
+    num_medians = np.ceil(len_array / num_sample).astype(int)
+    desired_length = num_medians * num_sample
+    to_length = desired_length - len_array
+
+    if to_length > 0:
+        half_length = to_length / 2
+        correct_array = np.pad(
+            array,
+            (np.floor(half_length).astype(int), np.ceil(half_length).astype(int)),
+            mode="reflect",
+        )
+    else:
+        correct_array = array
+
+    reshaped_array = correct_array.reshape(num_medians, -1)
+    medians = np.median(reshaped_array, axis=1)
+
+    offset = np.around(len_array / (2 * num_medians))
+    middles = np.linspace(offset, len_array - offset, num_medians, dtype=int)
+    interp_func = interpolate.interp1d(
+        middles, medians, fill_value="extrapolate", kind="linear"
+    )
+
+    full_samples = np.linspace(0, len_array, len_array, dtype=int)
+    return array - interp_func(full_samples)
+
+
+def calculate_noises_multi(
+    time_series: np.ndarray,
+    boxcar_array: np.ndarray,
+    max_boxcar: int,
+    smoothing_factor: int = 4,
+    scale_func: Callable = partial(stats.median_abs_deviation, scale="normal"),
+) -> np.ndarray:
+    """
+    Calculate the noise level of a time series over a set
+    of boxcars. Detrend the time series using median_line_detrend.
+    Convolve the detrened time series with the boxcar array,
+    Then use `scale_func` to calculate the noise level.
+
+    Args:
+        time_series - The dedispersed time series.
+
+        box_car_length - Length of the boxcars.
+
+        sigma - Return pulses with significance above
+                this
+
+        smoothing_factor - Detrend blocks are
+                           smoothing_factor*box_car_length long.
+
+        scale_func - The function used to calculate the measure of scale.
+                     must accept `axis=0` argument.
+
+    Returns:
+        Measures of scale for each boxcar in `boxcar array`.
+    """
+
+    flattened_times_series = median_line_detrend(
+        time_series, max_boxcar * smoothing_factor
+    )
+    convolved_profiles = convolve_multi_boxcar(
+        flattened_times_series, boxcar_array=boxcar_array
+    )
+    stds = scale_func(convolved_profiles, axis=0)
+    return stds
+
+
+@dataclass
+class NoiseInfoResult:
+    """
+    The noise levels for a file.
+
+    noise_levels - The noise level at each location (row) and
+                   each boxcar, column.
+
+    boxcar_lengths - Length of the boxcars.
+
+    num_chans - Number of channels.
+    """
+
+    noise_levels: np.ndarray
+    boxcars_lengths: np.ndarray
+    num_chans: int
+
+    @property
+    def mean_noise_levels(self):
+        """
+        The mean noise levels across the file.
+        """
+        return self.noise_levels.mean(axis=0)
+
+    @property
+    def median_noise_levels(self):
+        """
+        The mean noise levels across the file.
+        """
+        return np.median(self.noise_levels, axis=0)
+
+    def plot_noise(self):
+        """
+        Plot the mean noise levels for a file.
+        """
+        plt.plot(self.boxcars_lengths, self.mean_noise_levels, label="Mean")
+        plt.plot(self.boxcars_lengths, self.median_noise_levels, label="Median")
+        plt.xlabel("Boxcar Lengths [Samples]", size=25)
+        plt.ylabel("Noise Level", size=25)
+        plt.tick_params(axis="both", which="both", labelsize=15)
+        plt.tick_params(width=5)
+        plt.legend(prop={"size": 15})
+        plt.title("Noise Levels", size=30)
+        plt.show()
+
+    @property
+    def mean_onesigma_boxcar_volume(self):
+        """
+        The mean volume of a one sigma boxcar.
+        """
+        return self.num_chans * self.boxcars_lengths * self.mean_noise_levels
+
+
+def noise_info(
+    file_path: str,
+    dm: float,
+    boxcar_lengths: np.ndarray,
+    num_locations: int = 16,
+    num_samples: int = 2**14,
+    chan_mask: Union[np.ndarray, None] = None,
+):
+    """
+    Get noise levels for a file and set of boxcar lengths. This is done by
+    selecting `num_locations` evenly spaced throughout the file. `num_samples` are
+    extracted from each of these locations. If a Dispersion Measure is given, The
+    the data is dedispersed to that DM. If a channel mask is provided, these channels
+    are not included in the time series. The resulting time series are detrended by
+    calculating medians of blocks 4 times the largest boxcar size, and
+    interpolating a linear fit between these points. The detrened time series are
+    convolved with boxcars of the given length. The noise is then calculated my MAD.
+
+    Args:
+        file_path - String that is the path to a file.
+
+        dm - Dispersion Measure in pc/cm^3.
+
+        boxcar_lengths - Numpy array of boxcar lengths to consider.
+
+        num_locations - Number of locations in the file to consider.
+
+        num_samples - Number of sample to consider, must be 4 times the
+                      largest boxcar.
+
+        chan_mask - Mask these channels if given. True=value to mask
+
+    Returns:
+        NoiseInfoResult
+    """
+    yr_obj = Your(file_path)
+    samples_lost = delay_lost(
+        dm=dm,
+        chan_freqs=yr_obj.chan_freqs,
+        tsamp=yr_obj.your_header.tsamp,
+    )
+    if num_samples * num_locations > yr_obj.your_header.nspectra:
+        raise ValueError("Too many or too long Boxcars.")
+    start_locations = np.linspace(
+        0, yr_obj.your_header.nspectra - num_samples - samples_lost, num_locations
+    )
+    nsamp = num_samples + samples_lost
+    boxcar_array, max_boxcar = generate_boxcar_array(
+        boxcar_lengths, return_max=True, normalization_func=lambda x: x
+    )
+    if 4 * max_boxcar > num_samples:
+        raise ValueError(f"{4*max_boxcar=} is larger than {num_samples=}")
+
+    noises = np.zeros((num_locations, len(boxcar_lengths)))
+    for j, location in enumerate(
+        track(
+            start_locations,
+            description="Processing Noises",
+            transient=True,
+            refresh_per_second=1,
+        )
+    ):
+        dynamic_spectra = yr_obj.get_data(location, nsamp)
+        if dm > 0:
+            dynamic_spectra_dispered = dedisperse(
+                dynamic_spectra,
+                dm=dm,
+                tsamp=yr_obj.your_header.tsamp,
+                chan_freqs=yr_obj.chan_freqs,
+            )
+            # cut the rolled part
+            dynamic_spectra = dynamic_spectra_dispered[:-samples_lost]
+        if chan_mask is not None:
+            dynamic_spectra = dynamic_spectra[:, ~chan_mask]
+
+        time_series = dynamic_spectra.mean(axis=1)
+        noises[j] = calculate_noises_multi(
+            time_series=time_series, boxcar_array=boxcar_array, max_boxcar=max_boxcar
+        )
+    return NoiseInfoResult(noises, boxcar_lengths, yr_obj.your_header.nchans)

@@ -2,12 +2,20 @@
 """
 Test will.calculate
 """
-# Can't use inits with pytest, this error is unavoidable
-# pylint: disable=W0201
+from unittest import mock
+
 import numpy as np
 import pytest
+from your.formats.filwriter import make_sigproc_object
 
-from will import calculate
+from will import calculate, create
+
+# Can't use inits with pytest, this error is unavoidable
+# pylint: disable=W0201
+
+# pylint: disable=redefined-outer-name
+# The pytest.fixture needs to be redefined
+
 
 rng = np.random.default_rng(2022)
 
@@ -244,7 +252,6 @@ class TestConvolveMultiBoxcar:
         """
         If profile is above two, raise NotImplementedError
         """
-        print(self.profile[:, None].shape)
         with pytest.raises(NotImplementedError):
             calculate.convolve_multi_boxcar(
                 self.profile[:, None, None], self.sqrt_array
@@ -264,3 +271,212 @@ def test_boxcar_convolved():
     assert convolved.argmax() == 1
     assert convolved[0] < convolved.max()
     assert convolved[2] < convolved.max()
+
+
+class TestMedianDetrend:
+    """
+    Test the median_line_detrend.
+    """
+
+    @staticmethod
+    def test_base():
+        """
+        Test no padding
+        """
+        num_samps = 2**14
+        noise = rng.normal(size=num_samps)
+        times = np.linspace(0, 1, num_samps)
+        noise_with_tend = noise + 5 * times + 4
+        detrend = calculate.median_line_detrend(noise_with_tend, num_sample=1024)
+        assert detrend.size == num_samps
+        fit = np.polyfit(times, detrend, deg=1)
+        assert (np.abs(fit) < np.array((0.1, 0.1))).all()
+
+    @staticmethod
+    def test_pad():
+        """
+        Test padding.
+        """
+        num_samps = 2**14 - 1
+        noise = rng.normal(size=num_samps)
+        times = np.linspace(0, 1, num_samps)
+        noise_with_tend = noise + 5 * times + 4
+        detrend = calculate.median_line_detrend(noise_with_tend, num_sample=1024)
+        assert detrend.size == num_samps
+        fit = np.polyfit(times, detrend, deg=1)
+        assert (np.abs(fit) < np.array((0.1, 0.1))).all()
+
+
+def test_calculate_noises_multi():
+    """
+    Make a Gaussian time series, check if
+    it integrates down as expected.
+    """
+
+    time_series = rng.normal(size=2**14)
+    boxcar_lengths = np.array([2**x for x in range(0, 8)])
+    boxcar_array, max_boxcar = calculate.generate_boxcar_array(
+        boxcar_lengths, return_max=True, normalization_func=lambda x: x
+    )
+    noises = calculate.calculate_noises_multi(
+        time_series, boxcar_array=boxcar_array, max_boxcar=max_boxcar
+    )
+    np.testing.assert_allclose(noises, 1 / np.sqrt(boxcar_lengths), rtol=0.3)
+
+
+def test_NoiseInfoResult():
+    """
+    Test the NoiseInfoResult dataclass
+    """
+    num_samps = 10
+    num_boxcars = 8
+    noises = rng.integers(10, size=num_samps * num_boxcars).reshape(
+        num_samps, num_boxcars
+    )
+    noise_info = calculate.NoiseInfoResult(
+        noises, np.array([2**x for x in range(0, num_boxcars)]), 4096
+    )
+    np.testing.assert_allclose(noise_info.mean_noise_levels, noises.mean(axis=0))
+    np.testing.assert_allclose(
+        noise_info.median_noise_levels, np.median(noises, axis=0)
+    )
+
+    with mock.patch("matplotlib.pyplot.show") as show:
+        noise_info.plot_noise()
+        show.assert_called_once()
+
+
+DM = 20
+NUM_SAMP = 2**10
+NCHANS = 512
+CHAN_FREQS = np.linspace(1100, 1000, NCHANS)
+TSAMP = 0.000256
+
+
+@pytest.fixture(scope="session")
+def create_fil(tmpdir_factory):
+    """
+    Create a filter bank to test
+    """
+
+    out_name = tmpdir_factory.mktemp("data").join("test.fil")
+    out_name = str(out_name)
+
+    medians = 15 * np.ones(NCHANS)
+    medians[10:15] += 10
+    stds = 5 * np.ones(NCHANS)
+    stds[60:70] += 14
+    dynamic = create.dynamic_from_statistics(
+        medians, stds, dtype=np.uint8, nsamps=NUM_SAMP
+    )
+
+    simple_pulse = create.SimpleGaussPulse(
+        0.01,
+        dm=DM,
+        tau=5,
+        chan_freqs=CHAN_FREQS,
+        sigma_freq=100,
+        center_freq=1050,
+        tsamp=TSAMP,
+        spectral_index_alpha=1,
+        nscint=1,
+        phi=1,
+    )
+    pulse = simple_pulse.sample_pulse(int(4e5))
+    dynamic[64 : 64 + len(pulse)] += pulse
+    sigproc_object = make_sigproc_object(
+        rawdatafile=out_name,
+        source_name="fake",
+        nchans=NCHANS,
+        foff=-np.abs(CHAN_FREQS[0] - CHAN_FREQS[1]),  # MHz
+        fch1=CHAN_FREQS.max(),  # MHz
+        tsamp=TSAMP,  # seconds
+        tstart=59246,  # MJD
+        src_raj=112233.44,  # HHMMSS.SS
+        src_dej=112233.44,  # DDMMSS.SS
+        machine_id=0,
+        nbeams=0,
+        ibeam=0,
+        nbits=8,
+        nifs=1,
+        barycentric=0,
+        pulsarcentric=0,
+        telescope_id=6,
+        data_type=0,
+        az_start=-1,
+        za_start=-1,
+    )
+
+    sigproc_object.write_header(out_name)
+    sigproc_object.append_spectra(dynamic, out_name)
+    return out_name, dynamic
+
+
+class TestNoiseInfo:
+    """
+    Test noise_info on a fake filterbank.
+    """
+
+    def setup_class(self):
+        """
+        Use same boxcar lengths, test locations
+        """
+        self.boxcar_lengths = np.array([2**x for x in range(0, 4)])
+        self.num_locations = 10
+
+    def test_base(self, create_fil):
+        """
+        Test the base case.
+        """
+
+        noise_info = calculate.noise_info(
+            create_fil[0],
+            dm=0,
+            boxcar_lengths=self.boxcar_lengths,
+            num_locations=self.num_locations,
+            num_samples=2**6,
+        )
+        np.testing.assert_allclose(self.boxcar_lengths, noise_info.boxcars_lengths)
+        assert NCHANS == noise_info.num_chans
+
+    def test_dm(self, create_fil):
+        """
+        Test the DM != 0.
+        """
+        noise_info = calculate.noise_info(
+            create_fil[0],
+            dm=10,
+            boxcar_lengths=self.boxcar_lengths,
+            num_locations=self.num_locations,
+            num_samples=2**6,
+        )
+        assert len(noise_info.noise_levels[0]) == len(self.boxcar_lengths)
+
+    def test_mask(self, create_fil):
+        """
+        Test with mask.
+        """
+        mask = np.zeros(NCHANS, dtype=bool)
+        mask[10:20] = True
+        noise_info = calculate.noise_info(
+            create_fil[0],
+            dm=10,
+            boxcar_lengths=self.boxcar_lengths,
+            num_locations=self.num_locations,
+            num_samples=2**6,
+            chan_mask=mask,
+        )
+        assert len(noise_info.mean_noise_levels) == len(self.boxcar_lengths)
+
+    def test_raise_error(self, create_fil):
+        """
+        Should raise error is noise sections overlap.
+        """
+        with pytest.raises(ValueError):
+            calculate.noise_info(
+                create_fil[0],
+                dm=10,
+                boxcar_lengths=self.boxcar_lengths,
+                num_locations=self.num_locations,
+                num_samples=2**10,
+            )
