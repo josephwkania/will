@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Analyze a Pulsar &#8212; WILL 0.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -285,7 +286,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Analyze-a-Pulsar">
-<h1>Analyze a Pulsar<a class="headerlink" href="#Analyze-a-Pulsar" title="Permalink to this headline">¶</a></h1>
+<h1>Analyze a Pulsar<a class="headerlink" href="#Analyze-a-Pulsar" title="Permalink to this heading">¶</a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -327,7 +328,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <section id="Search-for-pulses">
-<h2>Search for pulses<a class="headerlink" href="#Search-for-pulses" title="Permalink to this headline">¶</a></h2>
+<h2>Search for pulses<a class="headerlink" href="#Search-for-pulses" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -426,7 +427,7 @@ WARNING:root:First pulse (1035) does not give enough padding, increasing by 1167
 </div>
 </section>
 <section id="Single-pulse-properties">
-<h2>Single pulse properties<a class="headerlink" href="#Single-pulse-properties" title="Permalink to this headline">¶</a></h2>
+<h2>Single pulse properties<a class="headerlink" href="#Single-pulse-properties" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -477,7 +478,7 @@ Pulse Window Occupency: 91.13%
 </div>
 </section>
 <section id="Folded-Properties">
-<h2>Folded Properties<a class="headerlink" href="#Folded-Properties" title="Permalink to this headline">¶</a></h2>
+<h2>Folded Properties<a class="headerlink" href="#Folded-Properties" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -529,7 +530,7 @@ PulseInfo(locations=884, snrs=97.48174589384959, std=7.746107941058169)
 </div>
 </section>
 <section id="Effects-of-RFI-Mitigation">
-<h2>Effects of RFI Mitigation<a class="headerlink" href="#Effects-of-RFI-Mitigation" title="Permalink to this headline">¶</a></h2>
+<h2>Effects of RFI Mitigation<a class="headerlink" href="#Effects-of-RFI-Mitigation" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -607,7 +608,7 @@ PulseInfo(locations=884, snrs=97.48174589384959, std=7.746107941058169)
 </div>
 </section>
 <section id="Cleaned-Single-Pulse-Properties">
-<h2>Cleaned Single Pulse Properties<a class="headerlink" href="#Cleaned-Single-Pulse-Properties" title="Permalink to this headline">¶</a></h2>
+<h2>Cleaned Single Pulse Properties<a class="headerlink" href="#Cleaned-Single-Pulse-Properties" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -657,7 +658,7 @@ Pulse Window Occupency: 99.83%
 </div>
 </section>
 <section id="Cleaned-Folded-Properties">
-<h2>Cleaned Folded Properties<a class="headerlink" href="#Cleaned-Folded-Properties" title="Permalink to this headline">¶</a></h2>
+<h2>Cleaned Folded Properties<a class="headerlink" href="#Cleaned-Folded-Properties" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
@@ -700,7 +701,7 @@ Folded Pulse SNR: 171.71
 <p>SNR has gone up a lot but time series is uneven, see <a class="reference external" href="https://arxiv.org/pdf/0901.3993.pdf">https://arxiv.org/pdf/0901.3993.pdf</a> for a discussion of this effect.</p>
 </section>
 <section id="Compare-Raw-and-RFI-Cleaned">
-<h2>Compare Raw and RFI Cleaned<a class="headerlink" href="#Compare-Raw-and-RFI-Cleaned" title="Permalink to this headline">¶</a></h2>
+<h2>Compare Raw and RFI Cleaned<a class="headerlink" href="#Compare-Raw-and-RFI-Cleaned" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
@@ -918,7 +919,7 @@ Text(0, 0.5, &#39;Pulse Counts&#39;)
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -935,7 +936,7 @@ Text(0, 0.5, &#39;Pulse Counts&#39;)
       &copy;2022, Joseph W. Kania.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

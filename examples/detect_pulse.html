@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Detect Pulses &#8212; WILL 0.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -285,7 +286,7 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Detect-Pulses">
-<h1>Detect Pulses<a class="headerlink" href="#Detect-Pulses" title="Permalink to this headline">¶</a></h1>
+<h1>Detect Pulses<a class="headerlink" href="#Detect-Pulses" title="Permalink to this heading">¶</a></h1>
 <p>We’ll detect a pulse get info and repeat with RFI mitigation from JESS</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -346,7 +347,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <section id="Get-chunk-of-search-mode-dynamic-spectra">
-<h2>Get chunk of search mode dynamic spectra<a class="headerlink" href="#Get-chunk-of-search-mode-dynamic-spectra" title="Permalink to this headline">¶</a></h2>
+<h2>Get chunk of search mode dynamic spectra<a class="headerlink" href="#Get-chunk-of-search-mode-dynamic-spectra" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -393,7 +394,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 <section id="Make-the-dedispersed-time-series">
-<h2>Make the dedispersed time series<a class="headerlink" href="#Make-the-dedispersed-time-series" title="Permalink to this headline">¶</a></h2>
+<h2>Make the dedispersed time series<a class="headerlink" href="#Make-the-dedispersed-time-series" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -436,7 +437,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 <section id="id1">
-<h2>Detect Pulses<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>Detect Pulses<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -484,7 +485,7 @@ Text(0.5, 0, &#39;Locations&#39;)
 </div>
 <p>We have a range of points because the pulse is over several boxcars</p>
 <section id="Find-largest-pulse-over-range">
-<h3>Find largest pulse over range<a class="headerlink" href="#Find-largest-pulse-over-range" title="Permalink to this headline">¶</a></h3>
+<h3>Find largest pulse over range<a class="headerlink" href="#Find-largest-pulse-over-range" title="Permalink to this heading">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
@@ -505,7 +506,7 @@ MaxPulse(location=7254, snr=27.901931791973993)
 </section>
 </section>
 <section id="Repeat-with-RFI-Mitigation">
-<h2>Repeat with RFI Mitigation<a class="headerlink" href="#Repeat-with-RFI-Mitigation" title="Permalink to this headline">¶</a></h2>
+<h2>Repeat with RFI Mitigation<a class="headerlink" href="#Repeat-with-RFI-Mitigation" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -721,7 +722,7 @@ MaxPulse(location=7253, snr=33.44802201410966)
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -738,7 +739,7 @@ MaxPulse(location=7253, snr=33.44802201410966)
       &copy;2022, Joseph W. Kania.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

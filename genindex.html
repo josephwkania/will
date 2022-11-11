@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,6 +11,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="#" />
@@ -83,7 +84,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.detect.PulseSearchParamters.box_car_length">box_car_length (will.detect.PulseSearchParamters attribute)</a>
 </li>
-      <li><a href="will.html#will.create.boxcar_convolved">boxcar_convolved() (in module will.create)</a>
+      <li><a href="will.html#will.calculate.boxcar_convolved">boxcar_convolved() (in module will.calculate)</a>
+</li>
+      <li><a href="will.html#will.calculate.NoiseInfoResult.boxcars_lengths">boxcars_lengths (will.calculate.NoiseInfoResult attribute)</a>
 </li>
       <li><a href="will.html#will.create.build_pulse">build_pulse() (in module will.create)</a>
 </li>
@@ -93,19 +96,31 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="will.html#will.calculate.calculate_dm_boxcar_widths">calculate_dm_boxcar_widths() (in module will.calculate)</a>
+</li>
+      <li><a href="will.html#will.calculate.calculate_dm_widths">calculate_dm_widths() (in module will.calculate)</a>
+</li>
+      <li><a href="will.html#will.calculate.calculate_noises_multi">calculate_noises_multi() (in module will.calculate)</a>
+</li>
       <li><a href="will.html#will.create.SimpleGaussPulse.center_freq">center_freq (will.create.SimpleGaussPulse attribute)</a>
 </li>
       <li><a href="will.html#will.create.GaussPulse.center_freqs">center_freqs (will.create.GaussPulse attribute)</a>
 </li>
+      <li><a href="will.html#will.detect.ExtractPulses.centering_means">centering_means (will.detect.ExtractPulses attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.create.GaussPulse.chan_freqs">chan_freqs (will.create.GaussPulse attribute)</a>
 
       <ul>
         <li><a href="will.html#will.create.SimpleGaussPulse.chan_freqs">(will.create.SimpleGaussPulse attribute)</a>
 </li>
+        <li><a href="will.html#will.create.TwoDimensionalPulse.chan_freqs">(will.create.TwoDimensionalPulse attribute)</a>
+</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.create.clone_spectra">clone_spectra() (in module will.create)</a>
+</li>
+      <li><a href="will.html#will.calculate.convolve_multi_boxcar">convolve_multi_boxcar() (in module will.calculate)</a>
 </li>
       <li><a href="will.html#will.create.GaussPulse.create_pulse">create_pulse() (will.create.GaussPulse method)</a>
 
@@ -130,11 +145,15 @@
       <ul>
         <li><a href="will.html#will.create.SimpleGaussPulse.dm">(will.create.SimpleGaussPulse attribute)</a>
 </li>
+        <li><a href="will.html#will.create.TwoDimensionalPulse.dm">(will.create.TwoDimensionalPulse attribute)</a>
+</li>
         <li><a href="will.html#will.detect.PulseSearchParamters.dm">(will.detect.PulseSearchParamters attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="will.html#will.create.GaussPulse.dm_interchan_smear">dm_interchan_smear (will.create.GaussPulse attribute)</a>
+</li>
       <li><a href="will.html#will.create.dynamic_from_statistics">dynamic_from_statistics() (in module will.create)</a>
 </li>
       <li><a href="will.html#will.detect.ExtractPulses.dynamic_spectra">dynamic_spectra (will.detect.ExtractPulses attribute)</a>
@@ -189,6 +208,8 @@
 </li>
       <li><a href="will.html#will.create.GaussPulse">GaussPulse (class in will.create)</a>
 </li>
+      <li><a href="will.html#will.calculate.generate_boxcar_array">generate_boxcar_array() (in module will.calculate)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -215,7 +236,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.detect.locations_of_pulses">locations_of_pulses() (in module will.detect)</a>
 </li>
-      <li><a href="will.html#will.create.log_normal_from_stats">log_normal_from_stats() (in module will.create)</a>
+      <li><a href="will.html#will.calculate.log_normal_from_stats">log_normal_from_stats() (in module will.calculate)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -225,11 +246,23 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.detect.MaxPulse">MaxPulse (class in will.detect)</a>
 </li>
+      <li><a href="will.html#will.calculate.NoiseInfoResult.mean_noise_levels">mean_noise_levels (will.calculate.NoiseInfoResult property)</a>
+</li>
+      <li><a href="will.html#will.calculate.NoiseInfoResult.mean_onesigma_boxcar_volume">mean_onesigma_boxcar_volume (will.calculate.NoiseInfoResult property)</a>
+</li>
+      <li><a href="will.html#will.calculate.median_line_detrend">median_line_detrend() (in module will.calculate)</a>
+</li>
+      <li><a href="will.html#will.calculate.NoiseInfoResult.median_noise_levels">median_noise_levels (will.calculate.NoiseInfoResult property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
       <ul>
         <li><a href="will.html#module-will">will</a>
+</li>
+        <li><a href="will.html#module-will.calculate">will.calculate</a>
 </li>
         <li><a href="will.html#module-will.create">will.create</a>
 </li>
@@ -244,14 +277,22 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="will.html#will.calculate.noise_info">noise_info() (in module will.calculate)</a>
+</li>
+      <li><a href="will.html#will.calculate.NoiseInfoResult.noise_levels">noise_levels (will.calculate.NoiseInfoResult attribute)</a>
+</li>
+      <li><a href="will.html#will.calculate.NoiseInfoResult">NoiseInfoResult (class in will.calculate)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.create.GaussPulse.nscint">nscint (will.create.GaussPulse attribute)</a>
 
       <ul>
         <li><a href="will.html#will.create.SimpleGaussPulse.nscint">(will.create.SimpleGaussPulse attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="will.html#will.calculate.NoiseInfoResult.num_chans">num_chans (will.calculate.NoiseInfoResult attribute)</a>
+</li>
       <li><a href="will.html#will.inject.num_pulses">num_pulses() (in module will.inject)</a>
 </li>
   </ul></td>
@@ -266,6 +307,8 @@
 
       <ul>
         <li><a href="will.html#will.create.SimpleGaussPulse.optimal_boxcar_width">(will.create.SimpleGaussPulse property)</a>
+</li>
+        <li><a href="will.html#will.create.TwoDimensionalPulse.optimal_boxcar_width">(will.create.TwoDimensionalPulse property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -292,21 +335,27 @@
 </li>
       <li><a href="will.html#will.detect.PulseSNRs.plot_folded_profile">plot_folded_profile() (will.detect.PulseSNRs method)</a>
 </li>
+      <li><a href="will.html#will.calculate.NoiseInfoResult.plot_noise">plot_noise() (will.calculate.NoiseInfoResult method)</a>
+</li>
       <li><a href="will.html#will.detect.PulseSNRs.plot_snrs">plot_snrs() (will.detect.PulseSNRs method)</a>
 </li>
       <li><a href="will.html#will.detect.PulseSNRs.plot_stds">plot_stds() (will.detect.PulseSNRs method)</a>
 </li>
       <li><a href="will.html#will.detect.process_dynamic_spectra">process_dynamic_spectra() (in module will.detect)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.create.GaussPulse.pulse_center">pulse_center (will.create.GaussPulse property)</a>
 
       <ul>
         <li><a href="will.html#will.create.SimpleGaussPulse.pulse_center">(will.create.SimpleGaussPulse property)</a>
 </li>
+        <li><a href="will.html#will.create.TwoDimensionalPulse.pulse_center">(will.create.TwoDimensionalPulse property)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.detect.PulseSNRs.pulse_locations">pulse_locations (will.detect.PulseSNRs attribute)</a>
+</li>
+      <li><a href="will.html#will.create.TwoDimensionalPulse.pulse_pdf">pulse_pdf (will.create.TwoDimensionalPulse attribute)</a>
 </li>
       <li><a href="will.html#will.detect.PulseSNRs.pulse_search_params">pulse_search_params (will.detect.PulseSNRs attribute)</a>
 </li>
@@ -328,7 +377,7 @@
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="will.html#will.create.quicksort">quicksort() (in module will.create)</a>
+      <li><a href="will.html#will.calculate.quicksort">quicksort() (in module will.calculate)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -348,6 +397,8 @@
 
       <ul>
         <li><a href="will.html#will.create.SimpleGaussPulse.sample_pulse">(will.create.SimpleGaussPulse method)</a>
+</li>
+        <li><a href="will.html#will.create.TwoDimensionalPulse.sample_pulse">(will.create.TwoDimensionalPulse method)</a>
 </li>
       </ul></li>
       <li><a href="will.html#will.detect.PulseSearchParamters.samples_around_pulse">samples_around_pulse (will.detect.PulseSearchParamters attribute)</a>
@@ -370,10 +421,10 @@
 </li>
       <li><a href="will.html#will.create.GaussPulse.sigma_times">sigma_times (will.create.GaussPulse attribute)</a>
 </li>
-      <li><a href="will.html#will.create.SimpleGaussPulse">SimpleGaussPulse (class in will.create)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="will.html#will.create.SimpleGaussPulse">SimpleGaussPulse (class in will.create)</a>
+</li>
       <li><a href="will.html#will.create.skewed_gauss">skewed_gauss() (in module will.create)</a>
 </li>
       <li><a href="will.html#will.detect.MaxPulse.snr">snr (will.detect.MaxPulse attribute)</a>
@@ -384,7 +435,7 @@
         <li><a href="will.html#will.detect.PulseSNRs.snrs">(will.detect.PulseSNRs attribute)</a>
 </li>
       </ul></li>
-      <li><a href="will.html#will.create.sort_subarrays">sort_subarrays() (in module will.create)</a>
+      <li><a href="will.html#will.calculate.sort_subarrays">sort_subarrays() (in module will.calculate)</a>
 </li>
       <li><a href="will.html#will.create.spectral_index">spectral_index() (in module will.create)</a>
 </li>
@@ -398,7 +449,7 @@
 </li>
       <li><a href="will.html#will.detect.PulseInfo.std">std (will.detect.PulseInfo attribute)</a>
 </li>
-      <li><a href="will.html#will.create.std_min_func">std_min_func() (in module will.create)</a>
+      <li><a href="will.html#will.calculate.std_min_func">std_min_func() (in module will.calculate)</a>
 </li>
       <li><a href="will.html#will.detect.PulseSNRs.stds">stds (will.detect.PulseSNRs attribute)</a>
 </li>
@@ -416,16 +467,20 @@
         <li><a href="will.html#will.create.SimpleGaussPulse.tau">(will.create.SimpleGaussPulse attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.detect.ExtractPulses.times">times (will.detect.ExtractPulses attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="will.html#will.create.GaussPulse.tsamp">tsamp (will.create.GaussPulse attribute)</a>
 
       <ul>
         <li><a href="will.html#will.create.SimpleGaussPulse.tsamp">(will.create.SimpleGaussPulse attribute)</a>
 </li>
+        <li><a href="will.html#will.create.TwoDimensionalPulse.tsamp">(will.create.TwoDimensionalPulse attribute)</a>
+</li>
       </ul></li>
+      <li><a href="will.html#will.create.TwoDimensionalPulse">TwoDimensionalPulse (class in will.create)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -445,6 +500,13 @@
 
       <ul>
         <li><a href="will.html#module-will">module</a>
+</li>
+      </ul></li>
+      <li>
+    will.calculate
+
+      <ul>
+        <li><a href="will.html#module-will.calculate">module</a>
 </li>
       </ul></li>
       <li>
@@ -522,7 +584,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -539,7 +601,7 @@
       &copy;2022, Joseph W. Kania.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

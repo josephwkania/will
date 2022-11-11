@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Create &amp; Inject Pulses &#8212; WILL 0.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -285,9 +286,9 @@ div.rendered_html tbody tr:hover {
 }
 </style>
 <section id="Create-&amp;-Inject-Pulses">
-<h1>Create &amp; Inject Pulses<a class="headerlink" href="#Create-&-Inject-Pulses" title="Permalink to this headline">¶</a></h1>
+<h1>Create &amp; Inject Pulses<a class="headerlink" href="#Create-&-Inject-Pulses" title="Permalink to this heading">¶</a></h1>
 <section id="Show-how-we-can-inject-a-pulse-into-a-GREENBURST-filterbank.">
-<h2>Show how we can inject a pulse into a GREENBURST filterbank.<a class="headerlink" href="#Show-how-we-can-inject-a-pulse-into-a-GREENBURST-filterbank." title="Permalink to this headline">¶</a></h2>
+<h2>Show how we can inject a pulse into a GREENBURST filterbank.<a class="headerlink" href="#Show-how-we-can-inject-a-pulse-into-a-GREENBURST-filterbank." title="Permalink to this heading">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -347,7 +348,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 <section id="Get-a-pulse-search-mode-file">
-<h2>Get a pulse search mode file<a class="headerlink" href="#Get-a-pulse-search-mode-file" title="Permalink to this headline">¶</a></h2>
+<h2>Get a pulse search mode file<a class="headerlink" href="#Get-a-pulse-search-mode-file" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -399,7 +400,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 <section id="Find-a-bandpass-to-scale-the-frequency-structure">
-<h2>Find a bandpass to scale the frequency structure<a class="headerlink" href="#Find-a-bandpass-to-scale-the-frequency-structure" title="Permalink to this headline">¶</a></h2>
+<h2>Find a bandpass to scale the frequency structure<a class="headerlink" href="#Find-a-bandpass-to-scale-the-frequency-structure" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -434,7 +435,7 @@ div.rendered_html tbody tr:hover {
 </div>
 </section>
 <section id="Create-the-pulse">
-<h2>Create the pulse<a class="headerlink" href="#Create-the-pulse" title="Permalink to this headline">¶</a></h2>
+<h2>Create the pulse<a class="headerlink" href="#Create-the-pulse" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -477,7 +478,7 @@ div.rendered_html tbody tr:hover {
 <p>We can see that there is not pulse in areas with zero variance (Like the cavity filter).</p>
 </section>
 <section id="Inject-the-pulse">
-<h2>Inject the pulse<a class="headerlink" href="#Inject-the-pulse" title="Permalink to this headline">¶</a></h2>
+<h2>Inject the pulse<a class="headerlink" href="#Inject-the-pulse" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -528,7 +529,7 @@ div.rendered_html tbody tr:hover {
 <p>The pulse added to the dynamic spectra. We see that the pulse doesn’t exist where the channel variances are zero.</p>
 </section>
 <section id="Pulse-with-complex-frequency-time-structure">
-<h2>Pulse with complex frequency-time structure<a class="headerlink" href="#Pulse-with-complex-frequency-time-structure" title="Permalink to this headline">¶</a></h2>
+<h2>Pulse with complex frequency-time structure<a class="headerlink" href="#Pulse-with-complex-frequency-time-structure" title="Permalink to this heading">¶</a></h2>
 <p>This method samples all of the channels independently. It can accommodate changes in frequency and time, allowing for drifts, etc. The disadvantage that this is computationally more expansive making it ~10 times slower</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -647,7 +648,7 @@ div.rendered_html tbody tr:hover {
 <p>The dedispersed pulse showing the downward drift. The final components is angled relative the the first three.</p>
 </section>
 <section id="Periodic-pulses-w/-constant-Fluence">
-<h2>Periodic pulses w/ constant Fluence<a class="headerlink" href="#Periodic-pulses-w/-constant-Fluence" title="Permalink to this headline">¶</a></h2>
+<h2>Periodic pulses w/ constant Fluence<a class="headerlink" href="#Periodic-pulses-w/-constant-Fluence" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -699,7 +700,7 @@ div.rendered_html tbody tr:hover {
 <p>Now we have a pulsar with a period of <code class="docutils literal notranslate"><span class="pre">1234</span></code> samples</p>
 </section>
 <section id="Variable-Fluence">
-<h2>Variable Fluence<a class="headerlink" href="#Variable-Fluence" title="Permalink to this headline">¶</a></h2>
+<h2>Variable Fluence<a class="headerlink" href="#Variable-Fluence" title="Permalink to this heading">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
@@ -866,7 +867,7 @@ pulse_energies=array([597722, 435202, 216310, 138696, 411175, 158899, 526172])
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -883,7 +884,7 @@ pulse_energies=array([597722, 435202, 216310, 138696, 411175, 158899, 526172])
       &copy;2022, Joseph W. Kania.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

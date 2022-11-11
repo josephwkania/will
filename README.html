@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>WILL - Weighted Injector of Luminous Lighthouses &#8212; WILL 0.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -35,7 +36,7 @@
           <div class="body" role="main">
             
   <section id="will-weighted-injector-of-luminous-lighthouses">
-<h1>WILL - Weighted Injector of Luminous Lighthouses<a class="headerlink" href="#will-weighted-injector-of-luminous-lighthouses" title="Permalink to this headline">¶</a></h1>
+<h1>WILL - Weighted Injector of Luminous Lighthouses<a class="headerlink" href="#will-weighted-injector-of-luminous-lighthouses" title="Permalink to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">will</span></code> is a library to create, inject, and detect pulses from Fast Radio Bursts (FRBs) and pulsars.</p>
 <p align="center">
   <img src="https://github.com/josephwkania/will/blob/master/examples/Multi-Component_Pulse.png?raw=true" alt="Example pulse with multiple components">
@@ -45,7 +46,7 @@
 </p>
 </section>
 <section id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h1>
 <p>There are <span class="xref myst">many</span> pulsar and FRB simulators. These lack ability to handle complex band shapes (from bandstop filters, rolloff, etc).
 They also try to inject pulses at a given Signal-to-Noise ratio. This signal strength methodology can lead to circular logic, in worse radio frequency
 environments, the injected signal is brighter and still detectible.</p>
@@ -56,42 +57,48 @@ environments, the injected signal is brighter and still detectible.</p>
 <li><p>Straightforward Pulse Detection</p></li>
 <li><p>Good Documentation</p></li>
 </ul>
-<p>There are three submodules <code class="docutils literal notranslate"><span class="pre">will.create</span></code>, <code class="docutils literal notranslate"><span class="pre">will.inject</span></code>, and <code class="docutils literal notranslate"><span class="pre">will.detect</span></code>.</p>
+<p>There are four submodules <code class="docutils literal notranslate"><span class="pre">will.create</span></code>, <code class="docutils literal notranslate"><span class="pre">will.inject</span></code>, <code class="docutils literal notranslate"><span class="pre">will.detect</span></code>, and <code class="docutils literal notranslate"><span class="pre">will.calculate</span></code>.</p>
 <section id="create">
-<h2><code class="docutils literal notranslate"><span class="pre">create</span></code><a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">create</span></code><a class="headerlink" href="#create" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">GaussPulse</span></code> can make multiple independent component pulses.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SimpleGaussPulse</span></code> created pulses that are not correlated in frequency and time</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">filter_weights</span></code> Uses Gaussian smoothing to create bandpass weights model filter and rolloff</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">clone_spectra</span></code> makes dynamic spectra with Gaussian noise that copies statistics</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">log_normal_from_stats</span></code> creates a log-normal distro. with given median and Stand. Dev.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sort_subarrays</span></code> gives correlation to pulse powers</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dynamic_from_statistics</span></code> Creates a noise dynamic spectra w/ given STD and median per channel</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">clone_spectra</span></code> Makes a noise clone of a give dynamic spectra</p></li>
 </ul>
 </section>
 <section id="inject">
-<h2><code class="docutils literal notranslate"><span class="pre">inject</span></code><a class="headerlink" href="#inject" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">inject</span></code><a class="headerlink" href="#inject" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">inject_constant_into_file</span></code> inject pulse(s) of the same intensity</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">inject_distribution_into_file</span></code> allows you to specify the pulse energies</p></li>
 </ul>
 </section>
 <section id="detect">
-<h2><code class="docutils literal notranslate"><span class="pre">detect</span></code><a class="headerlink" href="#detect" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">detect</span></code><a class="headerlink" href="#detect" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">find_first_pulse</span></code> Helps find the first pulse in a file</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">search_file</span></code> search a file for periodic pulses at given DM and pulse width</p></li>
 </ul>
 </section>
+<section id="calculate">
+<h2><code class="docutils literal notranslate"><span class="pre">calculate</span></code><a class="headerlink" href="#calculate" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">log_normal_from_stats</span></code> creates a log-normal distro. with given median and Stand. Dev.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sort_subarrays</span></code> gives correlation across time to pulse powers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">noise_info</span></code> calculates the noise level across a file for a variety of boxcar widths</p></li>
+</ul>
+</section>
 <section id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">¶</a></h2>
 <p>We have a <a class="reference external" href="https://josephwkania.github.io/will/">docs website</a>
 which contains the examples and and <a class="reference external" href="https://josephwkania.github.io/will/py-modindex.html">API documentation</a></p>
 </section>
 </section>
 <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
 <p>To install directly into your current Python environment</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/josephwkania/will.git
 </pre></div>
@@ -105,17 +112,17 @@ For tests <span class="sb">`</span>pip install will<span class="o">[</span>tests
 </div>
 </section>
 <section id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h1>
 <p>There are <a class="reference external" href="https://github.com/josephwkania/will/tree/master/examples">example notebooks</a> that show how to create, inject, and detect pulses.</p>
 </section>
 <section id="questions-contributing">
-<h1>Questions + Contributing<a class="headerlink" href="#questions-contributing" title="Permalink to this headline">¶</a></h1>
+<h1>Questions + Contributing<a class="headerlink" href="#questions-contributing" title="Permalink to this heading">¶</a></h1>
 <p>See <a class="reference external" href="https://github.com/josephwkania/will/tree/master/CONTRIBUTING.md">CONTRIBUTING.md</a></p>
 </section>
 <section id="other-simulators">
-<h1>Other Simulators<a class="headerlink" href="#other-simulators" title="Permalink to this headline">¶</a></h1>
+<h1>Other Simulators<a class="headerlink" href="#other-simulators" title="Permalink to this heading">¶</a></h1>
 <section id="single-pulses">
-<h2>Single Pulses<a class="headerlink" href="#single-pulses" title="Permalink to this headline">¶</a></h2>
+<h2>Single Pulses<a class="headerlink" href="#single-pulses" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>https://github.com/kiyo-masui/burst_search/blob/master/burst_search/simulate.py</p></li>
 <li><p>https://github.com/kmsmith137/simpulse</p></li>
@@ -127,10 +134,11 @@ For tests <span class="sb">`</span>pip install will<span class="o">[</span>tests
 </ul>
 </section>
 <section id="pulsars">
-<h2>Pulsars<a class="headerlink" href="#pulsars" title="Permalink to this headline">¶</a></h2>
+<h2>Pulsars<a class="headerlink" href="#pulsars" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>https://github.com/SixByNine/sigproc/blob/master/src/fake.c</p></li>
 <li><p>https://github.com/PsrSigSim/PsrSigSim</p></li>
+<li><p>https://github.com/scottransom/presto/blob/master/bin/injectpsr.py</p></li>
 </ul>
 </section>
 </section>
@@ -159,6 +167,7 @@ For tests <span class="sb">`</span>pip install will<span class="o">[</span>tests
 <li class="toctree-l2"><a class="reference internal" href="#create"><code class="docutils literal notranslate"><span class="pre">create</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#inject"><code class="docutils literal notranslate"><span class="pre">inject</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#detect"><code class="docutils literal notranslate"><span class="pre">detect</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#calculate"><code class="docutils literal notranslate"><span class="pre">calculate</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
@@ -195,7 +204,7 @@ For tests <span class="sb">`</span>pip install will<span class="o">[</span>tests
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -212,7 +221,7 @@ For tests <span class="sb">`</span>pip install will<span class="o">[</span>tests
       &copy;2022, Joseph W. Kania.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -4,6 +4,14 @@ will package
 Submodules
 ----------
 
+will.calculate module
+---------------------
+
+.. automodule:: will.calculate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 will.create module
 ------------------
 
