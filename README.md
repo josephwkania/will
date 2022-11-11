@@ -42,6 +42,7 @@ There are four submodules `will.create`, `will.inject`, `will.detect`, and `will
 ## `calculate`
 - `log_normal_from_stats` creates a log-normal distro. with given median and Stand. Dev.
 - `sort_subarrays` gives correlation across time to pulse powers
+- `noise_info` calculates the noise level across a file for a variety of boxcar widths
 
 ## Documentation
 We have a [docs website](https://josephwkania.github.io/will/)
