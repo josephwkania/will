@@ -29,19 +29,19 @@ def inject_constant_into_file(  # noqa: max-complexity:30
     Inject a (the same) pulse(s) into a file.
 
     Args:
-        yr_input - Your object for file to inject pulse
+        yr_input: `Your` object for file to inject pulse.
 
-        pulse - 2D array that contains the pulse
+        pulse: 2D array that contains the pulse.
 
-        start - Start sample of the pulse
+        start: Start sample of the pulse.
 
-        period - Sample period of injected pulse
+        period: Sample period of injected pulse (Optional).
 
-        out_fil - Out filterbank, if None, returns array
+        out_fil: Out filterbank, if None, returns array (Optional).
 
-        clip_powers - Clip powers instead of wrap
+        clip_powers: Clip powers instead of wrap (Optional).
 
-    Returns
+    Returns:
         None if out_fil, else dynamic spectra with injected pulse
     """
     nsamples, nchans = pulse.shape
@@ -158,21 +158,21 @@ def inject_distribution_into_file(  # noqa: max-complexity:30
     Inject a pulse(s) into a file. From a given distributution.
 
     Args:
-        yr_input - Your object for file to inject pulse
+        yr_input: `Your` object for file to inject pulse.
 
-        pulse_obj - Object that creates the pulses
+        pulse_obj: Object that creates the pulses.
 
-        pulse_counts - The number of samples for each pulse
+        pulse_counts: The number of samples for each pulse.
 
-        start - Start sample of the pulse
+        start: Start sample of the pulse (Optional).
 
-        period - Sample period of injected pulse
+        period: Sample period of injected pulse (Optional).
 
-        out_fil - Out filterbank, if None, returns array
+        out_fil: Out filterbank, if None, returns array (Optional).
 
-        clip_powers - Clip powers instead of wrap
+        clip_powers: Clip powers instead of wrap (Optional).
 
-    Returns
+    Returns:
         None if out_fil, else dynamic spectra with injected pulse
     """
     # create a pulse with one sample to check dims
@@ -287,14 +287,14 @@ def num_pulses(period: float, nspectra: int, start: int = 0) -> int:
     Calculate the number of pulses needed for a chunk of data
 
     Args:
-        period - Period of pulse
+        period: Period of pulse.
 
-        nspectra - Number of spectra in chunk
+        nspectra: Number of spectra in chunk.
 
-        start - Start of first pulse
+        start: Start of first pulse (Optional).
 
     Returns:
-        Number of pulses within a data chunk, including partial pulses
+        Number of pulses within a data chunk, including partial pulses.
     """
     window = nspectra - start
     npulses = np.ceil(window / period)

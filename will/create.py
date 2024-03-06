@@ -20,17 +20,17 @@ from . import calculate
 # pylint: disable=invalid-name
 def gaussian(domain: np.ndarray, mu: float, sig: float) -> np.ndarray:
     """
-    A Gaussian
+    A Gaussian Function.
 
     Args:
-        domain - Domain to calculate the Gaussian
+        domain: Domain to calculate the Gaussian.
 
-        mu - Center location
+        mu: Center location.
 
-        sig - Pulse width
+        sig: Pulse width.
 
     Returns:
-        Gaussian evaluated over x
+        Gaussian evaluated over x.
     """
     return np.exp(-np.power(domain - mu, 2.0) / (2 * np.power(sig, 2.0)))
 
@@ -48,19 +48,19 @@ def skewed_gauss(
     Two dimensional Gaussian with an angle theta.
 
     Args:
-        x - Horizontal Domain from np.meshgrid
+        x: Horizontal Domain from np.meshgrid.
 
-        y - Vertical Domain from np.meshgrid
+        y: Vertical Domain from np.meshgrid.
 
-        x_mu - Horizontal Location
+        x_mu: Horizontal Location.
 
-        y_mu - Vertical Distance
+        y_mu: Vertical Distance.
 
-        x_sig - Horizontal sigma
+        x_sig: Horizontal sigma.
 
-        y_sig - Vertical Sigma
+        y_sig: Vertical Sigma.
 
-        theta - Rotation angle increasing counterclockwise [radians]
+        theta: Rotation angle increasing counterclockwise [radians].
 
     Returns:
         2D gaussian with amplitude one.
@@ -87,15 +87,15 @@ def skewed_gauss(
 
 def pulse_with_tail(times: np.ndarray, tau: float = 50) -> np.ndarray:
     """
-    Create a Gaussian Pulse with a scattering tail
+    Create a Gaussian Pulse with a scattering tail.
 
     Args:
-        Times - Time array
+        Times: Time array.
 
-        tau - With parameter
+        tau: Width parameter (Optional).
 
     Returns:
-        pulse profile
+        pulse profile.
 
     Notes:
     Based on
@@ -104,7 +104,7 @@ def pulse_with_tail(times: np.ndarray, tau: float = 50) -> np.ndarray:
     https://academic.oup.com/mnras/article/157/1/55/2604596
 
     I tried moving the center to match the other Gaussian,
-    but this slows down the rvs sampler by a factor of ~4
+    but this slows down the rvs sampler by a factor of ~4.
 
     Example:
     times = np.linspace(1, 256, 256)
@@ -130,17 +130,17 @@ def uniform_locations(
     num_locations: int,
 ) -> np.ndarray:
     """
-    Locations based on uniform sampling
+    Locations based on uniform sampling.
 
     Args:
-        start - Start index
+        start: Start index.
 
-        stop - Stop index
+        stop: Stop index.
 
-        num_locations - The number of locations to generate
+        num_locations: The number of locations to generate.
 
-    returns:
-        location indices for one axis
+    Returns:
+        Location indices for one axis.
     """
     logging.debug("Creating %i uniform pulse locations", num_locations)
 
@@ -153,15 +153,15 @@ def uniform_locations(
 
 def _normalize_pulse_with_tail(times: np.ndarray, tau: float) -> float:
     """
-    Find the normalization constant for pulse with scatter tail
+    Find the normalization constant for pulse with scatter tail.
 
     Args:
-        times - Time sample locations
+        Times: Time sample locations.
 
-        tau - pulse width
+        tau: Pulse width.
 
-    returns:
-        normalization constant
+    Returns:
+        Normalization constant.
 
     Note:
         based on Harry45
@@ -174,6 +174,8 @@ def _normalize_pulse_with_tail(times: np.ndarray, tau: float) -> float:
 
 class pulse_with_tail_dist(stats.rv_continuous):
     """
+    Class to create a pulse with a tail.
+
     Args:
         rv_continuous class
 
@@ -183,17 +185,17 @@ class pulse_with_tail_dist(stats.rv_continuous):
 
     def _pdf(self, times: np.ndarray, tau: float, norm_const: float):
         """
-        The pdf is the pulse_with_tail function
+        The pdf is the pulse_with_tail function.
 
         Args:
-            times - Time index
+            times: Time index.
 
-            tau - Pulse width
+            tau: Pulse width.
 
-            norm_constant - Normalization Constant
+            norm_constant: Normalization Constant.
 
         Returns:
-            Values sampled from pulse with tail distribution
+            Values sampled from pulse with tail distribution.
         """
         # center: int
         return (1.0 / norm_const) * pulse_with_tail(times, tau=tau)
@@ -201,15 +203,15 @@ class pulse_with_tail_dist(stats.rv_continuous):
 
 def gauss_with_tail_cdf(times: np.ndarray, tau: float) -> np.ndarray:
     """
-    Calculate the time locations for a Gaussian pulse with exponential tail
+    Calculate the time locations for a Gaussian pulse with exponential tail.
 
     Args:
-        times - Array with times to consider
+        times: Array with times to consider.
 
-        tau - Pulse width
+        tau: Pulse width.
 
     Returns:
-        Values sampled from pulse with tail distribution
+        Values sampled from pulse with tail distribution.
 
     Notes:
         based on
@@ -230,16 +232,16 @@ def arbitrary_array_cdf(
     array: np.ndarray, locations: float, num_samples: int
 ) -> np.ndarray:
     """
-    Calculate the time locations from a given array
+    Calculate the time locations from a given array.
 
     Args:
-        times - Array with times to consider
+        times: Array with times to consider.
 
-        tau - Pulse width
+        tau: Pulse width.
 
 
     Returns:
-        Values sampled from pulse with tail distribution
+        Values sampled from pulse with tail distribution.
 
     Notes:
         based on
@@ -271,20 +273,20 @@ def gauss_with_tail_locations(
     This provides a comparison between the cdf and rvs samplers.
 
     Args:
-        start - Start index
+        start: Start index.
 
-        stop - Stop index
+        stop: Stop index.
 
-        sigma - Gaussian sigma
+        sigma: Gaussian sigma.
 
-        num_locations - The number of locations to generate
+        num_locations: The number of locations to generate.
 
-        back_end - How the samples are calculated [rvs] uses the rv_continuous class,
-                   cdf creates a CDF an linearly interpolates it. The latter is
-                   much faster.
+        back_end: How the samples are calculated [rvs] uses the rv_continuous class,
+                  cdf creates a CDF an linearly interpolates it. The latter is
+                  much faster. (Optional)
 
     Returns:
-        Location indices for one axis
+        Location indices for one axis.
 
     Example:
         gauss_with_tail_locations(0.1, 1024, 20, int(5e2), back_end="rvs")
@@ -323,16 +325,16 @@ def build_pulse(
     Build the pulse from locations tuple.
 
     Args:
-        num_times - Length of the time samples axis
+        num_times: Length of the time samples axis.
 
-        num_chans - Length of channel axis
+        num_chans: Length of channel axis.
 
-        locations - Locations of the points to increase the energy
-                    given as two arrays
+        locations: Locations of the points to increase the energy
+                   given as two arrays.
 
     Returns:
         2D float array with the pulse, time on the ventricle
-        axis
+        axis.
 
     Example:
         pulse = build_pulse(10, 10, [[2, 2, 2], [2, 0, 2]]) will
@@ -356,17 +358,17 @@ def spectral_index(
     chan_freqs: np.ndarray, freq_ref: float, spectral_index_alpha: float
 ) -> np.ndarray:
     """
-    Add spectral index to pulse profile
+    Add spectral index to pulse profile.
 
     Args:
-        frequencies - Frequencies of the bandpass
+        frequencies: Frequencies of the bandpass.
 
-        freq_ref - Reference frequency
+        freq_ref: Reference frequency.
 
-        spectral index - Spectral index
+        spectral index: Spectral index.
 
     Returns:
-        pulse profile modulated by spectral index
+        Pulse profile modulated by spectral index.
     """
     return (chan_freqs / freq_ref) ** spectral_index_alpha
 
@@ -375,19 +377,19 @@ def scintillation(
     chan_freqs: np.ndarray, freq_ref: float, nscint: int = 3, phi: float = 0
 ) -> np.ndarray:
     """
-    Adds Scintillation that is abs(cos(band))
+    Adds Scintillation that is abs(cos(band)).
 
     Args:
-        chan_freqs - Array of channel Frequencies
+        chan_freqs: Array of channel Frequencies.
 
-        freq_freq - Reference Frequency
+        freq_freq: Reference Frequency.
 
-        nscint - number of scintills
+        nscint: Number of scintills (Optional).
 
-        phi - phase of of scintillation
+        phi: Phase of of scintillation (Optional).
 
     Returns:
-        scintillation intensities
+        Scintillation intensities.
 
     Notes:
         Similar to https://arxiv.org/abs/2003.14272
@@ -408,14 +410,14 @@ def scatter_profile(
     Create exponential scattering profile.
 
     Args:
-        freq - Frequencies array
+        freq: Frequencies array.
 
-        ref_freq - Reference Frequency
+        ref_freq: Reference Frequency.
 
-        tau - Scattering parameter
+        tau: Scattering parameter (Optional).
 
     Return:
-        Exponential scattering profile
+        Exponential scattering profile.
 
     Notes:
         Bases on
@@ -439,16 +441,16 @@ def apply_scatter_profile(
     Create exponential scattering profile.
 
     Args:
-        freq - Frequencies array
+        freq: Frequencies array.
 
-        ref_freq - Reference Frequency
+        ref_freq: Reference Frequency.
 
-        tau - Scattering parameter
+        tau: Scattering parameter (Optional).
 
-        axis - Axis to perform convolution
+        axis: Axis to perform convolution (Optional).
 
     Return:
-        Exponential scattering profile
+        Exponential scattering profile.
     """
     if axis is None:
         scatter = scatter_profile(chan_freqs, ref_freq, tau)
@@ -471,12 +473,12 @@ def optimal_boxcar_width(
     of boxcar widths.
 
     Args:
-        time_profile - The time profile of the pulse
+        time_profile: The time profile of the pulse.
 
-        boxcar_widths - Array of boxcar widths
+        boxcar_widths: Array of boxcar widths.
 
     Returns:
-        Length of the optimal boxcar
+        Length of the optimal boxcar.
     """
     powers = calculate.boxcar_convolved(
         time_profile=time_profile, boxcar_widths=boxcar_widths
@@ -496,29 +498,28 @@ class SimpleGaussPulse:
     to sample the pulse.
 
     Args:
+        sigma_time: Time sigma in seconds.
 
-        sigma_time - time sigma in seconds
+        dm: Dispersion Measure [pc/cm^3].
 
-        dm - Dispersion measure
+        tau: Scatter.
 
-        tau - scatter
+        sigma_freq: Frequency Sigma [MHz].
 
-        sigma_freq - Frequency Sigma in MHz
+        center_freq: Center Frequency [MHz].
 
-        center_freq - Center Frequency in MHz
+        chan_freq: Array of channel frequencies [MHz].
 
-        chan_freq - Array of channel frequencies in MHz
+        tsamp: sampling time of dynamic spectra [second].
 
-        tsamp - sampling time of dynamic spectra in second
+        spectra_index_alpha: spectral index around center_freq.
 
-        spectra_index_alpha - spectral index around center_freq
+        nscint: Number of scintills.
 
-        nscint - number of scintills
+        phi: Pase of of scintillation.
 
-        phi - phase of of scintillation
-
-        bandpass - scale frequency structure with bandpass if
-                   not None
+        bandpass: Scale frequency structure with bandpass if
+                   not None (Optional).
     """
 
     sigma_time: float
@@ -536,21 +537,33 @@ class SimpleGaussPulse:
     def __post_init__(self):
         """
         Create the pulse time and frequency profiles when
-        the instance is created
+        the instance is created.
         """
         self.create_pulse()
 
     @property
     def pulse_center(self) -> np.int64:
         """
-        The location of the pulse maximum in time samples
+        The location of the pulse maximum in time samples.
+
+        Args:
+            None.
+
+        Returns:
+            Index of pulse maximum.
         """
         return self.pulse_time_profile.argmax()
 
     @functools.cached_property
     def optimal_boxcar_width(self) -> np.int64:
         """
-        Find the optimal boxcar width
+        Find the optimal boxcar width.
+
+        Args:
+            None.
+
+        Returns:
+            Optimal Boxcar width.
         """
         boxcar_widths = np.arange(1, self.pulse_width)
         return optimal_boxcar_width(
@@ -559,7 +572,7 @@ class SimpleGaussPulse:
 
     def create_pulse(self) -> None:
         """
-        Create the pulse
+        Create the pulse.
         """
         logging.debug("Creating time profile.")
 
@@ -609,15 +622,15 @@ class SimpleGaussPulse:
 
     def sample_pulse(self, nsamp: int, dtype: type = np.uint32) -> np.ndarray:
         """
-        Sample the pulse with `nsamp` samples
+        Sample the pulse with `nsamp` samples.
 
         Args:
-            nsamp - Number of samples in the pulse
+            nsamp: Number of samples in the pulse.
 
-            dtype - Data type of the pulse
+            dtype: Data type of the pulse (Optional).
 
         Returns:
-            2D ndarray with disperesed pulse
+            2D ndarray with disperesed pulse.
         """
 
         logging.debug("Calculating %i locations.", nsamp)
@@ -651,15 +664,14 @@ class TwoDimensionalPulse:
     Create a pulse from a 2D pulse Probability Distribution Function (PDF).
 
     Args:
-        pulse_pdf - The 2D array containing pulse the pulse profile at
+        pulse_pdf: The 2D array containing pulse the pulse profile at
                     0 DM.
 
-        chan_freq - Array of channel frequencies in MHz
+        chan_freq: Array of channel frequencies [MHz].
 
-        tsamp - sampling time of dynamic spectra in second
+        tsamp: sampling time of dynamic spectra [second].
 
-        dm - Dispersion Measure
-
+        dm: Dispersion Measure [pc/cm^3].
     """
 
     pulse_pdf: np.ndarray
@@ -674,14 +686,26 @@ class TwoDimensionalPulse:
     @property
     def pulse_center(self) -> int:
         """
-        The location of the pulse maximum in time samples
+        The location of the pulse maximum in time samples.
+
+        Args:
+            None
+
+        Returns:
+            Argument of pulse center.
         """
         return self.pulse_pdf.mean(axis=1).argmax()
 
     @functools.cached_property
     def optimal_boxcar_width(self) -> np.int64:
         """
-        Find the optimal boxcar width
+        Find the optimal boxcar width.
+
+        Args:
+            None
+
+        Returns:
+            S/N Optimizing boxcar width.
         """
         boxcar_widths = np.arange(1, self.pulse_width)
         return optimal_boxcar_width(
@@ -690,15 +714,15 @@ class TwoDimensionalPulse:
 
     def sample_pulse(self, nsamp: int, dtype: type = np.uint32) -> np.ndarray:
         """
-        Sample the pulse with `nsamp` samples
+        Sample the pulse with `nsamp` samples.
 
         Args:
-            nsamp - Number of samples in the pulse
+            nsamp: Number of samples in the pulse.
 
-            dtype - Data type of the pulse
+            dtype: Data type of the pulse (Optional).
 
         Returns:
-            2D ndarray with disperesed pulse
+            2D ndarray with disperesed pulse.
         """
         logging.debug("Calculating %i locations.", nsamp)
 
@@ -726,45 +750,45 @@ class TwoDimensionalPulse:
 @dataclass
 class GaussPulse:
     """
-    Create a pulse from a 2D Gaussian.
-    This function can handle
+    Class to create a pulse from a 2D Gaussian.
+
 
     The PDF is created ith the object.
     To sample use sample_pulse(nsamps).
 
     Args:
-        relative_intensities - The relative intensities of the
+        relative_intensities: The relative intensities of the
                                pule components.
 
-        sigma_time - time sigma in seconds
+        sigma_time: time sigma [second].
 
-        sigma_freq - Frequency Sigma in MHz
+        sigma_freq: Frequency Sigma [MHz].
 
-        chan_freq - Array of channel frequencies in MHz
+        chan_freq: Array of channel frequencies [MHz].
 
-        tsamp - sampling time of dynamic spectra in second
+        tsamp: Sampling time of dynamic spectra [second].
 
-        pulse_theta - Angle of pulse components
+        pulse_theta: Angle of pulse components.
 
-        nsamp - Number of samples to add
+        nsamp: Number of samples to add.
 
-        dm - Dispersion Measure
+        dm: Dispersion Measure [pc/cm^3].
 
-        tau - Scatter parameter
+        tau: Scatter parameter.
 
-        tsamp - Sampling time of dynamic spectra in second
+        tsamp: Sampling time of dynamic spectra in second.
 
-        spectra_index_alpha - Spectral index power around center_freq
+        spectra_index_alpha: Spectral index power around center_freq.
 
-        nscint - Number of frequency scintills
+        nscint: Number of frequency scintills.
 
-        phi - Phase of frequency scintillation
+        phi: Phase of frequency scintillation.
 
-        bandpass - Scale frequency structure with bandpass if
-                   not None
+        bandpass: Scale frequency structure with bandpass if
+                  not None (Optional).
 
-        dm_interchan_smear - Interchannel DM smearing simulated by
-                             boxcar convolution
+        dm_interchan_smear: Interchannel DM smearing simulated by
+                            boxcar convolution (Optional).
     """
 
     relative_intensities: Union[Sequence, float]
@@ -787,7 +811,7 @@ class GaussPulse:
         """
         Convert sequencies to ndarrays
 
-        Create the pulse when the object is created
+        Create the pulse when the object is created.
         """
         self.relative_intensities = np.array(self.relative_intensities, ndmin=1)
         self.sigma_times = np.array(self.sigma_times, ndmin=1)
@@ -814,14 +838,26 @@ class GaussPulse:
     @property
     def pulse_center(self) -> int:
         """
-        The location of the pulse maximum in time samples
+        The location of the pulse maximum in time samples.
+
+        Args:
+            None
+
+        Returns:
+            Index of pulse maximum.
         """
         return self.pulse_pdf.mean(axis=1).argmax()
 
     @functools.cached_property
     def optimal_boxcar_width(self) -> np.int64:
         """
-        Find the optimal boxcar width
+        Find the optimal boxcar width.
+
+        Args:
+            None
+
+        Returns:
+            Optimal Boxcar width in number of samples.
         """
         boxcar_widths = np.arange(1, self.pulse_width)
         return optimal_boxcar_width(
@@ -830,7 +866,7 @@ class GaussPulse:
 
     def create_pulse(self) -> None:
         """
-        Create the pulse
+        Create the pulse.
         """
         logging.debug("Creating pulse profile.")
 
@@ -917,15 +953,15 @@ class GaussPulse:
 
     def sample_pulse(self, nsamp: int, dtype: type = np.uint32) -> np.ndarray:
         """
-        Sample the pulse with `nsamp` samples
+        Sample the pulse with `nsamp` samples.
 
         Args:
-            nsamp - Number of samples in the pulse
+            nsamp: Number of samples in the pulse.
 
-            dtype - Data type of the pulse
+            dtype: Data type of the pulse.
 
         Returns:
-            2D ndarray with disperesed pulse
+            2D ndarray with disperesed pulse.
         """
         logging.debug("Calculating %i locations.", nsamp)
 
@@ -963,18 +999,19 @@ def filter_weights(
     at the end of the bandpass.
 
     Args:
-        dynamic_spectra - 2D dynamic spectra with time on the
-                          vertical axis
+        dynamic_spectra: 2D dynamic spectra with time on the
+                          vertical axis.
 
-        metric - The statistic to sample.
+        metric: The statistic to sample (Optional).
 
-        bandpass_smooth_length - length of the median filter to
-                                 smooth the bandpass
+        bandpass_smooth_length: length of the median filter to
+                                smooth the bandpass (Optional).
 
-        sigma_cut - Cut values below (standard deviation)*(sigma cut)
+        sigma_cut: Cut values below (standard deviation)*(sigma cut)
+                   (Optional).
 
-        smooth_sigma - Gaussian filter smoothing sigma. If =0, return
-                       the mask where True=good channels
+        smooth_sigma: Gaussian filter smoothing sigma. If =0, return
+                      the mask where True=good channels (Optional).
 
     Returns:
         Bandpass weights for sections of spectra with low values.
@@ -1000,16 +1037,16 @@ def dynamic_from_statistics(
     Make a dynamic spectra from statistics.
 
     Args:
-        medians - Bandpass medians
+        medians: Bandpass medians.
 
-        stds - Standard deviation of the bandpass
+        stds: Standard deviation of the bandpass.
 
-        dtype - data type of fake file
+        dtype: data type of fake file.
 
-        nsamps - Number of time samples
+        nsamps: Number of time samples (Optional).
 
     Returns:
-        2D random arrays
+        2D array of randim numbers with the specified characteristics.
     """
     nchans = medians.shape[0]
     clone = np.random.normal(size=nchans * nsamps)
@@ -1026,7 +1063,10 @@ def clone_spectra(
     Clone a section of dynamic spectra using Gaussian random numbers.
 
     Args:
-        2D array of dynamic spectra
+        dynamic_spectra: 2D array of dynamic spectra.
+
+        median_filter_lenght: Run the standard devaitions and medians
+                              through a filter with this lenght (Optional).
 
     Returns:
         Dynamic spectra that has simlar statstics as the given dynamic

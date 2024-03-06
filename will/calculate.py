@@ -24,14 +24,14 @@ def std_min_func(sigma: float, mu: float, std: float) -> float:
     have standard deviation `std`
 
     Args:
-        sigma - lognormal sigma
+        sigma: lognormal sigma.
 
-        mu - lognormal mu
+        mu: lognormal mu.
 
-        std - The desired standard deviation
+        std: The desired standard deviation.
 
     Returns:
-        desired variance - Actual variance(sigma, mu)
+        Desired variance - Actual variance(sigma, mu).
     """
     return std**2 - (np.exp(sigma**2) - 1) * np.exp(2 * mu + sigma**2)
 
@@ -42,12 +42,12 @@ def log_normal_from_stats(median: float, std: float, size: int) -> np.ndarray:
     and standard deviation.
 
     Args:
-        median - median of resulting distribution
+        median: median of resulting distribution.
 
-        std - Standard deviation of returned samples
+        std: Standard deviation of returned samples.
 
     Returns:
-        `size` numbers from the sampled from lognormal distribution
+        `size` numbers from the sampled from lognormal distribution.
     """
     mu = np.log(median)
     sigma_guess = np.sqrt(mu - 0.5 * np.log(std**2))
@@ -75,19 +75,20 @@ def quicksort(
     Quicksort in place.
 
     Args:
-        array - Array to be sorted
+        array: Array to be sorted.
 
-        left - Left most element of sort
+        left: Left most element of sort (Optional).
 
-        right - Right most element of sort
+        right: Right most element of sort (Optional).
 
-        sort_fraction - The fraction of the array to
-                        stop sorting.
+        sort_fraction: The fraction of the array to
+                       stop sorting, default is to sort
+                        entire array (Optional).
 
-        sort_ascend - Sort increasing
+        sort_ascend: Sort increasing (Optional).
 
     Returns:
-        None - Sort in place
+        None: Sort in place (Optional).
     """
     if left is None:
         left = 0
@@ -133,15 +134,16 @@ def sort_subarrays(
     type shape.
 
     Args:
-        array - array to sort
+        array: Array to sort.
 
-        num_subarrays - Number of subarrays to sort
+        num_subarrays: Number of subarrays to sort.
 
-        sort_fraction - The fraction of the subarray to
-                stop sorting.
+        sort_fraction: The fraction of the subarray to
+                       stop sorting, default is to sort
+                       the entire array (Optional).
 
     Returns:
-        Subarray sorted (also is sorted in place)
+        Subarray sorted (also is sorted in place).
     """
     splits = np.array_split(array, num_subarrays)
     for j, split in enumerate(splits):
@@ -159,14 +161,14 @@ def calculate_dm_widths(
     Eqn 2 in seconds.
 
     Args:
-        dm - The Dispersion Measure in pc/cm^3.
+        dm: The Dispersion Measure [pc/cm^3].
 
-        channel_width - The channel width in MHz.
+        channel_width: The channel width [MHz].
 
-        chan_freqs - The channel frequencies in MHz.
+        chan_freqs: The channel frequencies [MHz].
 
     Returns:
-        inter-channel dm smearing in seconds
+        inter-channel dm smearing in seconds.
     """
     return 8.3 / 10e6 * dm * channel_width * (1000 / chan_freqs) ** 3
 
@@ -177,16 +179,16 @@ def calculate_dm_boxcar_widths(
     chan_freqs: np.ndarray,
 ) -> np.ndarray:
     """
-     This calculates the boxcar widths in samples that correspond to the
+    This calculates the boxcar widths in samples that correspond to the
     inter-channel dispersion delays in seconds. If delay is less than
-     than the sample time of one, return a boxcar width of one.
+    than the sample time of one, return a boxcar width of one.
 
      Args:
-         dm - Dispersion Measure in pc/cm^3.
+        dm: Dispersion Measure [pc/cm^3].
 
-         sampling_time - Sampling time of data.
+        sampling_time: Sampling time of data [second].
 
-         chan_freqs - The channel frequencies in MHz.
+        chan_freqs: The channel frequencies [MHz].
 
      Returns:
          Array with boxcar lengths in samples.
@@ -207,12 +209,12 @@ def generate_boxcar_array(
     Make a 2D array of boxcars for the given boxcar_lengths.
 
     Args:
-        boxcar_lengths - Array of boxcar lengths.
+        boxcar_lengths: Array of boxcar lengths.
 
-        normalization_func - Function to normalize the boxcar, default
-                             is to use sqrt.
+        normalization_func: Function to normalize the boxcar, default
+                            is to use sqrt (Optional).
 
-        return_max - Return max boxcar length
+        return_max: Return max boxcar length (Optional).
 
     Returns:
         Array of boxcars, with the boxcars stacked horizontally.
@@ -235,13 +237,13 @@ def convolve_multi_boxcar(profile: np.ndarray, boxcar_array: np.ndarray) -> np.n
     Convolve an profile array with an array that contains multiple boxcars.
 
     Args:
-        profile - 1D or 2D array that contains the profile. For 1D array,
-                  will be convolved with all boxcars. If 2D, time should
-                  be on the vertical axis and number of profiles and
-                  boxcars should match.
+        profile: 1D or 2D array that contains the profile. For 1D array,
+                 will be convolved with all boxcars. If 2D, time should
+                 be on the vertical axis and number of profiles and
+                 boxcars should match.
 
-        boxcar_array - Array containing boxcars, boxcars should be stacked along
-                       axis=1, see `generate_boxcar_array`.
+        boxcar_array: Array containing boxcars, boxcars should be stacked along
+                      axis=1, see `generate_boxcar_array`.
 
     Returns:
         Profile convolved with the boxcar_array.
@@ -269,12 +271,12 @@ def boxcar_convolved(time_profile: np.ndarray, boxcar_widths: np.ndarray) -> np.
     Calculate the pulse profile convolved with a boxcar width.
 
     Args:
-        time_profile - Time profile of the pulse
+        time_profile: Time profile of the pulse (Optional).
 
-        boxcar_widths - Array of boxcar widths
+        boxcar_widths: Array of boxcar widths (Optional).
 
     Returns:
-        Pulse profile convolved with a boxcar
+        Pulse profile convolved with a boxcar.
     """
     boxcar_widths = np.array(boxcar_widths, ndmin=1)
     powers = np.zeros(boxcar_widths.shape, dtype=np.float64)
@@ -295,12 +297,12 @@ def median_line_detrend(array: np.ndarray, num_sample: int) -> np.ndarray:
     to these medians, then subtracting this line.
 
     Args:
-        array - Array to detrend.
+        array: Array to detrend.
 
-        num_samples - Number of samples per median block.
+        num_samples: Number of samples per median block.
 
     Return:
-        array with trend subtracted.
+        Array with trend subtracted.
 
     Inspired by 'Advanced Architectures for Astrophysical Supercomputing',
     section 4.2.3
@@ -347,18 +349,18 @@ def calculate_noises_multi(
     Then use `scale_func` to calculate the noise level.
 
     Args:
-        time_series - The dedispersed time series.
+        time_series: The dedispersed time series.
 
-        box_car_length - Length of the boxcars.
+        box_car_length: Length of the boxcars.
 
-        sigma - Return pulses with significance above
+        sigma: Return pulses with significance above
                 this
 
-        smoothing_factor - Detrend blocks are
-                           smoothing_factor*box_car_length long.
+        smoothing_factor: Detrend blocks are
+                          smoothing_factor*box_car_length long (Optional).
 
-        scale_func - The function used to calculate the measure of scale.
-                     must accept `axis=0` argument.
+        scale_func: The function used to calculate the measure of scale.
+                    must accept `axis=0` argument (Optional).
 
     Returns:
         Measures of scale for each boxcar in `boxcar array`.
@@ -379,12 +381,13 @@ class NoiseInfoResult:
     """
     The noise levels for a file.
 
-    noise_levels - The noise level at each location (row) and
-                   each boxcar, column.
+    Args:
+        noise_levels: The noise level at each location (row) and
+                      each boxcar, column.
 
-    boxcar_lengths - Length of the boxcars.
+        boxcar_lengths: Length of the boxcars.
 
-    num_chans - Number of channels.
+        num_chans: Number of channels.
     """
 
     noise_levels: np.ndarray
@@ -395,13 +398,25 @@ class NoiseInfoResult:
     def mean_noise_levels(self):
         """
         The mean noise levels across the file.
+
+        Args:
+            None.
+
+        Returns:
+            Average noise level in the file.
         """
         return self.noise_levels.mean(axis=0)
 
     @property
     def median_noise_levels(self):
         """
-        The mean noise levels across the file.
+        The median noise levels across the file.
+
+        Args:
+            None.
+
+        Returns:
+            Median noise level across the file.
         """
         return np.median(self.noise_levels, axis=0)
 
@@ -446,18 +461,18 @@ def noise_info(
     convolved with boxcars of the given length. The noise is then calculated my MAD.
 
     Args:
-        file_path - String that is the path to a file.
+        file_path: String that is the path to a file.
 
-        dm - Dispersion Measure in pc/cm^3.
+        dm: Dispersion Measure [pc/cm^3].
 
-        boxcar_lengths - Numpy array of boxcar lengths to consider.
+        boxcar_lengths: Numpy array of boxcar lengths to consider.
 
-        num_locations - Number of locations in the file to consider.
+        num_locations: Number of locations in the file to consider (Optional).
 
-        num_samples - Number of sample to consider, must be 4 times the
-                      largest boxcar.
+        num_samples: Number of sample to consider, must be 4 times the
+                     largest boxcar (Optional).
 
-        chan_mask - Mask these channels if given. True=value to mask
+        chan_mask: Mask these channels if given. True=value to mask (Optional).
 
     Returns:
         NoiseInfoResult

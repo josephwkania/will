@@ -28,23 +28,24 @@ def find_first_pulse(
     box_car_length: int = 1,
 ) -> None:
     """
-    Help to find the index of the first pulse by ploting the
+    Help to find the index of the first pulse by plotting the
     dedispersed dynamic spectra and time series.
 
     Args:
-        file - Path to the file to investigate
+        file: Path to the file to investigate.
 
-        dm - Dispersion measure of the pulsar
+        dm: Dispersion measure of the pulsar.
 
-        start - Start Index
+        start: Index of first sample to get from the file.
 
-        gulp - Number of samples to get
+        gulp: Number of samples to get from file.
 
-        box_car_length - If > 1, dynamic spectra and time series
-                         get convolved with a boxcar of this length
+        box_car_length: If > 1, dynamic spectra and time series
+                        get convolved with a boxcar of this length
+                        (optional).
 
-        num_cands - Number of candidates to print
-
+    Returns:
+        None
     """
     start = np.around(start).astype(int)
     yr_obj = Your(file)
@@ -115,16 +116,16 @@ def dedisped_time_series(
     Get the dedispered time series from a chunk of dynamic spectra.
 
     Args:
-        dynamic_spectra - 2D spectra with time on the vertical axis
+        dynamic_spectra: 2D spectra with time on the vertical axis.
 
-        dm - The dispersion measure
+        dm: The Dispersion Measure.
 
-        tsamp - Time sample of the data
+        tsamp: Time sample of the data.
 
-        chan_freqs - The channel frequencies
+        chan_freqs: The channel frequencies.
 
     Returns:
-        Time series at a the given DM
+        Time series at a the given DM.
     """
     dynamic_spectra_dispered = dedisperse(
         dynamic_spectra, dm=dm, tsamp=tsamp, chan_freqs=chan_freqs
@@ -135,13 +136,14 @@ def dedisped_time_series(
 @dataclass
 class PulseInfo:
     """
-    Pulse info result
+    Pulse info result.
 
-    locations - sample location of the pulses
+    Args:
+        locations: sample location of the pulses
 
-    snrs - Signal to noise of pulses
+        snrs: Signal to noise of pulses
 
-    std - Standard devivation of time series
+        std: Standard deviation of time series
     """
 
     locations: Union[np.int64, float, np.ndarray]
@@ -159,20 +161,21 @@ def detect_all_pulses(
     Detect pulses in a dedisperesed series.
 
     Args:
-        time_series - The dedispersed time series
+        time_series: The dedispersed time series.
 
-        box_car_length - Length of the boxcar
+        box_car_length: Length of the boxcar.
 
-        sigma - Return pulses with significance above
-                this
+        sigma: Return pulses with significance above
+               this value (Optional).
 
-        smoothing_factor - Median filter is smoothing_factor*box_car_length
+        smoothing_factor: Median filter is smoothing_factor*box_car_length
+                          (Optional).
 
     Returns:
         PulseInfo[Locations, SNRs]
 
     Deterned the time series by subtracting off the running median
-    Thesis described in Bardell Thesis, but Heimdall uses a different
+    Thesis described in Barsdell Thesis, but Heimdall uses a different
     method
 
     Don't scale SNR as described in https://arxiv.org/pdf/2011.10191.pdf
@@ -215,20 +218,18 @@ def detect_max_pulse(
     standard deviation as computed by Median Absolute Deviation.
 
     Args:
-        time_series - The dedispersed time series
+        time_series: The dedispersed time series.
 
-        box_car_length - Length of the boxcar
+        box_car_length: Length of the boxcar
 
-        sigma - Return pulses with significance above
-                this
-
-        smoothing_factor - Median filter is smoothing_factor*box_car_length
+        smoothing_factor: Median filter is smoothing_factor*box_car_length
+                          (Optional).
 
     Returns:
         dataclass[Locations, SNRs]
 
-    Deterned the time series by subtracting off the running median
-    Thesis described in Bardell Thesis, but Heimdall uses a different
+    Detrend the time series by subtracting off the running median
+    Thesis described in Barsdell Thesis, but Heimdall uses a different
     method
 
     Don't scale SNR as described in https://arxiv.org/pdf/2011.10191.pdf
@@ -240,7 +241,7 @@ def detect_max_pulse(
 
     # this follows https://arxiv.org/pdf/2011.10191.pdf
     # std = stats.median_abs_deviation(flattened_times_series, scale="normal")
-    # normatlized_time_series = flattened_times_series / std
+    # normalized_time_series = flattened_times_series / std
 
     if box_car_length > 1:
         window = signal.boxcar(box_car_length) / np.sqrt(box_car_length)
@@ -281,9 +282,10 @@ class MaxPulse:
     """
     Max pulse location
 
-    location - Sample location of max pulse
+    Args:
+        location: Sample location of max pulse
 
-    snr - Signal to noise ratio
+        snr: Signal to noise ratio
 
     If `None`, no pulse fitting requirements found.
     """
@@ -299,15 +301,15 @@ def find_max_pulse(
     Find the maximum pulse between two indices.
 
     Args:
-        pulses - The dataclass from detected pulses
+        pulses: The dataclass from detected pulses.
 
-        start_idx - Start index of the the range
+        start_idx: Start index of the the range (Optional).
 
-        end_idx - End index of range
+        end_idx: End index of range (Optional).
 
     Returns:
         dataclass(location index, SNR)
-        if no pulse in range, returns (None, None)
+        if no pulse in range, returns (None, None).
     """
     if end_idx == -1:
         mask = pulses.locations >= start_idx
@@ -336,27 +338,27 @@ class PulseSearchParamters:
     """
     The parameters to use for the single pulse search.
 
-    file - Fits for Fil contaning the pulse.
+    file: Fits for Fil containing the pulse.
 
-    first_pulse - Location of the first pulse in seconds.
+    first_pulse: Location of the first pulse (in seconds).
 
-    period - Period of the pulse in seconds.
+    period: Period of the pulse (in seconds).
 
-    dm - Dispersion Measure of the pulse
+    dm: Dispersion Measure of the pulse (pc/cm^3).
 
-    box_car_length - Length of the boxcar for the matched filter.
+    box_car_length: Length of the boxcar for the matched filter.
 
-    samples_around_pulse - The number of samples on either side of
-                           of the boxcar
+    samples_around_pulse: The number of samples on either side of
+                           of the boxcar.
 
-    search_window_frac - The fraction, around the center, of the time
-                         series search for a pulse.
+    search_window_frac: The fraction, around the center, of the time
+                        series search for a pulse (Optional).
 
-    sigma - Pulse threshold
+    sigma: Pulse threshold (Optional).
 
-    start - Start sample to process (default to first sample)
+    start: Start sample to process (default to first sample) (Optional).
 
-    stop - Final sample to process (default is EOF)
+    stop: Final sample to process (default is EOF) (Optional).
     """
 
     # pylint: disable=invalid-name
@@ -372,7 +374,6 @@ class PulseSearchParamters:
     stop: int = -1
 
     def __post_init__(self):
-
         self.yr_obj: Your = Your(self.file)
 
         self.samples_lost: int = delay_lost(
@@ -392,7 +393,7 @@ def locations_of_pulses(pulse_search_params: PulseSearchParamters) -> np.ndarray
     Make an array of pulse locations from the start location and period.
 
     Args:
-        pulse_search_params - The dataclass that has the search parameters
+        pulse_search_params: The dataclass that has the search parameters
 
     Returns:
         Location of the pulses in samples
@@ -428,12 +429,13 @@ class PulseSNRs:
     """
     Results of pulse search
 
-    snrs - Pulse Signal to Noise Ratio
+    Args:
+        snrs: Pulse Signal to Noise Ratio.
 
-    stds - Standard Deviations of pulse block
-           Computed via Median Abs Deviation
+        stds: Standard Deviations of pulse block
+              Computed via Median Abs Deviation.
 
-    folded - Folded dynamic spectra
+    folded: Folded dynamic spectra.
     """
 
     snrs: np.ndarray
@@ -443,18 +445,24 @@ class PulseSNRs:
     pulse_locations: np.ndarray
 
     @property
-    def percent_with_pulses(self):
+    def percent_with_pulses(self) -> float:
         """
         The percent of pulse bins with a single above snr
         present.
+
+        Returns:
+            Percent of windows with pulses above cutoff.
         """
         mask = self.snrs >= self.pulse_search_params.sigma
         return 100 * mask.mean()
 
     @property
-    def folded_properties(self):
+    def folded_properties(self) -> PulseInfo:
         """
-        Get the pulse properties of the folded profile
+        Get the pulse properties of the folded profile.
+
+        Returns:
+            Info about pulse.
         """
         time_series = self.folded.mean(axis=1)
         max_pulse = detect_max_pulse(
@@ -470,8 +478,12 @@ class PulseSNRs:
 
         Args:
             cut_snrs: Don't plot SNRs below the cutoff specified in PulseSearchParamters
+                      (Optional).
 
-            title - The title of the plot, default `SNR vs. Time`
+            title: The title of the plot, default `SNR vs. Time` (Optional)
+
+        Returns:
+            None.
         """
 
         # pulse locations in seconds
@@ -496,7 +508,11 @@ class PulseSNRs:
         as a function of time.
 
         Args:
-            title - The tile of the plot, default `Standard Deviation vs. Time`
+            title: The tile of the plot, default `Standard Deviation vs. Time`
+                    (Optional).
+
+        Returns:
+            None.
         """
         locs = self.pulse_locations * self.pulse_search_params.yr_obj.your_header.tsamp
 
@@ -514,8 +530,11 @@ class PulseSNRs:
         Plot the folded dynamic spectra.
 
         Args:
-            median_filter_length - The length of the median filter used to
-                                    remove the bandpass
+            median_filter_length: The length of the median filter used to
+                                    remove the bandpass (Optional).
+
+        Returns:
+            None.
         """
         nsamps, _ = self.folded.shape
         xmax = 1000 * nsamps * self.pulse_search_params.yr_obj.your_header.tsamp
@@ -532,7 +551,10 @@ class PulseSNRs:
 
     def plot_folded_profile(self) -> None:
         """
-        Plot the folded pulse profile and print the Signal to Noise
+        Plot the folded pulse profile and print the Signal to Noise.
+
+        Returns:
+            None.
         """
         time_series = self.folded.mean(axis=1)
         times = (
@@ -556,12 +578,12 @@ def search_file(
     Search a Fil or Fits file for pulses.
 
     Args:
-        pulse_search_params - dataclass with the pulse search paramters.
+        pulse_search_params: dataclass with the pulse search paramters.
 
-        pulse_locations - Array with the locations of the center of the pulse.
+        pulse_locations: Array with the locations of the center of the pulse.
 
     Returns:
-        PulseSNRs - Dataclass that has the pulse snrs, standard deviations, and
+        PulseSNRs: Dataclass that has the pulse snrs, standard deviations, and
                     the folded profile.
     """
 
@@ -639,14 +661,14 @@ def process_dynamic_spectra(
     optionally running a Gaussain filter, and zero centering.
 
     Args:
-        dynamic_spectra - dynamic spectra to process
+        dynamic_spectra: dynamic spectra to process.
 
-        sigma - Sigma for Gaussian filter, if zero filter not applied
+        sigma: Sigma for Gaussian filter, if zero filter not applied.
 
-        dtype - data type of output file
+        dtype: data type of output file.
 
     Returns:
-        processed to dynamic spectra, mean used to center the data
+        Processed to dynamic spectra, mean used to center the data.
     """
     dynamic_spectra = dynamic_spectra - np.median(dynamic_spectra, axis=0).astype(dtype)
 
@@ -663,13 +685,14 @@ class ExtractPulses:
     """
     Results of extracting single pulses.
 
-    dynamic_spectra - Pulse dynamic spectra.
+    Args:
+        dynamic_spectra: Pulse dynamic spectra.
 
-    bandpass_labels - Frequency labels.
+        bandpass_labels: Frequency labels.
 
-    times - Time labels.
+        times: Time labels.
 
-    centering_means - The means used to center the pulses.
+        centering_means: The means used to center the pulses.
     """
 
     dynamic_spectra: np.ndarray
@@ -687,12 +710,14 @@ def extract_pulses(
     """
     Search a Fil or Fits file for pulses.
     Args:
-        pulse_search_params - dataclass with the pulse search paramters.
-        pulse_locations - Array with the locations of the center of the pulse.
-        sigma - Sigma of Gauss filter, if 0 no filter is applied
+        pulse_search_params: dataclass with the pulse search paramters.
+
+        pulse_locations: Array with the locations of the center of the pulse.
+
+        sigma: Sigma of Gauss filter, if 0 no filter is applied
 
     Returns:
-        ExtractPulses - Dataclass that has the pulse dynamic spectra,
+        ExtractPulses: Dataclass that has the pulse dynamic spectra,
                         bandpass labels, times, and means used to center
     """
 
