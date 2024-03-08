@@ -17,7 +17,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Use Pulse Detection to Optimize Filter Parameters" href="examples/optimize.html" />
+    <link rel="prev" title="Extract &amp; Re-Inject Pulse" href="examples/extract_reinject_pulse.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -38,281 +38,6 @@
 <h1>will package<a class="headerlink" href="#will-package" title="Permalink to this heading">¶</a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
-</section>
-<section id="module-will.calculate">
-<span id="will-calculate-module"></span><h2>will.calculate module<a class="headerlink" href="#module-will.calculate" title="Permalink to this heading">¶</a></h2>
-<p>Math functions.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="will.calculate.NoiseInfoResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">NoiseInfoResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">noise_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxcars_lengths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_chans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.calculate.NoiseInfoResult" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>The noise levels for a file.</p>
-<dl class="simple">
-<dt>noise_levels - The noise level at each location (row) and</dt><dd><p>each boxcar, column.</p>
-</dd>
-</dl>
-<p>boxcar_lengths - Length of the boxcars.</p>
-<p>num_chans - Number of channels.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="will.calculate.NoiseInfoResult.boxcars_lengths">
-<span class="sig-name descname"><span class="pre">boxcars_lengths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#will.calculate.NoiseInfoResult.boxcars_lengths" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="will.calculate.NoiseInfoResult.mean_noise_levels">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_noise_levels</span></span><a class="headerlink" href="#will.calculate.NoiseInfoResult.mean_noise_levels" title="Permalink to this definition">¶</a></dt>
-<dd><p>The mean noise levels across the file.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="will.calculate.NoiseInfoResult.mean_onesigma_boxcar_volume">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_onesigma_boxcar_volume</span></span><a class="headerlink" href="#will.calculate.NoiseInfoResult.mean_onesigma_boxcar_volume" title="Permalink to this definition">¶</a></dt>
-<dd><p>The mean volume of a one sigma boxcar.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="will.calculate.NoiseInfoResult.median_noise_levels">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">median_noise_levels</span></span><a class="headerlink" href="#will.calculate.NoiseInfoResult.median_noise_levels" title="Permalink to this definition">¶</a></dt>
-<dd><p>The mean noise levels across the file.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="will.calculate.NoiseInfoResult.noise_levels">
-<span class="sig-name descname"><span class="pre">noise_levels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#will.calculate.NoiseInfoResult.noise_levels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="will.calculate.NoiseInfoResult.num_chans">
-<span class="sig-name descname"><span class="pre">num_chans</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#will.calculate.NoiseInfoResult.num_chans" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="will.calculate.NoiseInfoResult.plot_noise">
-<span class="sig-name descname"><span class="pre">plot_noise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#will.calculate.NoiseInfoResult.plot_noise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the mean noise levels for a file.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.boxcar_convolved">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">boxcar_convolved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxcar_widths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#will.calculate.boxcar_convolved" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the pulse profile convolved with a boxcar width.</p>
-<dl>
-<dt>Args:</dt><dd><p>time_profile - Time profile of the pulse</p>
-<p>boxcar_widths - Array of boxcar widths</p>
-</dd>
-<dt>Returns:</dt><dd><p>Pulse profile convolved with a boxcar</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.calculate_dm_boxcar_widths">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">calculate_dm_boxcar_widths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#will.calculate.calculate_dm_boxcar_widths" title="Permalink to this definition">¶</a></dt>
-<dd><p>This calculates the boxcar widths in samples that correspond to the
-inter-channel dispersion delays in seconds. If delay is less than
-than the sample time of one, return a boxcar width of one.</p>
-<dl>
-<dt>Args:</dt><dd><blockquote>
-<div><p>dm - Dispersion Measure in pc/cm^3.</p>
-<p>sampling_time - Sampling time of data.</p>
-<p>chan_freqs - The channel frequencies in MHz.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>Array with boxcar lengths in samples.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.calculate_dm_widths">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">calculate_dm_widths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#will.calculate.calculate_dm_widths" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the inter-channel DM smearing. This implements
-Burke-Spolaor &amp; Bannister 2018 (<a class="reference external" href="https://arxiv.org/pdf/1407.0400.pdf">https://arxiv.org/pdf/1407.0400.pdf</a>)
-Eqn 2 in seconds.</p>
-<dl>
-<dt>Args:</dt><dd><p>dm - The Dispersion Measure in pc/cm^3.</p>
-<p>channel_width - The channel width in MHz.</p>
-<p>chan_freqs - The channel frequencies in MHz.</p>
-</dd>
-<dt>Returns:</dt><dd><p>inter-channel dm smearing in seconds</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.calculate_noises_multi">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">calculate_noises_multi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_series:</span> <span class="pre">~numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxcar_array:</span> <span class="pre">~numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_boxcar:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_factor:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_func:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">functools.partial(&lt;function</span> <span class="pre">median_abs_deviation&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale='normal')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#will.calculate.calculate_noises_multi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the noise level of a time series over a set
-of boxcars. Detrend the time series using median_line_detrend.
-Convolve the detrened time series with the boxcar array,
-Then use <cite>scale_func</cite> to calculate the noise level.</p>
-<dl>
-<dt>Args:</dt><dd><p>time_series - The dedispersed time series.</p>
-<p>box_car_length - Length of the boxcars.</p>
-<dl class="simple">
-<dt>sigma - Return pulses with significance above</dt><dd><p>this</p>
-</dd>
-<dt>smoothing_factor - Detrend blocks are</dt><dd><p>smoothing_factor*box_car_length long.</p>
-</dd>
-<dt>scale_func - The function used to calculate the measure of scale.</dt><dd><p>must accept <cite>axis=0</cite> argument.</p>
-</dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>Measures of scale for each boxcar in <cite>boxcar array</cite>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.convolve_multi_boxcar">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">convolve_multi_boxcar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxcar_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#will.calculate.convolve_multi_boxcar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convolve an profile array with an array that contains multiple boxcars.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>profile - 1D or 2D array that contains the profile. For 1D array,</dt><dd><p>will be convolved with all boxcars. If 2D, time should
-be on the vertical axis and number of profiles and
-boxcars should match.</p>
-</dd>
-<dt>boxcar_array - Array containing boxcars, boxcars should be stacked along</dt><dd><p>axis=1, see <cite>generate_boxcar_array</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>Profile convolved with the boxcar_array.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.generate_boxcar_array">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">generate_boxcar_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boxcar_lengths:</span> <span class="pre">~numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization_func:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">&lt;ufunc</span> <span class="pre">'sqrt'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_max:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#will.calculate.generate_boxcar_array" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a 2D array of boxcars for the given boxcar_lengths.</p>
-<dl>
-<dt>Args:</dt><dd><p>boxcar_lengths - Array of boxcar lengths.</p>
-<dl class="simple">
-<dt>normalization_func - Function to normalize the boxcar, default</dt><dd><p>is to use sqrt.</p>
-</dd>
-</dl>
-<p>return_max - Return max boxcar length</p>
-</dd>
-<dt>Returns:</dt><dd><p>Array of boxcars, with the boxcars stacked horizontally.
-(Optional) max boxcar length</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.log_normal_from_stats">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">log_normal_from_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">median</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#will.calculate.log_normal_from_stats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a lognormal distribution that has has a given median
-and standard deviation.</p>
-<dl>
-<dt>Args:</dt><dd><p>median - median of resulting distribution</p>
-<p>std - Standard deviation of returned samples</p>
-</dd>
-<dt>Returns:</dt><dd><p><cite>size</cite> numbers from the sampled from lognormal distribution</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.median_line_detrend">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">median_line_detrend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#will.calculate.median_line_detrend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Detrend an array by finding medians of sections and fitting a line
-to these medians, then subtracting this line.</p>
-<dl>
-<dt>Args:</dt><dd><p>array - Array to detrend.</p>
-<p>num_samples - Number of samples per median block.</p>
-</dd>
-<dt>Return:</dt><dd><p>array with trend subtracted.</p>
-</dd>
-</dl>
-<p>Inspired by ‘Advanced Architectures for Astrophysical Supercomputing’,
-section 4.2.3</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.noise_info">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">noise_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxcar_lengths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_locations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16384</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chan_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.calculate.noise_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get noise levels for a file and set of boxcar lengths. This is done by
-selecting <cite>num_locations</cite> evenly spaced throughout the file. <cite>num_samples</cite> are
-extracted from each of these locations. If a Dispersion Measure is given, The
-the data is dedispersed to that DM. If a channel mask is provided, these channels
-are not included in the time series. The resulting time series are detrended by
-calculating medians of blocks 4 times the largest boxcar size, and
-interpolating a linear fit between these points. The detrened time series are
-convolved with boxcars of the given length. The noise is then calculated my MAD.</p>
-<dl>
-<dt>Args:</dt><dd><p>file_path - String that is the path to a file.</p>
-<p>dm - Dispersion Measure in pc/cm^3.</p>
-<p>boxcar_lengths - Numpy array of boxcar lengths to consider.</p>
-<p>num_locations - Number of locations in the file to consider.</p>
-<dl class="simple">
-<dt>num_samples - Number of sample to consider, must be 4 times the</dt><dd><p>largest boxcar.</p>
-</dd>
-</dl>
-<p>chan_mask - Mask these channels if given. True=value to mask</p>
-</dd>
-<dt>Returns:</dt><dd><p>NoiseInfoResult</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.quicksort">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">quicksort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_ascend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#will.calculate.quicksort" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quicksort in place.</p>
-<dl>
-<dt>Args:</dt><dd><p>array - Array to be sorted</p>
-<p>left - Left most element of sort</p>
-<p>right - Right most element of sort</p>
-<dl class="simple">
-<dt>sort_fraction - The fraction of the array to</dt><dd><p>stop sorting.</p>
-</dd>
-</dl>
-<p>sort_ascend - Sort increasing</p>
-</dd>
-<dt>Returns:</dt><dd><p>None - Sort in place</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.sort_subarrays">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">sort_subarrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_subarrays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#will.calculate.sort_subarrays" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sort subband of array. Flips the sorts back and forth to get a sine wave
-type shape.</p>
-<dl>
-<dt>Args:</dt><dd><p>array - array to sort</p>
-<p>num_subarrays - Number of subarrays to sort</p>
-<dl class="simple">
-<dt>sort_fraction - The fraction of the subarray to</dt><dd><p>stop sorting.</p>
-</dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><p>Subarray sorted (also is sorted in place)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="will.calculate.std_min_func">
-<span class="sig-prename descclassname"><span class="pre">will.calculate.</span></span><span class="sig-name descname"><span class="pre">std_min_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#will.calculate.std_min_func" title="Permalink to this definition">¶</a></dt>
-<dd><p>The zeros of this function are the log normal sigma that will
-have standard deviation <cite>std</cite></p>
-<dl>
-<dt>Args:</dt><dd><p>sigma - lognormal sigma</p>
-<p>mu - lognormal mu</p>
-<p>std - The desired standard deviation</p>
-</dd>
-<dt>Returns:</dt><dd><p>desired variance - Actual variance(sigma, mu)</p>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 <section id="module-will.create">
 <span id="will-create-module"></span><h2>will.create module<a class="headerlink" href="#module-will.create" title="Permalink to this heading">¶</a></h2>
@@ -835,7 +560,7 @@ pulse = create.pulse_with_tail(times, 50)</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="will.create.pulse_with_tail_dist">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">pulse_with_tail_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">momtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-14</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">badvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">longname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extradoc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.create.pulse_with_tail_dist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">will.create.</span></span><span class="sig-name descname"><span class="pre">pulse_with_tail_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">momtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-14</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">badvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">longname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#will.create.pulse_with_tail_dist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">rv_continuous</span></code></p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>rv_continuous class</p>
@@ -1240,12 +965,14 @@ because we want the actual SNR of the time series.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="will.detect.extract_pulses">
 <span class="sig-prename descclassname"><span class="pre">will.detect.</span></span><span class="sig-name descname"><span class="pre">extract_pulses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pulse_search_params:</span> <span class="pre">~will.detect.PulseSearchParamters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_locations:</span> <span class="pre">~numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#will.detect.ExtractPulses" title="will.detect.ExtractPulses"><span class="pre">ExtractPulses</span></a></span></span><a class="headerlink" href="#will.detect.extract_pulses" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search a Fil or Fits file for pulses.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>pulse_search_params - dataclass with the pulse search paramters.
+<dd><p>Search a Fil or Fits file for pulses.
+Args:</p>
+<blockquote>
+<div><p>pulse_search_params - dataclass with the pulse search paramters.
 pulse_locations - Array with the locations of the center of the pulse.
 sigma - Sigma of Gauss filter, if 0 no filter is applied</p>
-</dd>
+</div></blockquote>
+<dl class="simple">
 <dt>Returns:</dt><dd><dl class="simple">
 <dt>ExtractPulses - Dataclass that has the pulse dynamic spectra,</dt><dd><p>bandpass labels, times, and means used to center</p>
 </dd>
@@ -1419,9 +1146,9 @@ optionally running a Gaussain filter, and zero centering.</p>
 <li class="toctree-l1"><a class="reference internal" href="examples/detect_pulse.html">Detect Pulses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/analyze_pulsar.html">Analyze a Pulsar</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/optimize.html">Use Pulse Detection to Optimize Filter Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/extract_reinject_pulse.html">Extract &amp; Re-Inject Pulse</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">will package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-will.calculate">will.calculate module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-will.create">will.create module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-will.detect">will.detect module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-will.inject">will.inject module</a></li>
@@ -1434,7 +1161,7 @@ optionally running a Gaussain filter, and zero centering.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="examples/optimize.html" title="previous chapter">Use Pulse Detection to Optimize Filter Parameters</a></li>
+      <li>Previous: <a href="examples/extract_reinject_pulse.html" title="previous chapter">Extract &amp; Re-Inject Pulse</a></li>
   </ul></li>
 </ul>
 </div>

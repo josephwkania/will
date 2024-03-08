@@ -1,0 +1,581 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Extract &amp; Re-Inject Pulse &#8212; WILL 0.2.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="will package" href="../will.html" />
+    <link rel="prev" title="Use Pulse Detection to Optimize Filter Parameters" href="optimize.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="Extract-&amp;-Re-Inject-Pulse">
+<h1>Extract &amp; Re-Inject Pulse<a class="headerlink" href="#Extract-&-Re-Inject-Pulse" title="Permalink to this heading">¶</a></h1>
+<section id="Use-burstfit-to-extract-a-pulse,-then-re-inject-into-the-same-file">
+<h2>Use burstfit to extract a pulse, then re-inject into the same file<a class="headerlink" href="#Use-burstfit-to-extract-a-pulse,-then-re-inject-into-the-same-file" title="Permalink to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jess.dispersion</span> <span class="kn">import</span> <span class="n">dedisperse</span>
+<span class="kn">from</span> <span class="nn">jess.fitters</span> <span class="kn">import</span> <span class="n">median_fitter</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">median_abs_deviation</span>
+<span class="kn">from</span> <span class="nn">will</span> <span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">inject</span>
+<span class="kn">from</span> <span class="nn">your</span> <span class="kn">import</span> <span class="n">Your</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># !pip install  git+https://github.com/thepetabyteproject/burstfit</span>
+<span class="c1"># I had to make some changes to burstfit to get the plotting to work</span>
+<span class="kn">from</span> <span class="nn">burstfit.data</span> <span class="kn">import</span> <span class="n">BurstData</span>
+<span class="kn">from</span> <span class="nn">burstfit.fit</span> <span class="kn">import</span> <span class="n">BurstFit</span>
+<span class="kn">from</span> <span class="nn">burstfit.io</span> <span class="kn">import</span> <span class="n">BurstIO</span>
+<span class="kn">from</span> <span class="nn">burstfit.model</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">SgramModel</span>
+<span class="kn">from</span> <span class="nn">burstfit.utils.functions</span> <span class="kn">import</span> <span class="n">gauss_norm</span><span class="p">,</span> <span class="n">gauss_norm2</span><span class="p">,</span> <span class="n">pulse_fn_vec</span><span class="p">,</span> <span class="n">sgram_fn_vec</span>
+<span class="kn">from</span> <span class="nn">burstfit.utils.plotter</span> <span class="kn">import</span> <span class="n">plot_me</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">show_dynamic</span><span class="p">(</span>
+    <span class="n">dynamic_spectra</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">save</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Show a dynamic spectra by first flattening it</span>
+<span class="sd">    in frequency. Do this by getting the medians of</span>
+<span class="sd">    each channel and then run a median filter along the</span>
+<span class="sd">    bandpass.</span>
+
+<span class="sd">    Then set the limits of the imshow so we get good detail</span>
+<span class="sd">    for the majority of the data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dynmaic_spectra: the dynamic spectra to plot</span>
+
+<span class="sd">        title: Title of plot</span>
+
+<span class="sd">        save: Save the plot as `title` + `.png`</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spectra_mads</span> <span class="o">=</span> <span class="n">median_fitter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">dynamic_spectra</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">flat</span> <span class="o">=</span> <span class="n">dynamic_spectra</span> <span class="o">-</span> <span class="n">spectra_mads</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">median_abs_deviation</span><span class="p">(</span><span class="n">flat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">med</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">flat</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">flat</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">med</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">std</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">med</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">std</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time Sample #&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Channel #&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">title</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Extract-the-pulse-using-burstfit">
+<h2>Extract the pulse using burstfit<a class="headerlink" href="#Extract-the-pulse-using-burstfit" title="Permalink to this heading">¶</a></h2>
+<p>This is copied from the burstfit documentation, <a class="reference external" href="https://github.com/thepetabyteproject/burstfit/blob/main/examples/BurstFit_custom_function.ipynb">https://github.com/thepetabyteproject/burstfit/blob/main/examples/BurstFit_custom_function.ipynb</a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span>
+<span class="n">download_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">temp_dir</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/FRB180417.fil&quot;</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://zenodo.org/record/3905426/files/FRB180417.fil&quot;</span>
+<span class="n">urlretrieve</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">,</span>
+    <span class="n">download_path</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">fil_file</span> <span class="o">=</span> <span class="n">download_path</span>
+</pre></div>
+</div>
+</div>
+<section id="Make-a-simple-channel-mask">
+<h3>Make a simple channel mask<a class="headerlink" href="#Make-a-simple-channel-mask" title="Permalink to this heading">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">yr_obj</span> <span class="o">=</span> <span class="n">Your</span><span class="p">(</span><span class="n">fil_file</span><span class="p">)</span>
+<span class="n">dynamic_spectra</span> <span class="o">=</span> <span class="n">yr_obj</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">yr_obj</span><span class="o">.</span><span class="n">your_header</span><span class="o">.</span><span class="n">nspectra</span><span class="p">)</span>
+
+<span class="n">stds</span> <span class="o">=</span> <span class="n">dynamic_spectra</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">stds</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">stds</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">stds</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">stds</span><span class="p">)</span>
+<span class="n">stds</span> <span class="o">/=</span> <span class="n">median_abs_deviation</span><span class="p">(</span><span class="n">stds</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">stds</span><span class="p">)</span>
+
+<span class="n">chan_mask</span> <span class="o">=</span> <span class="n">stds</span> <span class="o">&gt;</span> <span class="mi">4</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">chan_mask</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;matplotlib.lines.Line2D at 0x7f59e0f11b50&gt;]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_9_1.png" src="../_images/examples_extract_reinject_pulse_9_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DM</span> <span class="o">=</span> <span class="mf">475.28400</span>
+<span class="n">bd</span> <span class="o">=</span> <span class="n">BurstData</span><span class="p">(</span>
+    <span class="n">fp</span><span class="o">=</span><span class="n">fil_file</span><span class="p">,</span>
+    <span class="n">dm</span><span class="o">=</span><span class="n">DM</span><span class="p">,</span>
+    <span class="n">tcand</span><span class="o">=</span><span class="mf">2.0288800</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">snr</span><span class="o">=</span><span class="mf">16.8128</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We need the indices of the bad channels</span>
+<span class="n">bad_chans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">yr_obj</span><span class="o">.</span><span class="n">your_header</span><span class="o">.</span><span class="n">nchans</span><span class="p">)[</span><span class="n">chan_mask</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bd</span><span class="o">.</span><span class="n">prepare_data</span><span class="p">(</span><span class="n">mask_chans</span><span class="o">=</span><span class="n">bad_chans</span><span class="p">)</span>
+<span class="n">plot_me</span><span class="p">(</span><span class="n">bd</span><span class="o">.</span><span class="n">sgram</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_12_0.png" src="../_images/examples_extract_reinject_pulse_12_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pnames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;mu_t&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma_t&quot;</span><span class="p">,</span> <span class="s2">&quot;tau&quot;</span><span class="p">]</span>
+<span class="n">pulseModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">pulse_fn_vec</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="n">pnames</span><span class="p">)</span>
+
+<span class="c1"># For spectra, we will use a normalized gaussian model</span>
+<span class="n">snames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mu_f&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma_f&quot;</span><span class="p">]</span>
+<span class="n">spectraModel</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">gauss_norm</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="n">snames</span><span class="p">)</span>
+
+<span class="n">sgramModel</span> <span class="o">=</span> <span class="n">SgramModel</span><span class="p">(</span>
+    <span class="n">pulseModel</span><span class="p">,</span> <span class="n">spectraModel</span><span class="p">,</span> <span class="n">sgram_fn_vec</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">chan_mask</span><span class="p">,</span> <span class="n">clip_fac</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">clip_fac</span>
+<span class="p">)</span>
+
+<span class="n">snames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mu_f1&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma_f1&quot;</span><span class="p">,</span> <span class="s2">&quot;mu_f2&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma_f2&quot;</span><span class="p">,</span> <span class="s2">&quot;amp&quot;</span><span class="p">]</span>
+<span class="n">spectraModel2</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">gauss_norm2</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="n">snames</span><span class="p">)</span>
+<span class="n">spectra_bounds</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">sgramModel2</span> <span class="o">=</span> <span class="n">SgramModel</span><span class="p">(</span>
+    <span class="n">pulseModel</span><span class="p">,</span> <span class="n">spectraModel2</span><span class="p">,</span> <span class="n">sgram_fn_vec</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span> <span class="n">clip_fac</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">clip_fac</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bf</span> <span class="o">=</span> <span class="n">BurstFit</span><span class="p">(</span>
+    <span class="n">sgram_model</span><span class="o">=</span><span class="n">sgramModel2</span><span class="p">,</span>
+    <span class="n">sgram</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">sgram</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+    <span class="n">dm</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">dm</span><span class="p">,</span>
+    <span class="n">foff</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">foff</span><span class="p">,</span>
+    <span class="n">fch1</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">fch1</span><span class="p">,</span>
+    <span class="n">tsamp</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">tsamp</span><span class="p">,</span>
+    <span class="n">clip_fac</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">clip_fac</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="n">bd</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bf</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+<span class="n">bf</span><span class="o">.</span><span class="n">precalc</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">bf</span><span class="o">.</span><span class="n">initial_profilefit</span><span class="p">(</span><span class="n">plot</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_16_0.png" src="../_images/examples_extract_reinject_pulse_16_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bf</span><span class="o">.</span><span class="n">fitall</span><span class="p">(</span><span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">spectra_bounds</span><span class="o">=</span><span class="n">spectra_bounds</span><span class="p">,</span> <span class="n">profile_bounds</span><span class="o">=</span><span class="p">[])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:burstfit.fit:Input spectra bounds detected. Using them for component 1
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_17_1.png" src="../_images/examples_extract_reinject_pulse_17_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_17_2.png" src="../_images/examples_extract_reinject_pulse_17_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/joseph/python/miniconda3/envs/kpe/lib/python3.9/site-packages/scipy/optimize/_minpack_py.py:1010: OptimizeWarning: Covariance of the parameters could not be estimated
+  warnings.warn(&#39;Covariance of the parameters could not be estimated&#39;,
+WARNING:burstfit.curvefit:Fit errors are not finite. Retrying with p0+-(0.2*p0) bounds
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_17_4.png" src="../_images/examples_extract_reinject_pulse_17_4.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="Create-the-pulse">
+<h2>Create the pulse<a class="headerlink" href="#Create-the-pulse" title="Permalink to this heading">¶</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">WILL</span></code> with above model as the probability distribution function.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pulse_obj</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">TwoDimensionalPulse</span><span class="p">(</span>
+    <span class="n">bf</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">yr_obj</span><span class="o">.</span><span class="n">chan_freqs</span><span class="p">,</span> <span class="n">tsamp</span><span class="o">=</span><span class="n">yr_obj</span><span class="o">.</span><span class="n">your_header</span><span class="o">.</span><span class="n">tsamp</span><span class="p">,</span> <span class="n">dm</span><span class="o">=</span><span class="n">DM</span>
+<span class="p">)</span>
+<span class="c1"># WILL has time on the vertical axis, burstfit on the horizontal, so transpose.</span>
+<span class="n">pulse</span> <span class="o">=</span> <span class="n">pulse_obj</span><span class="o">.</span><span class="n">sample_pulse</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bf</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_dynamic</span><span class="p">(</span><span class="n">pulse</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">DM</span><span class="si">}</span><span class="s2"> DM Pulse&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_21_0.png" src="../_images/examples_extract_reinject_pulse_21_0.png" />
+</div>
+</div>
+</section>
+<section id="Inject-the-pulse">
+<h2>Inject the pulse<a class="headerlink" href="#Inject-the-pulse" title="Permalink to this heading">¶</a></h2>
+<p>Original Dynamic Spectra</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_dynamic</span><span class="p">(</span><span class="n">dynamic_spectra</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Dynamic Spectra + </span><span class="si">{</span><span class="n">DM</span><span class="si">}</span><span class="s2"> dm Pulse&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_24_0.png" src="../_images/examples_extract_reinject_pulse_24_0.png" />
+</div>
+</div>
+<p>The pulse is faintly visible before sample 2000.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dynamic_spectra_w_pulse</span> <span class="o">=</span> <span class="n">inject</span><span class="o">.</span><span class="n">inject_constant_into_file</span><span class="p">(</span>
+    <span class="n">yr_input</span><span class="o">=</span><span class="n">yr_obj</span><span class="p">,</span>
+    <span class="n">pulse</span><span class="o">=</span><span class="n">pulse</span><span class="p">,</span>
+    <span class="n">start</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
+    <span class="n">gulp</span><span class="o">=</span><span class="n">yr_obj</span><span class="o">.</span><span class="n">your_header</span><span class="o">.</span><span class="n">nspectra</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_dynamic</span><span class="p">(</span><span class="n">dynamic_spectra_w_pulse</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Dynamic Spectra + </span><span class="si">{</span><span class="n">DM</span><span class="si">}</span><span class="s2"> dm Pulse&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_27_0.png" src="../_images/examples_extract_reinject_pulse_27_0.png" />
+</div>
+</div>
+</section>
+<section id="It-is-difficult-to-see-the-new-pulse,-lets-make-it-100x-brighter.">
+<h2>It is difficult to see the new pulse, lets make it 100x brighter.<a class="headerlink" href="#It-is-difficult-to-see-the-new-pulse,-lets-make-it-100x-brighter." title="Permalink to this heading">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pulse</span> <span class="o">=</span> <span class="n">pulse_obj</span><span class="o">.</span><span class="n">sample_pulse</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">bf</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="n">dynamic_spectra_w_pulse</span> <span class="o">=</span> <span class="n">inject</span><span class="o">.</span><span class="n">inject_constant_into_file</span><span class="p">(</span>
+    <span class="n">yr_input</span><span class="o">=</span><span class="n">yr_obj</span><span class="p">,</span>
+    <span class="n">pulse</span><span class="o">=</span><span class="n">pulse</span><span class="p">,</span>
+    <span class="n">start</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
+    <span class="n">gulp</span><span class="o">=</span><span class="n">yr_obj</span><span class="o">.</span><span class="n">your_header</span><span class="o">.</span><span class="n">nspectra</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">show_dynamic</span><span class="p">(</span><span class="n">dynamic_spectra_w_pulse</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Dynamic Spectra + Bright </span><span class="si">{</span><span class="n">DM</span><span class="si">}</span><span class="s2"> dm Pulse&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_extract_reinject_pulse_30_0.png" src="../_images/examples_extract_reinject_pulse_30_0.png" />
+</div>
+</div>
+<p>Now the re-injected pulse is visible between time samples 3000-3500.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">WILL</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">WILL - Weighted Injector of Luminous Lighthouses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#questions-contributing">Questions + Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#other-simulators">Other Simulators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inject_pulse.html">Create &amp; Inject Pulses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="detect_pulse.html">Detect Pulses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyze_pulsar.html">Analyze a Pulsar</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimize.html">Use Pulse Detection to Optimize Filter Parameters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Extract &amp; Re-Inject Pulse</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Use-burstfit-to-extract-a-pulse,-then-re-inject-into-the-same-file">Use burstfit to extract a pulse, then re-inject into the same file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Extract-the-pulse-using-burstfit">Extract the pulse using burstfit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Create-the-pulse">Create the pulse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Inject-the-pulse">Inject the pulse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#It-is-difficult-to-see-the-new-pulse,-lets-make-it-100x-brighter.">It is difficult to see the new pulse, lets make it 100x brighter.</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../will.html">will package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="optimize.html" title="previous chapter">Use Pulse Detection to Optimize Filter Parameters</a></li>
+      <li>Next: <a href="../will.html" title="next chapter">will package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Joseph W. Kania.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/examples/extract_reinject_pulse.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

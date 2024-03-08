@@ -47,7 +47,7 @@
 </section>
 <section id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h1>
-<p>There are <span class="xref myst">many</span> pulsar and FRB simulators. These lack ability to handle complex band shapes (from bandstop filters, rolloff, etc).
+<p>There are <a class="reference internal" href="#other-simulators"><span class="std std-ref">many</span></a> pulsar and FRB simulators. These lack ability to handle complex band shapes (from bandstop filters, rolloff, etc).
 They also try to inject pulses at a given Signal-to-Noise ratio. This signal strength methodology can lead to circular logic, in worse radio frequency
 environments, the injected signal is brighter and still detectible.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Will</span></code> attempts the following</p>
@@ -100,14 +100,14 @@ which contains the examples and and <a class="reference external" href="https://
 <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
 <p>To install directly into your current Python environment</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/josephwkania/will.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/josephwkania/will.git
 </pre></div>
 </div>
 <p>If you want a local version</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/josephwkania/will.git
-pip install will
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/josephwkania/will.git
+pip<span class="w"> </span>install<span class="w"> </span>will
 
-For tests <span class="sb">`</span>pip install will<span class="o">[</span>tests<span class="o">]</span><span class="sb">`</span>, <span class="k">for</span> docs <span class="sb">`</span>pip install will<span class="o">[</span>docs<span class="o">]</span><span class="sb">`</span>
+For<span class="w"> </span>tests<span class="w"> </span><span class="sb">`</span>pip<span class="w"> </span>install<span class="w"> </span>will<span class="o">[</span>tests<span class="o">]</span><span class="sb">`</span>,<span class="w"> </span><span class="k">for</span><span class="w"> </span>docs<span class="w"> </span><span class="sb">`</span>pip<span class="w"> </span>install<span class="w"> </span>will<span class="o">[</span>docs<span class="o">]</span><span class="sb">`</span>
 </pre></div>
 </div>
 </section>
@@ -183,6 +183,7 @@ For tests <span class="sb">`</span>pip install will<span class="o">[</span>tests
 <li class="toctree-l1"><a class="reference internal" href="examples/detect_pulse.html">Detect Pulses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/analyze_pulsar.html">Analyze a Pulsar</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/optimize.html">Use Pulse Detection to Optimize Filter Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/extract_reinject_pulse.html">Extract &amp; Re-Inject Pulse</a></li>
 <li class="toctree-l1"><a class="reference internal" href="will.html">will package</a></li>
 </ul>
 

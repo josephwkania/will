@@ -15,6 +15,7 @@ Welcome to WILL's documentation!
    examples/detect_pulse.ipynb
    examples/analyze_pulsar.ipynb
    examples/optimize.ipynb
+   examples/extract_reinject_pulse.ipynb
    will.rst
 
 
