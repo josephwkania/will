@@ -282,7 +282,7 @@ def boxcar_convolved(time_profile: np.ndarray, boxcar_widths: np.ndarray) -> np.
     powers = np.zeros(boxcar_widths.shape, dtype=np.float64)
     for j, width in enumerate(boxcar_widths):
         if width > 1:
-            window = signal.boxcar(width) / np.sqrt(width)
+            window = signal.windows.boxcar(width) / np.sqrt(width)
             convolved_profile = signal.fftconvolve(window, time_profile, "full")
             convolved_profile = convolved_profile[width // 2 - 1 : -width // 2]
         else:

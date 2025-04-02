@@ -66,7 +66,7 @@ def find_first_pulse(
 
     if box_car_length > 1:
         _, nchans = dynamic_spectra.shape
-        window = signal.boxcar(box_car_length) / np.sqrt(box_car_length)
+        window = signal.windows.boxcar(box_car_length) / np.sqrt(box_car_length)
         dynamic_spectra = signal.fftconvolve(
             np.broadcast_to(window[:, None], (box_car_length, nchans)),
             dynamic_spectra,
@@ -190,7 +190,7 @@ def detect_all_pulses(
     # normatlized_time_series = flattened_times_series / std
 
     if box_car_length > 1:
-        window = signal.boxcar(box_car_length) / np.sqrt(box_car_length)
+        window = signal.windows.boxcar(box_car_length) / np.sqrt(box_car_length)
         flattened_times_series = signal.fftconvolve(
             window, flattened_times_series, "full"
         )
@@ -244,7 +244,7 @@ def detect_max_pulse(
     # normalized_time_series = flattened_times_series / std
 
     if box_car_length > 1:
-        window = signal.boxcar(box_car_length) / np.sqrt(box_car_length)
+        window = signal.windows.boxcar(box_car_length) / np.sqrt(box_car_length)
         flattened_times_series = signal.fftconvolve(
             window, flattened_times_series, "full"
         )

@@ -167,7 +167,7 @@ def _normalize_pulse_with_tail(times: np.ndarray, tau: float) -> float:
         based on Harry45
     """
     # center: int
-    norm_constant = integrate.simps(pulse_with_tail(times, tau=tau), times)
+    norm_constant = integrate.simpson(pulse_with_tail(times, tau=tau), times)
     logging.debug("Normalization constant is %f", norm_constant)
     return norm_constant
 
