@@ -250,7 +250,21 @@ def arbitrary_array_cdf(
     logging.debug("Sampling given array")
     # if array has negatives, pulse_cdf will not be monotonic
     # and interpolation is difficult
-    assert array.min() >= 0, "Probability array must be non-negative!"
+    array_min = array.min()
+    if array_min < -0.01:
+        raise ValueError(
+            "Probability array must be non-negative! "
+            + f"Found minimum value {array_min}."
+        )
+    if array_min < 0:
+        array -= array_min
+        logging.warning(
+            "Probability array must be non-negative!"
+            + " Added %f to the pdf to enforce this."
+            + " Maybe numerical precision or something bad!",
+            -array_min,
+        )
+
     pulse_cdf = np.cumsum(array)
     pulse_cdf /= np.max(pulse_cdf)
     cdf_interp = interpolate.interp1d(pulse_cdf, locations)
