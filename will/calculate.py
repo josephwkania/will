@@ -11,9 +11,11 @@ from typing import Callable, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+from jess.calculators import accumulate, to_dtype
 from jess.dispersion import dedisperse, delay_lost
 from rich.progress import track
 from scipy import interpolate, optimize, signal, stats
+from scipy.interpolate import CubicSpline
 from your import Your
 
 
@@ -522,3 +524,66 @@ def noise_info(
             time_series=time_series, boxcar_array=boxcar_array, max_boxcar=max_boxcar
         )
     return NoiseInfoResult(noises, boxcar_lengths, yr_obj.your_header.nchans)
+
+
+def interp_frequecies(your_object: Your, factor: int) -> np.array:
+    """
+    Interperate channel frequencies to higher resolution.
+    Done so that `your_obj.chan_freqs = freqs.reshape(-1, factor).mean(axis=1)`
+
+    Args:
+        your_object: The Your object of the original file.
+
+        factor: The frequency upscaling factor.
+
+    Returns:
+        Channel frequencies interpolated by `factor`.
+    """
+    if not ((factor & (factor - 1) == 0) and factor > 0):
+        raise ValueError("factor must be a positive power of two!")
+    new_foff = your_object.native_foff / factor
+
+    new_fch1 = your_object.fch1 - (factor - 1) / 2 * new_foff
+    logging.debug("New foff is %f, new fch1 is %f", new_foff, new_fch1)
+    return new_fch1 + np.arange(your_object.native_nchans * factor) * new_foff
+
+
+def cubic_inter_weights(nchans: int, weights: np.array, factor: int) -> np.array:
+    """
+    Cubic Interpolate the filter weights, used when upscaling the frequency.
+
+    Args:
+        nchans: Number of chans of orginal data.
+
+        weights: The channel weights at the original resolution.
+
+        factor: The frequency upscaling factor:
+
+    Returns:
+        Upscaled channel weights.
+    """
+    cs = CubicSpline(np.arange(nchans), weights)
+    return cs(np.arange(nchans * factor) / factor)
+
+
+def rescale_pulse(
+    pulse: np.ndarray, time_factor: Union[None, int], freq_factor: Union[None, int]
+) -> np.ndarray:
+    """
+    Rescales the pulse by `time_factor` in time and `freq_factor` in frequency.
+    If pulse is not divisble along the respective axis, the pulse will be padded
+    with edge values.
+
+    Args:
+        time_factor: The factor to scrunch in time.
+
+        freq_factor: The factor to scrunch in frequency.
+
+    Returns:
+        The pulse reduced by factor `time_factor` and `freq_factor`.
+    """
+    if time_factor is not None and time_factor > 1:
+        pulse = accumulate(pulse, axis=0, factor=time_factor, pad="edge")
+    if freq_factor is not None and freq_factor > 1:
+        pulse = accumulate(pulse, axis=1, factor=freq_factor, pad="edge")
+    return to_dtype(pulse, "uint64")

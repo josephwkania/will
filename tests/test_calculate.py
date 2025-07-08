@@ -6,6 +6,7 @@ from unittest import mock
 
 import numpy as np
 import pytest
+from your import Your
 from your.formats.filwriter import make_sigproc_object
 
 from will import calculate, create
@@ -480,3 +481,123 @@ class TestNoiseInfo:
                 num_locations=self.num_locations,
                 num_samples=2**10,
             )
+
+
+class TestInterpFrequecies:
+    """
+    Test interp_frequecies
+    """
+
+    def test_interp(self, create_fil):
+        """
+        Test the interpolation function.
+        """
+        factor = 4
+        yr_obj = Your(create_fil[0])
+        freqs = calculate.interp_frequecies(your_object=yr_obj, factor=factor)
+        np.testing.assert_allclose(
+            yr_obj.chan_freqs, freqs.reshape(-1, factor).mean(axis=1)
+        )
+
+    def test_interp_bad_factor(self, create_fil):
+        """
+        Test the interpolation function, should raise ValueError
+        if factor is not a power of two.
+        """
+        factor = 3
+        yr_obj = Your(create_fil[0])
+        with pytest.raises(ValueError):
+            calculate.interp_frequecies(your_object=yr_obj, factor=factor)
+
+
+def test_cubic_inter_weights():
+    """
+    Test cubic_inter_weights.
+
+    Borrowed this from will.tests.test_create.test_filter_weights
+    """
+    nchans = 512
+    nsamps = 16
+    dynamic = 150 * np.ones(nchans)
+    diff = 150
+    start = 200
+    dynamic[start : start + diff] = 0
+    dynamic = dynamic + np.random.normal(size=nchans * nsamps).reshape(nsamps, nchans)
+    weights = create.filter_weights(dynamic, smooth_sigma=5)
+    factor = 4
+    spline_weights = calculate.cubic_inter_weights(nchans, weights, factor)
+    np.testing.assert_allclose(
+        spline_weights.reshape(-1, factor).mean(axis=1), weights, atol=0.04
+    )
+
+
+class TestRescalePulse:
+    """
+    Based on jess.test_caculate.TestAccumulate.
+    """
+
+    def setup_class(self):
+        """
+        Holds shared simple pulse
+        From jess.test_caculate.TestAccumulate.
+        """
+        simple_pulse = create.SimpleGaussPulse(
+            0.01,
+            dm=DM,
+            tau=5,
+            chan_freqs=CHAN_FREQS,
+            sigma_freq=100,
+            center_freq=1050,
+            tsamp=TSAMP,
+            spectral_index_alpha=1,
+            nscint=1,
+            phi=1,
+        )
+        self.simple_pulse_sampled = simple_pulse.sample_pulse(int(4e5))
+        self.pulse_energy = self.simple_pulse_sampled.sum()
+
+    def test_fold_in_time(self):
+        """
+        Test accumulate on time axis (ie axis=0).
+        """
+        time_factor = 4
+        folded_time = calculate.rescale_pulse(
+            self.simple_pulse_sampled,
+            time_factor=time_factor,
+            freq_factor=None,
+        )
+        time_samples, time_freqs = folded_time.shape
+        assert time_samples == self.simple_pulse_sampled.shape[0] // time_factor
+        assert time_freqs == self.simple_pulse_sampled.shape[1]
+        assert self.pulse_energy == folded_time.sum()
+
+    def test_fold_in_freq(self):
+        """
+        Test Accumulate on freq axis (ie axis=1).
+        """
+        freq_factor = 4
+        folded_freq = calculate.rescale_pulse(
+            self.simple_pulse_sampled,
+            freq_factor=freq_factor,
+            time_factor=None,
+        )
+        time_samples, time_freqs = folded_freq.shape
+        assert time_samples == self.simple_pulse_sampled.shape[0]
+        assert time_freqs == self.simple_pulse_sampled.shape[1] // freq_factor
+        assert self.pulse_energy == folded_freq.sum()
+
+    def test_fold_in_both(self):
+        """
+        Test Accumulate on both axes.
+        """
+        freq_factor = 4
+        time_factor = 2
+        folded = calculate.rescale_pulse(
+            self.simple_pulse_sampled,
+            time_factor=time_factor,
+            freq_factor=freq_factor,
+        )
+        time_samples, time_freqs = folded.shape
+        assert time_samples == self.simple_pulse_sampled.shape[0] // time_factor
+        assert time_freqs == self.simple_pulse_sampled.shape[1] // freq_factor
+        assert self.pulse_energy == folded.sum()
