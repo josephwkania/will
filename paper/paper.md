@@ -10,20 +10,24 @@ tags:
 authors:
   - name: Joseph W Kania
     orcid: 0000-0002-3354-3859
-    affiliation: "1,2"
+    affiliation: "1, 2, 3"
   - name: Kevin Bandura
     ocrid: 0000-0003-3772-2798
-    affiliation: "2, 3"
+    affiliation: "3, 4"
 
 affiliations:
-- name: West Virginia University, Department of Physics and Astronomy, P. O. Box 6315, Morgantown 26506, WV, USA
+- name: Jodrell Bank Centre for Astrophysics, Department of Physics and Astronomy, The University of Manchester, Oxford Road, Manchester M13 9PL, United Kingdom
   index: 1
-- name: Center for Gravitational Waves and Cosmology, West Virginia University, Chestnut Ridge Research Building, Morgantown 26506, WV, USA
+  ror: 027m9bs27
+- name: West Virginia University, Department of Physics and Astronomy, P. O. Box 6315, Morgantown 26506, WV, USA
   index: 2
-- name: Lane Department of Computer Science and Electrical Engineering, 1220 Evansdale Drive, PO Box 6109, Morgantown, WV 26506, USA
+  ror: 011vxgd24
+- name: Center for Gravitational Waves and Cosmology, West Virginia University, Chestnut Ridge Research Building, Morgantown 26506, WV, USA
   index: 3
+- name: Lane Department of Computer Science and Electrical Engineering, 1220 Evansdale Drive, PO Box 6109, Morgantown, WV 26506, USA
+  index: 4
 
-date: 30 April 2022
+date: 7 September 2025
 bibliography: paper.bib
 ---
  
@@ -76,7 +80,7 @@ A unique feature of `will.create` is the ability to take into account the changi
 due to band roll off or band stop filters. The sensitivity weights can be user provided and we have functions that can estimate weights.
 Taking into account sensitivity changes is important when evaluating the effectiveness of RFI filters. The variance of channels that are
 blocked by a bandstop filter are close to zero. A filter may then remove any pulse found here because the pulse does not follow the surrounding
-statistics. This would lead to the incorrect conclusion that the filter is malfunctioning.
+statistics. This would lead to the incorrect conclusion that the filter is malfunctioning. `will.create` can take pulses fitted with `burstfit` [@burstfit] and reinject them.    
  
 `will.detect` provides straightforward pulse detection at given width and DM. This allows analysis of pulsar pulses over an observation.
 You can also see the folded pulse dynamic spectra, time series, and SNR. You can use this functionality to see how see how the pulses
@@ -89,7 +93,7 @@ upon in `will.create`.
 # Figure
 
 ![Injected multicomponent pulse
-](https://github.com/josephwkania/will/blob/master/examples/Multi-Component_Pulse.png?raw=true)
+](https://github.com/josephwkania/will/blob/main/examples/Multi-Component_Pulse.png?raw=true)
 A dedispersed four component pulse created with `WILL`, the last component is rotated compared to the other components. 
 The pulse has no power between channels 2500 to 3000, correctly accounting for the bandstop filter at these frequencies.
 

@@ -3,11 +3,11 @@
 `will` is a library to create, inject, and detect pulses from Fast Radio Bursts (FRBs) and pulsars.
 
 <p align="center">
-  <img src="https://github.com/josephwkania/will/blob/master/examples/Multi-Component_Pulse.png?raw=true" alt="Example pulse with multiple components">
+  <img src="https://github.com/josephwkania/will/blob/main/examples/Multi-Component_Pulse.png?raw=true" alt="Example pulse with multiple components">
 </p>
 
 <p align="center">
-  <img src="https://github.com/josephwkania/will/blob/master/examples/Pulsar_with_Varying_Intensities.png?raw=true" alt="Example pulsar">
+  <img src="https://github.com/josephwkania/will/blob/main/examples/Pulsar_with_Varying_Intensities.png?raw=true" alt="Example pulsar">
 </p>
 
 # Overview
@@ -63,10 +63,10 @@ For tests `pip install will[tests]`, for docs `pip install will[docs]`
 ```
 
 # Examples
-There are [example notebooks](https://github.com/josephwkania/will/tree/master/examples) that show how to create, inject, and detect pulses.
+There are [example notebooks](https://github.com/josephwkania/will/tree/main/examples) that show how to create, inject, and detect pulses.
 
 # Questions + Contributing
-See [CONTRIBUTING.md](https://github.com/josephwkania/will/tree/master/CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/josephwkania/will/tree/main/CONTRIBUTING.md)
 
 # Other Simulators
 ## Single Pulses
